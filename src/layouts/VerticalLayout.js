@@ -21,7 +21,7 @@ import Layout from '@layouts/VerticalLayout'
 const VerticalLayout = props => (
   <Layout 
     // menu={<Menu />}  
-    // navbar='I am in navbar, Everything else is removed'
+    navbar='-'
     footer='@Supervisor 2021'
     {...props}>
     {props.children}

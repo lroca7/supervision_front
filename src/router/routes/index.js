@@ -11,10 +11,10 @@ import PageLayoutsRoutes from './PageLayouts'
 import ParametersRoutes from './Parameters'
 
 // ** Document title
-const TemplateTitle = '%s - Vuexy React Admin Template'
+const TemplateTitle = '%s - Supervisor'
 
 // ** Default Route
-const DefaultRoute = '/dashboard/ecommerce'
+const DefaultRoute = '/create/parameter'
 
 // ** Merge Routes
 const Routes = [
