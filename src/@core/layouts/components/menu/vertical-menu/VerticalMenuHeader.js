@@ -51,12 +51,12 @@ const VerticalMenuHeader = props => {
             <h2 className='brand-text mb-0'>{themeConfig.app.appName}</h2>
           </NavLink>
         </li>
-        <li className='nav-item nav-toggle'>
+        {/* <li className='nav-item nav-toggle'>
           <div className='nav-link modern-nav-toggle cursor-pointer'>
             <Toggler />
             <X onClick={() => setMenuVisibility(false)} className='toggle-icon icon-x d-block d-xl-none' size={20} />
           </div>
-        </li>
+        </li> */}
       </ul>
     </div>
   )

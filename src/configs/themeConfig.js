@@ -3,8 +3,8 @@
 //Template config options
 const themeConfig = {
   app: {
-    appName: 'Vuexy',
-    appLogoImage: require('@src/assets/images/logo/logo.svg').default
+    appName: 'Supervisor',
+    appLogoImage: require('@src/assets/images/logo/supervisor.svg').default
   },
   layout: {
     isRTL: false,
@@ -24,7 +24,7 @@ const themeConfig = {
     footer: {
       type: 'static' // static, sticky, hidden
     },
-    customizer: true,
+    customizer: false,
     scrollTop: true // Enable scroll to top button
   }
 }

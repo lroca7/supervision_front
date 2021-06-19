@@ -2,24 +2,47 @@ import { Home, Circle } from 'react-feather'
 
 export default [
   {
-    id: 'dashboards',
-    title: 'Dashboards',
-    icon: <Home size={20} />,
+    id: 'parameters',
+    title: 'Parametros',
+    // icon: <Home size={20} />,
     badge: 'light-warning',
-    badgeText: '2',
     children: [
       {
-        id: 'analyticsDash',
-        title: 'Analytics',
+        id: 'createParameter',
+        title: 'Crear parametro',
         icon: <Circle size={12} />,
-        navLink: '/dashboard/analytics'
+        navLink: '/create/parameter'
       },
       {
-        id: 'eCommerceDash',
-        title: 'eCommerce',
+        id: 'listParamete',
+        title: 'Listar parametros',
         icon: <Circle size={12} />,
-        navLink: '/dashboard/ecommerce'
+        navLink: '/list/parameters'
       }
     ]
   }
 ]
+
+// export default [
+//   {
+//     id: 'dashboards',
+//     title: 'Dashboards 2',
+//     icon: <Home size={20} />,
+//     badge: 'light-warning',
+//     badgeText: '2',
+//     children: [
+//       {
+//         id: 'analyticsDash',
+//         title: 'Analytics',
+//         icon: <Circle size={12} />,
+//         navLink: '/dashboard/analytics'
+//       },
+//       {
+//         id: 'eCommerceDash',
+//         title: 'eCommerce',
+//         icon: <Circle size={12} />,
+//         navLink: '/dashboard/ecommerce'
+//       }
+//     ]
+//   }
+// ]

@@ -5,7 +5,7 @@ const CardMedal = () => {
   return (
     <Card className='card-congratulations-medal'>
       <CardBody>
-        <h5>Congratulations 🎉 John!</h5>
+        <h5>Congratulations 🎉 Lizeth 2!</h5>
         <CardText className='font-small-3'>You have won gold medal</CardText>
         <h3 className='mb-75 mt-2 pt-50'>
           <a href='/' onClick={e => e.preventDefault()}>
