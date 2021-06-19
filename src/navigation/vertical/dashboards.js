@@ -15,9 +15,15 @@ export default [
       },
       {
         id: 'listParamete',
-        title: 'Listar parametros',
+        title: 'Por versión',
         icon: <Circle size={12} />,
         navLink: '/list/parameters'
+      },
+      {
+        id: 'listParamete',
+        title: 'Oficiales',
+        icon: <Circle size={12} />,
+        navLink: '/list/parameters/oficial'
       }
     ]
   }

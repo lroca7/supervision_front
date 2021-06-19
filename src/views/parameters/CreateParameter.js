@@ -170,6 +170,8 @@ const CreateParameter = () => {
                 inline
               />
 
+              <h4>Subgrupos</h4>
+
               {Object.entries(subgrupos).map(([key, value]) => {
                 return (
                   <div>

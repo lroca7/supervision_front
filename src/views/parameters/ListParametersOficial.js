@@ -23,8 +23,7 @@ import {
   Button,
   Spinner,
   CardText,
-  CustomInput,
-  Input
+  CustomInput
 } from "reactstrap"
 import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
 import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
@@ -40,7 +39,7 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
-const ListParameters = () => {
+const ListParametersOficial = () => {
   const { colors } = useContext(ThemeColors)
 
   const URL_BASE =
@@ -70,11 +69,10 @@ const ListParameters = () => {
 
   const getParameters = (e) => {
     setLoader(true)
-    debugger
 
-    const grupo = e.target.value
+    const grupo = 'Límites'
     setGrupo(grupo)
-    const url = `${URL_BASE}parametros?version=${grupo}`
+    const url = `${URL_BASE}parametros?grupo=${grupo}`
 
     fetch(url)
       .then((response) => response.json())
@@ -88,6 +86,7 @@ const ListParameters = () => {
   }
 
   useEffect(() => {
+    // getParameters()
     // console.log('data inicial -> ', students)
   }, [])
 
@@ -140,11 +139,16 @@ const ListParameters = () => {
 
   return (
     <div id="parameters-container mb-4">
-      <h2 className="mb-2">Parámetros por versión</h2>
+      <h2 className="mb-2">Parámetros oficiales</h2>
 
       <Col md="6">
-        <label>Ingresa la versión a consultar:</label>
-        <Input type="number" name="version" id="version" onChange={(e) => getParameters(e)} />
+        <label>Seleccionar grupo:</label>
+        <Select
+          id="select-group"
+          options={options}
+          placeholder="Seleccionar"
+          onChange={(e) => getParameters(e)}
+        />
       </Col>
 
       {loader === true ? (
@@ -158,7 +162,7 @@ const ListParameters = () => {
         <Col md="12" className="mt-2">
           {Object.entries(subgrupos).length > 0 ? (
             <>
-              <h4 className='mb-2'>Subgrupos</h4>
+              <h4>Subgrupos</h4>
 
               {Object.entries(subgrupos).map(([key, value]) => {
                 return (
@@ -190,6 +194,12 @@ const ListParameters = () => {
                 )
               })}
 
+              <div className="d-flex justify-content-center mt-4 mb-4">
+                <Button color="primary mr-2" onClick={saveParameters}>Guardar</Button>
+                <Button outline color="secondary">
+                  Cancelar
+                </Button>
+              </div>
             </>
           ) : (
             <p>No hay datos para visualizar </p>
@@ -200,4 +210,4 @@ const ListParameters = () => {
   )
 }
 
-export default ListParameters
+export default ListParametersOficial

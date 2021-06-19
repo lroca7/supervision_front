@@ -10,6 +10,11 @@ const ParametersRoutes = [
     path: '/list/parameters',
     component: lazy(() => import('../../views/parameters/ListParameters.js')),
     exact: true
+  },
+  {
+    path: '/list/parameters/oficial',
+    component: lazy(() => import('../../views/parameters/ListParametersOficial.js')),
+    exact: true
   }
 ]
 
