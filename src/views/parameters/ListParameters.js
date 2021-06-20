@@ -47,16 +47,7 @@ const ListParameters = () => {
     "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
 
   const [loader, setLoader] = useState(false)
-  //Analítica, Límites y Monitoreo
-  const options = [
-    { value: "Analítica", label: "Analítica" },
-    { value: "Límites", label: "Límites" },
-    { value: "Monitoreo", label: "Monitoreo" }
-  ]
-
-  const [grupo, setGrupo] = useState(null)
-  const [parameters, setParameters] = useState([])
-
+ 
   const [subgrupos, setSubgrupos] = useState([])
 
   const transFormData = (data) => {
@@ -64,80 +55,26 @@ const ListParameters = () => {
       r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
       return r
     }, {})
-    console.log("subgrupos -> ", group)
     setSubgrupos(group)
   }
 
   const getParameters = (e) => {
     setLoader(true)
-    debugger
 
     const grupo = e.target.value
-    setGrupo(grupo)
     const url = `${URL_BASE}parametros?version=${grupo}`
 
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
-          setParameters(result.result.parametros)
+          
           transFormData(result.result.parametros)
           setLoader(false)
         }
       })
   }
-
-  useEffect(() => {
-    // console.log('data inicial -> ', students)
-  }, [])
-
-  const [gridApi, setGridApi] = useState(null)
-  const [gridColumnApi, setGridColumnApi] = useState(null)
-
-  const onGridReady = (params) => {
-    setGridApi(params.api)
-    setGridColumnApi(params.columnApi)
-  }
-
-  const onCellValueChanged = (event) => {
-    console.log('data after changes is: ', event.data)
-  }
-
-  const saveParameters = () => {
-
-    // console.log('data despues del cambio subgrupos -> ', subgrupos)
-
-    const keys = Object.keys(subgrupos)
-
-    let dataToUpdate = []
-
-    keys.forEach(key => {      
-      dataToUpdate.push(subgrupos[key])
-    })
-    dataToUpdate = [].concat.apply([], dataToUpdate)
-
-    console.log('data para actualizar -> ', dataToUpdate)
-
-    const body = {
-      grupo,
-      user: 'jlotero',
-      tipo: 'oficiales',
-      parametros: dataToUpdate
-    }
-
-    const url = `${URL_BASE}parametros`
-
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        debugger
-      })
-
-  }
-
+  
   return (
     <div id="parameters-container mb-4">
       <h2 className="mb-2">Parámetros por versión</h2>
@@ -174,11 +111,9 @@ const ListParameters = () => {
                         defaultColDef={{
                           flex: 1,
                           minWidth: 110,
-                          editable: true,
+                          editable: false,
                           resizable: true
                         }}
-                        onGridReady={onGridReady}
-                        onCellValueChanged={onCellValueChanged}
                       >
                         <AgGridColumn field="nombre" editable="false"></AgGridColumn>
                         <AgGridColumn field="valor"></AgGridColumn>

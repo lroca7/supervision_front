@@ -23,7 +23,8 @@ import {
   Button,
   Spinner,
   CardText,
-  CustomInput
+  CustomInput,
+  Alert
 } from "reactstrap"
 import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
 import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
@@ -41,6 +42,14 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
 const ListParametersOficial = () => {
   const { colors } = useContext(ThemeColors)
+
+  const initialErrorState = {
+    status: false,
+    codigo: '',
+    error: '',
+    detaller: ''
+  }
+  const [error, setError] = useState(initialErrorState)
 
   const URL_BASE =
     "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
@@ -69,8 +78,8 @@ const ListParametersOficial = () => {
 
   const getParameters = (e) => {
     setLoader(true)
-
-    const grupo = 'Límites'
+    setError(initialErrorState)
+    const grupo = e.value
     setGrupo(grupo)
     const url = `${URL_BASE}parametros?grupo=${grupo}`
 
@@ -80,8 +89,17 @@ const ListParametersOficial = () => {
         if (result.codigo === 200) {
           setParameters(result.result.parametros)
           transFormData(result.result.parametros)
-          setLoader(false)
+          
+        } else {
+          setError({
+            status: result.status,
+            codigo: result.codigo,
+            error: result.error,
+            detalle: result.detalle
+          })
         }
+
+        setLoader(false)
       })
   }
 
@@ -100,41 +118,6 @@ const ListParametersOficial = () => {
 
   const onCellValueChanged = (event) => {
     console.log('data after changes is: ', event.data)
-  }
-
-  const saveParameters = () => {
-
-    // console.log('data despues del cambio subgrupos -> ', subgrupos)
-
-    const keys = Object.keys(subgrupos)
-
-    let dataToUpdate = []
-
-    keys.forEach(key => {      
-      dataToUpdate.push(subgrupos[key])
-    })
-    dataToUpdate = [].concat.apply([], dataToUpdate)
-
-    console.log('data para actualizar -> ', dataToUpdate)
-
-    const body = {
-      grupo,
-      user: 'jlotero',
-      tipo: 'oficiales',
-      parametros: dataToUpdate
-    }
-
-    const url = `${URL_BASE}parametros`
-
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        debugger
-      })
-
   }
 
   return (
@@ -162,7 +145,7 @@ const ListParametersOficial = () => {
         <Col md="12" className="mt-2">
           {Object.entries(subgrupos).length > 0 ? (
             <>
-              <h4>Subgrupos</h4>
+              <h4 className='mb-2'>Subgrupos</h4>
 
               {Object.entries(subgrupos).map(([key, value]) => {
                 return (
@@ -178,7 +161,7 @@ const ListParametersOficial = () => {
                         defaultColDef={{
                           flex: 1,
                           minWidth: 110,
-                          editable: true,
+                          editable: false,
                           resizable: true
                         }}
                         onGridReady={onGridReady}
@@ -193,19 +176,29 @@ const ListParametersOficial = () => {
                   </div>
                 )
               })}
-
-              <div className="d-flex justify-content-center mt-4 mb-4">
-                <Button color="primary mr-2" onClick={saveParameters}>Guardar</Button>
-                <Button outline color="secondary">
-                  Cancelar
-                </Button>
-              </div>
             </>
           ) : (
             <p>No hay datos para visualizar </p>
           )}
         </Col>
       )}
+
+      {
+        error.status && (
+          <Col md="12">
+            <Alert color='danger'>
+              {/* <h4 className='alert-heading'>Lorem ipsum dolor sit amet</h4> */}
+              <div className='alert-body'>
+                <p>{error.status}</p>
+                <p>{error.codigo}</p>
+                <p>{error.detalle}</p>
+                <p>{error.error}</p>
+              </div>
+            </Alert>
+          </Col>
+          
+        )
+      }
     </div>
   )
 }
