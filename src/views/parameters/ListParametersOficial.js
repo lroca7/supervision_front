@@ -101,6 +101,11 @@ const ListParametersOficial = () => {
 
         setLoader(false)
       })
+      .catch(error => {
+        console.error(error)
+        setLoader(false)
+        setSubgrupos([])
+      })
   }
 
   useEffect(() => {
@@ -189,8 +194,7 @@ const ListParametersOficial = () => {
             <Alert color='danger'>
               {/* <h4 className='alert-heading'>Lorem ipsum dolor sit amet</h4> */}
               <div className='alert-body'>
-                <p>{error.status}</p>
-                <p>{error.codigo}</p>
+                <p>{error.status} : {error.codigo}</p>
                 <p>{error.detalle}</p>
                 <p>{error.error}</p>
               </div>

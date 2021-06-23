@@ -7,8 +7,8 @@ const ParametersRoutes = [
     exact: true
   },
   {
-    path: '/list/parameters',
-    component: lazy(() => import('../../views/parameters/ListParameters.js')),
+    path: '/list/parameters/version',
+    component: lazy(() => import('../../views/parameters/ListParametersVersion.js')),
     exact: true
   },
   {

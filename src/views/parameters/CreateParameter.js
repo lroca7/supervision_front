@@ -39,6 +39,8 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
+import Swal from 'sweetalert2'
+
 const CreateParameter = () => {
   const { colors } = useContext(ThemeColors)
 
@@ -52,6 +54,8 @@ const CreateParameter = () => {
     { value: "Límites", label: "Límites" },
     { value: "Monitoreo", label: "Monitoreo" }
   ]
+
+  const [btnDisable, setbtnDisable] = useState(false)
 
   const [grupo, setGrupo] = useState(null)
   const [parameters, setParameters] = useState([])
@@ -104,6 +108,7 @@ const CreateParameter = () => {
   const saveParameters = () => {
 
     // console.log('data despues del cambio subgrupos -> ', subgrupos)
+    setbtnDisable(true)
 
     const keys = Object.keys(subgrupos)
 
@@ -116,10 +121,16 @@ const CreateParameter = () => {
 
     console.log('data para actualizar -> ', dataToUpdate)
 
+    let type = 'temporales'
+    const toogleType = document.getElementById('switch-parmeter-type')
+    if (toogleType.checked === true) {
+      type = 'oficiales'
+    }
+
     const body = {
       grupo,
       user: 'jlotero',
-      tipo: 'oficiales',
+      tipo: type,
       parametros: dataToUpdate
     }
 
@@ -130,8 +141,33 @@ const CreateParameter = () => {
       body: JSON.stringify(body)
     })
       .then((response) => response.json())
-      .then((result) => {
-        debugger
+      .then((result) => {        
+        if (result.codigo === 201) {
+          Swal.fire(
+            `${result.result.mensaje}`,
+            `Versión: ${result.result.version} <br/>
+             Tipo: ${result.result.tipo} <br/>
+             Usuario: ${result.result.usuario} <br/>
+             Fecha: ${result.result.fechaCreacion} <br/>`,
+            'success'
+          )
+        } else {
+          Swal.fire(
+            `${result.error}`,
+            `${result.detalle} <br/>`,
+            'error'
+          )
+        }
+
+        if (result.codigo === undefined) {
+          Swal.fire(
+            `${result.message}`,
+            ``,
+            'error'
+          )
+        }
+
+        setbtnDisable(false)
       })
 
   }
@@ -160,16 +196,6 @@ const CreateParameter = () => {
         <Col md="12" className="mt-2">
           {Object.entries(subgrupos).length > 0 ? (
             <>
-
-              <CardText className="mt-2">Oficiales</CardText>
-              <CustomInput
-                className="custom-control-primary mb-4"
-                type="switch"
-                id="switch-parmeter-type"
-                name="oficiales"
-                inline
-              />
-
               <h4>Subgrupos</h4>
 
               {Object.entries(subgrupos).map(([key, value]) => {
@@ -202,9 +228,20 @@ const CreateParameter = () => {
                 )
               })}
 
+              <h5 className="mt-2">Convertir parametros en oficiales</h5>
+              <CustomInput
+                className="custom-control-primary mb-4"
+                type="switch"
+                id="switch-parmeter-type"
+                name="oficiales"
+                inline
+              />
+
               <div className="d-flex justify-content-center mt-4 mb-4">
-                <Button color="primary mr-2" onClick={saveParameters}>Guardar</Button>
-                <Button outline color="secondary">
+                <Button disabled={btnDisable} color="primary mr-2" onClick={saveParameters}>
+                  {!btnDisable ? 'Guardar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Guardando...</span></>}
+                </Button>
+                <Button disabled={btnDisable} outline color="secondary">
                   Cancelar
                 </Button>
               </div>

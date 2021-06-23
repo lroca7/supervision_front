@@ -14,16 +14,36 @@ export default [
         navLink: '/create/parameter'
       },
       {
-        id: 'listParamete',
+        id: 'listParametersVersion',
         title: 'Por versión',
         icon: <Circle size={12} />,
-        navLink: '/list/parameters'
+        navLink: '/list/parameters/version'
       },
       {
-        id: 'listParamete',
+        id: 'listParametersOficial',
         title: 'Oficiales',
         icon: <Circle size={12} />,
         navLink: '/list/parameters/oficial'
+      }
+    ]
+  },
+  {
+    id: 'process',
+    title: 'Proceso',
+    // icon: <Home size={20} />,
+    badge: 'light-warning',
+    children: [
+      {
+        id: 'createCorrida',
+        title: 'Crear corrida',
+        icon: <Circle size={12} />,
+        navLink: '/create/corrida'
+      },
+      {
+        id: 'executeCorrida',
+        title: 'Lanzar corrida',
+        icon: <Circle size={12} />,
+        navLink: '/execute/corrida'
       }
     ]
   }

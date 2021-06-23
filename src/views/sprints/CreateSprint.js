@@ -23,8 +23,7 @@ import {
   Button,
   Spinner,
   CardText,
-  CustomInput,
-  Input
+  CustomInput
 } from "reactstrap"
 import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
 import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
@@ -40,14 +39,23 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
-const ListParameters = () => {
+const CreateSprint = () => {
   const { colors } = useContext(ThemeColors)
 
   const URL_BASE =
     "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
 
   const [loader, setLoader] = useState(false)
- 
+  //Analítica, Límites y Monitoreo
+  const options = [
+    { value: "Analítica", label: "Analítica" },
+    { value: "Límites", label: "Límites" },
+    { value: "Monitoreo", label: "Monitoreo" }
+  ]
+
+  const [grupo, setGrupo] = useState(null)
+  const [parameters, setParameters] = useState([])
+
   const [subgrupos, setSubgrupos] = useState([])
 
   const transFormData = (data) => {
@@ -55,33 +63,90 @@ const ListParameters = () => {
       r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
       return r
     }, {})
+    console.log("subgrupos -> ", group)
     setSubgrupos(group)
   }
 
   const getParameters = (e) => {
     setLoader(true)
 
-    const grupo = e.target.value
-    const url = `${URL_BASE}parametros?version=${grupo}`
+    const grupo = e.value
+    setGrupo(grupo)
+    const url = `${URL_BASE}parametros/plantilla-parametros?grupo=${grupo}`
 
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
-          
+          setParameters(result.result.parametros)
           transFormData(result.result.parametros)
           setLoader(false)
         }
       })
   }
-  
+
+  useEffect(() => {
+    // console.log('data inicial -> ', students)
+  }, [])
+
+  const [gridApi, setGridApi] = useState(null)
+  const [gridColumnApi, setGridColumnApi] = useState(null)
+
+  const onGridReady = (params) => {
+    setGridApi(params.api)
+    setGridColumnApi(params.columnApi)
+  }
+
+  const onCellValueChanged = (event) => {
+    console.log('data after changes is: ', event.data)
+  }
+
+  const saveParameters = () => {
+
+    // console.log('data despues del cambio subgrupos -> ', subgrupos)
+
+    const keys = Object.keys(subgrupos)
+
+    let dataToUpdate = []
+
+    keys.forEach(key => {      
+      dataToUpdate.push(subgrupos[key])
+    })
+    dataToUpdate = [].concat.apply([], dataToUpdate)
+
+    console.log('data para actualizar -> ', dataToUpdate)
+
+    const body = {
+      grupo,
+      user: 'jlotero',
+      tipo: 'oficiales',
+      parametros: dataToUpdate
+    }
+
+    const url = `${URL_BASE}parametros`
+
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        debugger
+      })
+
+  }
+
   return (
     <div id="parameters-container mb-4">
-      <h2 className="mb-2">Parámetros por versión</h2>
-
+      <h2 className="mb-2">Crear parámetros</h2>
       <Col md="6">
-        <label>Ingresa la versión a consultar:</label>
-        <Input type="number" name="version" id="version" onChange={(e) => getParameters(e)} />
+        <label>Seleccionar grupo:</label>
+        <Select
+          id="select-group"
+          options={options}
+          placeholder="Seleccionar"
+          onChange={(e) => getParameters(e)}
+        />
       </Col>
 
       {loader === true ? (
@@ -95,7 +160,17 @@ const ListParameters = () => {
         <Col md="12" className="mt-2">
           {Object.entries(subgrupos).length > 0 ? (
             <>
-              <h4 className='mb-2'>Subgrupos</h4>
+
+              <CardText className="mt-2">Oficiales</CardText>
+              <CustomInput
+                className="custom-control-primary mb-4"
+                type="switch"
+                id="switch-parmeter-type"
+                name="oficiales"
+                inline
+              />
+
+              <h4>Subgrupos</h4>
 
               {Object.entries(subgrupos).map(([key, value]) => {
                 return (
@@ -111,9 +186,11 @@ const ListParameters = () => {
                         defaultColDef={{
                           flex: 1,
                           minWidth: 110,
-                          editable: false,
+                          editable: true,
                           resizable: true
                         }}
+                        onGridReady={onGridReady}
+                        onCellValueChanged={onCellValueChanged}
                       >
                         <AgGridColumn field="nombre" editable="false"></AgGridColumn>
                         <AgGridColumn field="valor"></AgGridColumn>
@@ -125,6 +202,12 @@ const ListParameters = () => {
                 )
               })}
 
+              <div className="d-flex justify-content-center mt-4 mb-4">
+                <Button color="primary mr-2" onClick={saveParameters}>Guardar</Button>
+                <Button outline color="secondary">
+                  Cancelar
+                </Button>
+              </div>
             </>
           ) : (
             <p>No hay datos para visualizar </p>
@@ -135,4 +218,4 @@ const ListParameters = () => {
   )
 }
 
-export default ListParameters
+export default CreateSprint
