@@ -23,7 +23,10 @@ import {
   Button,
   Spinner,
   CardText,
-  CustomInput
+  CustomInput,
+  FormGroup,
+  Label,
+  Input
 } from "reactstrap"
 import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
 import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
@@ -39,6 +42,9 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
+import Swal from 'sweetalert2'
+import { data } from "../tables/data-tables/data"
+
 const CreateSprint = () => {
   const { colors } = useContext(ThemeColors)
 
@@ -46,11 +52,13 @@ const CreateSprint = () => {
     "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
 
   const [loader, setLoader] = useState(false)
+
+  const [btnDisable, setbtnDisable] = useState(false)
+
   //Analítica, Límites y Monitoreo
   const options = [
-    { value: "Analítica", label: "Analítica" },
-    { value: "Límites", label: "Límites" },
-    { value: "Monitoreo", label: "Monitoreo" }
+    { value: "oficiales", label: "Oficiales" },
+    { value: "temporales", label: "Temporales" }
   ]
 
   const [grupo, setGrupo] = useState(null)
@@ -67,12 +75,9 @@ const CreateSprint = () => {
     setSubgrupos(group)
   }
 
-  const getParameters = (e) => {
+  const getParameters = (version) => {
     setLoader(true)
-
-    const grupo = e.value
-    setGrupo(grupo)
-    const url = `${URL_BASE}parametros/plantilla-parametros?grupo=${grupo}`
+    const url = `${URL_BASE}parametros?version=${version}`
 
     fetch(url)
       .then((response) => response.json())
@@ -81,6 +86,7 @@ const CreateSprint = () => {
           setParameters(result.result.parametros)
           transFormData(result.result.parametros)
           setLoader(false)
+          setbtnDisable(false)
         }
       })
   }
@@ -101,29 +107,17 @@ const CreateSprint = () => {
     console.log('data after changes is: ', event.data)
   }
 
-  const saveParameters = () => {
+  const [dataCorrida, setDataCorrida] = useState(null)
 
-    // console.log('data despues del cambio subgrupos -> ', subgrupos)
+  const createCorrida = () => {
 
-    const keys = Object.keys(subgrupos)
-
-    let dataToUpdate = []
-
-    keys.forEach(key => {      
-      dataToUpdate.push(subgrupos[key])
-    })
-    dataToUpdate = [].concat.apply([], dataToUpdate)
-
-    console.log('data para actualizar -> ', dataToUpdate)
+    setbtnDisable(true)
 
     const body = {
-      grupo,
-      user: 'jlotero',
-      tipo: 'oficiales',
-      parametros: dataToUpdate
+      user: 'jlotero'
     }
 
-    const url = `${URL_BASE}parametros`
+    const url = `${URL_BASE}corridas`
 
     fetch(url, {
       method: 'POST',
@@ -132,46 +126,60 @@ const CreateSprint = () => {
       .then((response) => response.json())
       .then((result) => {
         debugger
+        if (result.codigo === 200) {
+          // Swal.fire(
+          //   `Corrida generada con exito`,
+          //   ``,
+          //   'success'
+          // )
+          getParameters(result.result.corrida.verParam)
+          setDataCorrida(result.result.corrida)       
+          
+        }
+        // setbtnDisable(false)
       })
 
   }
 
+  const onChangeValue = (event) => {
+    debugger
+    console.log(event.target.value)
+  }
+
   return (
     <div id="parameters-container mb-4">
-      <h2 className="mb-2">Crear parámetros</h2>
-      <Col md="6">
-        <label>Seleccionar grupo:</label>
-        <Select
-          id="select-group"
-          options={options}
-          placeholder="Seleccionar"
-          onChange={(e) => getParameters(e)}
-        />
-      </Col>
+      <h2 className="mb-2">Crear corrida</h2>
+      <Col md="12" className="d-flex align-items-center justify-content-center">   
+        <Button disabled={btnDisable} color="primary mr-2" onClick={createCorrida}>
+          {!btnDisable ? 'Generar' : <><Spinner color="white" size="sm" /><span className="ml-50">Generando...</span></>}
+        </Button>
+      </Col>     
+      {(dataCorrida !== null && Object.entries(subgrupos).length > 0) && (
+        <>
+          <Col md="6" className="mt-2">  
+            <h5 className="mt-2 mb-2">No de Corrida: {dataCorrida.idCorrida}</h5>
+            <h5>Parámetros de corrida:</h5>
+            <label>Usuario:</label>
+            <Input type="text" name="user" id="user" value={dataCorrida.user}/>
+            <label>Fecha:</label>
+            <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion}/>
+            <label>Tipo:</label>
+            <Select
+              id="select-group"
+              options={options}
+              placeholder="Seleccionar"
+              onChange={(e) => getParameters(e)}
+            />
+            <label>Grupo: ? </label>
+            <Input type="text" name="grupo" id="grupo" />
+            <label>Versión:</label>
+            <Input type="text" name="version" id="version" value={dataCorrida.verParam}/>
+          </Col>
 
-      {loader === true ? (
-        <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
-          <Button.Ripple color="primary">
-            <Spinner color="white" size="sm" />
-            <span className="ml-50">Cargando...</span>
-          </Button.Ripple>
-        </Col>
-      ) : (
-        <Col md="12" className="mt-2">
+
+          <Col md="12" className="mt-2">
           {Object.entries(subgrupos).length > 0 ? (
             <>
-
-              <CardText className="mt-2">Oficiales</CardText>
-              <CustomInput
-                className="custom-control-primary mb-4"
-                type="switch"
-                id="switch-parmeter-type"
-                name="oficiales"
-                inline
-              />
-
-              <h4>Subgrupos</h4>
-
               {Object.entries(subgrupos).map(([key, value]) => {
                 return (
                   <div>
@@ -186,11 +194,9 @@ const CreateSprint = () => {
                         defaultColDef={{
                           flex: 1,
                           minWidth: 110,
-                          editable: true,
+                          editable: false,
                           resizable: true
                         }}
-                        onGridReady={onGridReady}
-                        onCellValueChanged={onCellValueChanged}
                       >
                         <AgGridColumn field="nombre" editable="false"></AgGridColumn>
                         <AgGridColumn field="valor"></AgGridColumn>
@@ -202,18 +208,31 @@ const CreateSprint = () => {
                 )
               })}
 
+              <h5 className="mt-2">Convertir parametros en oficiales</h5>
+              <CustomInput
+                className="custom-control-primary mb-4"
+                type="switch"
+                id="switch-parmeter-type"
+                name="oficiales"
+                inline
+              />
+
               <div className="d-flex justify-content-center mt-4 mb-4">
-                <Button color="primary mr-2" onClick={saveParameters}>Guardar</Button>
-                <Button outline color="secondary">
+                <Button disabled={btnDisable} color="primary mr-2" >
+                  {!btnDisable ? 'Guardar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Guardando...</span></>}
+                </Button>
+                <Button disabled={btnDisable} outline color="secondary">
                   Cancelar
                 </Button>
               </div>
+
             </>
           ) : (
             <p>No hay datos para visualizar </p>
           )}
         </Col>
-      )}
+        </>
+      )} 
     </div>
   )
 }

@@ -37,13 +37,13 @@ export default [
         id: 'createCorrida',
         title: 'Crear corrida',
         icon: <Circle size={12} />,
-        navLink: '/create/corrida'
+        navLink: '/create/sprint'
       },
       {
         id: 'executeCorrida',
         title: 'Lanzar corrida',
         icon: <Circle size={12} />,
-        navLink: '/execute/corrida'
+        navLink: '/execute/sprint'
       }
     ]
   }

@@ -9,6 +9,7 @@ import UiElementRoutes from './UiElements'
 import ExtensionsRoutes from './Extensions'
 import PageLayoutsRoutes from './PageLayouts'
 import ParametersRoutes from './Parameters'
+import SprintsRoutes from './Sprints'
 
 // ** Document title
 const TemplateTitle = '%s - Supervisor'
@@ -27,7 +28,8 @@ const Routes = [
   ...FormRoutes,
   ...TablesRoutes,
   ...ChartMapsRoutes,
-  ...ParametersRoutes
+  ...ParametersRoutes,
+  ...SprintsRoutes
 ]
 
 export { DefaultRoute, TemplateTitle, Routes }
