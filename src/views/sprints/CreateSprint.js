@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react"
+import { useContext, useState, useEffect, useRef } from "react"
 import { List } from "react-feather"
 import { kFormatter } from "@utils"
 import Avatar from "@components/avatar"
@@ -51,9 +51,17 @@ const CreateSprint = () => {
   const URL_BASE =
     "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
 
-  const [loader, setLoader] = useState(false)
+  
+  const initialErrorState = {
+    status: false,
+    codigo: '',
+    error: '',
+    detaller: ''
+  }
+  const [error, setError] = useState(initialErrorState)
 
   const [btnDisable, setbtnDisable] = useState(false)
+  const [btnDisableLaunch, setbtnDisableLaunch] = useState(false)
 
   //Analítica, Límites y Monitoreo
   const options = [
@@ -61,10 +69,21 @@ const CreateSprint = () => {
     { value: "temporales", label: "Temporales" }
   ]
 
-  const [grupo, setGrupo] = useState(null)
-  const [parameters, setParameters] = useState([])
+  const [grupoParameter, setGrupoParameter] = useState(null)
+  const [typeParameter, setTypeParameter] = useState(null)
 
+  const [parameters, setParameters] = useState([])
+  const [parametersInitial, setParametersInitial] = useState([])
   const [subgrupos, setSubgrupos] = useState([])
+  const [dataCorrida, setDataCorrida] = useState(null)
+  const [corrida, setCorrida] = useState({
+    id : null,
+    verParam : null,
+    idFlujo : null,
+    fecProceso: null
+  })
+
+  const inputEl = useRef(null)
 
   const transFormData = (data) => {
     const group = data.reduce((r, a) => {
@@ -76,7 +95,7 @@ const CreateSprint = () => {
   }
 
   const getParameters = (version) => {
-    setLoader(true)
+
     const url = `${URL_BASE}parametros?version=${version}`
 
     fetch(url)
@@ -84,30 +103,20 @@ const CreateSprint = () => {
       .then((result) => {
         if (result.codigo === 200) {
           setParameters(result.result.parametros)
+          setParametersInitial(JSON.parse(JSON.stringify(result.result.parametros)))
+
           transFormData(result.result.parametros)
-          setLoader(false)
-          setbtnDisable(false)
+
+          debugger
+          setGrupoParameter(result.result.grupo)
+          setTypeParameter({ value: result.result.tipo, label: result.result.tipo })
+
+          // const radioType = document.getElementById('radio-type')
+          // radioType.checked = 2
+
         }
       })
   }
-
-  useEffect(() => {
-    // console.log('data inicial -> ', students)
-  }, [])
-
-  const [gridApi, setGridApi] = useState(null)
-  const [gridColumnApi, setGridColumnApi] = useState(null)
-
-  const onGridReady = (params) => {
-    setGridApi(params.api)
-    setGridColumnApi(params.columnApi)
-  }
-
-  const onCellValueChanged = (event) => {
-    console.log('data after changes is: ', event.data)
-  }
-
-  const [dataCorrida, setDataCorrida] = useState(null)
 
   const createCorrida = () => {
 
@@ -125,26 +134,205 @@ const CreateSprint = () => {
     })
       .then((response) => response.json())
       .then((result) => {
-        debugger
         if (result.codigo === 200) {
-          // Swal.fire(
-          //   `Corrida generada con exito`,
-          //   ``,
-          //   'success'
-          // )
+
+          
           getParameters(result.result.corrida.verParam)
           setDataCorrida(result.result.corrida)       
-          
+          setCorrida({
+            id: result.result.corrida.idCorrida,
+            verParam: result.result.corrida.verParam,
+            idFlujo : result.result.corrida.idFlujo,
+            fecProceso: result.result.corrida.fecProceso
+          })
         }
         // setbtnDisable(false)
+      })
+      .catch((errro) => {
+        console.error(error)
+
       })
 
   }
 
   const onChangeValue = (event) => {
-    debugger
-    console.log(event.target.value)
+    setCorrida({
+      typeFlujo: event.target.value
+    })
   }
+
+  const onChangeFechaProceso = (event) => {
+    setCorrida({
+      ...corrida,
+      fecProceso: event.target.value
+    })
+  }
+
+  const saveParameters = () => {   
+
+    const keys = Object.keys(subgrupos)
+
+    let dataToUpdate = []
+
+    keys.forEach(key => {      
+      dataToUpdate.push(subgrupos[key])
+    })
+    dataToUpdate = [].concat.apply([], dataToUpdate)
+
+    console.log('data para actualizar -> ', dataToUpdate)
+
+    let type = 'temporales'
+    const toogleType = document.getElementById('switch-parmeter-type')
+    if (toogleType.checked === true) {
+      type = 'oficiales'
+    }
+
+    const body = {
+      grupo,
+      user: 'jlotero',
+      tipo: type,
+      parametros: dataToUpdate
+    }
+
+    const url = `${URL_BASE}parametros`
+
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+      .then((response) => response.json())
+      .then((result) => {        
+        if (result.codigo === 201) {
+          Swal.fire(
+            `${result.result.mensaje}`,
+            `Versión: ${result.result.version} <br/>
+             Tipo: ${result.result.tipo} <br/>
+             Usuario: ${result.result.usuario} <br/>
+             Fecha: ${result.result.fechaCreacion} <br/>`,
+            'success'
+          )
+        } else {
+          Swal.fire(
+            `${result.error}`,
+            `${result.detalle} <br/>`,
+            'error'
+          )
+        }
+
+        if (result.codigo === undefined) {
+          Swal.fire(
+            `${result.message}`,
+            ``,
+            'error'
+          )
+        }
+
+      })
+
+  }
+
+  const updateCorrida = () => {
+
+    const body = {
+      idCorrida : corrida.id,
+      verParam : corrida.verParam,
+      idFlujo : corrida.idFlujo,
+      fecProceso: corrida.fecProceso
+    }
+
+    const url = `${URL_BASE}corridas`
+
+    fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(body)
+    })
+      .then((response) => response.json())
+      .then((result) => {        
+        if (result.codigo === 201) {
+          Swal.fire(
+            `${result.result.mensaje}`,
+            ``,
+            'success'
+          )
+        } else {
+          Swal.fire(
+            `${result.error}`,
+            `${result.detalle} <br/>`,
+            'error'
+          )
+        }
+
+        if (result.codigo === undefined) {
+          Swal.fire(
+            `${result.message}`,
+            ``,
+            'error'
+          )
+        }
+
+        setbtnDisable(false)
+      })
+
+
+  }
+
+  const executeCorrida = () => {
+
+    const url = `${URL_BASE}corridas/ejecutar-corrida?idCorrida=${corrida.id}`
+
+    fetch(url, {
+      method: 'GET'
+    })
+      .then((response) => response.json())
+      .then((result) => {        
+        if (result.codigo === 201) {
+          Swal.fire(
+            `${result.result.mensaje}`,
+            ``,
+            'success'
+          )
+        } else {
+          Swal.fire(
+            `${result.error}`,
+            `${result.detalle} <br/>`,
+            'error'
+          )
+        }
+
+        if (result.codigo === undefined) {
+          Swal.fire(
+            `${result.message}`,
+            ``,
+            'error'
+          )
+        }
+
+        setbtnDisable(false)
+      })
+
+
+  }
+
+
+  const launchCorrida = () => {
+
+    setbtnDisableLaunch(true)
+
+    if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
+      alert('Crear nuevos parametros')
+      saveParameters()
+    }
+
+    // updateCorrida()
+
+    executeCorrida()
+
+  }
+
+  useEffect(() => {
+
+
+  }, [])
 
   return (
     <div id="parameters-container mb-4">
@@ -153,29 +341,63 @@ const CreateSprint = () => {
         <Button disabled={btnDisable} color="primary mr-2" onClick={createCorrida}>
           {!btnDisable ? 'Generar' : <><Spinner color="white" size="sm" /><span className="ml-50">Generando...</span></>}
         </Button>
-      </Col>     
+      </Col>   
+
       {(dataCorrida !== null && Object.entries(subgrupos).length > 0) && (
         <>
           <Col md="6" className="mt-2">  
             <h5 className="mt-2 mb-2">No de Corrida: {dataCorrida.idCorrida}</h5>
             <h5>Parámetros de corrida:</h5>
             <label>Usuario:</label>
-            <Input type="text" name="user" id="user" value={dataCorrida.user}/>
-            <label>Fecha:</label>
-            <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion}/>
+            <Input type="text" name="user" id="user" value={dataCorrida.user} disabled/>
+            <label>Fecha creación:</label>
+            <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled/>
+            <h5>Fecha del proceso:</h5>
+            <Input class="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} onChange={onChangeFechaProceso}/>
             <label>Tipo:</label>
             <Select
               id="select-group"
+              ref={inputEl}
               options={options}
               placeholder="Seleccionar"
+              value={typeParameter}
               onChange={(e) => getParameters(e)}
             />
-            <label>Grupo: ? </label>
-            <Input type="text" name="grupo" id="grupo" />
+            <label>Grupo: </label>
+            <Input type="text" name="grupo" id="grupo" vale={grupoParameter} />
             <label>Versión:</label>
             <Input type="text" name="version" id="version" value={dataCorrida.verParam}/>
           </Col>
 
+          <Col md="12" className="mt-2">
+            <h5>Seleccione el tipo de corrida:</h5>
+            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeValue} value={"2"} >
+              <FormGroup check>
+                <Label check>
+                  <Input type="radio" name="radio1" value="1" />{' '}
+                  PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
+                </Label>
+              </FormGroup>
+              <FormGroup check>
+                <Label check>
+                  <Input type="radio" name="radio1" value="2" />{' '}
+                  PBO - Márgenes - Valoración (Solo manual)
+                </Label>
+              </FormGroup>
+              <FormGroup check >
+                <Label check>
+                  <Input type="radio" name="radio1" value="3"  />{' '}
+                  Márgenes - Valoración
+                </Label>
+              </FormGroup>
+              <FormGroup check >
+                <Label check>
+                  <Input type="radio" name="radio1" value="3"  />{' '}
+                  Valoración
+                </Label>
+              </FormGroup>
+            </FormGroup>
+          </Col>
 
           <Col md="12" className="mt-2">
           {Object.entries(subgrupos).length > 0 ? (
@@ -194,7 +416,7 @@ const CreateSprint = () => {
                         defaultColDef={{
                           flex: 1,
                           minWidth: 110,
-                          editable: false,
+                          editable: true,
                           resizable: true
                         }}
                       >
@@ -218,10 +440,10 @@ const CreateSprint = () => {
               />
 
               <div className="d-flex justify-content-center mt-4 mb-4">
-                <Button disabled={btnDisable} color="primary mr-2" >
-                  {!btnDisable ? 'Guardar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Guardando...</span></>}
+                <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
+                  {!btnDisableLaunch ? 'Lanzar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
                 </Button>
-                <Button disabled={btnDisable} outline color="secondary">
+                <Button disabled={btnDisableLaunch} outline color="secondary">
                   Cancelar
                 </Button>
               </div>
@@ -233,6 +455,22 @@ const CreateSprint = () => {
         </Col>
         </>
       )} 
+
+      {
+        error.status && (
+          <Col md="12">
+            <Alert color='danger'>
+              {/* <h4 className='alert-heading'>Lorem ipsum dolor sit amet</h4> */}
+              <div className='alert-body'>
+                <p>{error.status} : {error.codigo}</p>
+                <p>{error.detalle}</p>
+                <p>{error.error}</p>
+              </div>
+            </Alert>
+          </Col>
+          
+        )
+      }
     </div>
   )
 }
