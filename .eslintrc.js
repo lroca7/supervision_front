@@ -71,7 +71,7 @@ module.exports = {
     'prefer-const': 'error',
     'prefer-template': 'error',
 
-    "parser": "babel-eslint"
+    'parser': 'babel-eslint'
   }
 
   // rules: {

@@ -50,7 +50,7 @@ const CreateSprint = () => {
 
   const URL_BASE =
     "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
-
+  
   
   const initialErrorState = {
     status: false,
@@ -108,13 +108,10 @@ const CreateSprint = () => {
 
           transFormData(result.result.parametros)
 
-          debugger
           setGrupoParameter(result.result.grupo)
           setTypeParameter({ value: result.result.tipo, label: result.result.tipo })
 
-          // const radioType = document.getElementById('radio-type')
-          // radioType.checked = 2
-
+          setbtnDisable(false)
         }
       })
   }
@@ -141,13 +138,14 @@ const CreateSprint = () => {
           getParameters(result.result.corrida.verParam)
           setDataCorrida(result.result.corrida)       
           setCorrida({
+            ...corrida,
             id: result.result.corrida.idCorrida,
             verParam: result.result.corrida.verParam,
             idFlujo : result.result.corrida.idFlujo,
             fecProceso: result.result.corrida.fecProceso
           })
         }
-        setbtnDisable(false)
+        // setbtnDisable(false)
       })
       .catch((error) => {
         console.error(error)
@@ -156,8 +154,9 @@ const CreateSprint = () => {
 
   }
 
-  const onChangeValue = (event) => {
+  const onChangeTypeProccess = (event) => {
     setCorrida({
+      ...corrida,
       typeFlujo: event.target.value
     })
   }
@@ -188,8 +187,10 @@ const CreateSprint = () => {
       type = 'oficiales'
     }
 
+    debugger
+
     const body = {
-      grupo,
+      grupo: grupoParameter,
       user: 'jlotero',
       tipo: type,
       parametros: dataToUpdate
@@ -204,6 +205,10 @@ const CreateSprint = () => {
       .then((response) => response.json())
       .then((result) => {        
         if (result.codigo === 201) {
+          setCorrida({
+            ...corrida,
+            verParam: result.result.version
+          })
           Swal.fire(
             `${result.result.mensaje}`,
             `Versión: ${result.result.version} <br/>
@@ -234,6 +239,9 @@ const CreateSprint = () => {
 
   const updateCorrida = async () => {
 
+    let status = ''
+
+    debugger
     const body = {
       idCorrida : corrida.id,
       verParam : corrida.verParam,
@@ -242,6 +250,8 @@ const CreateSprint = () => {
     }
 
     const url = `${URL_BASE}corridas`
+
+    console.log('body -> ', body)
 
     fetch(url, {
       method: 'PUT',
@@ -255,12 +265,16 @@ const CreateSprint = () => {
             ``,
             'success'
           )
+
+          status = 'success'
         } else {
           Swal.fire(
             `${result.error}`,
             `${result.detalle} <br/>`,
             'error'
           )
+
+          status = 'error'
         }
 
         if (result.codigo === undefined) {
@@ -269,9 +283,21 @@ const CreateSprint = () => {
             ``,
             'error'
           )
+          status = 'error'
         }
+        
 
-        setbtnDisable(false)
+        setbtnDisableLaunch(false)
+      })
+      .catch((error) => {
+        debugger
+        console.error(error)
+        Swal.fire(
+          `Ha ocurrido un error al actualizar`,
+          `${error}`,
+          'error'
+        )
+        setbtnDisableLaunch(false)
       })
 
 
@@ -306,6 +332,17 @@ const CreateSprint = () => {
         }
         setbtnDisableLaunch(false)
       })
+      .catch((error) => {
+
+        debugger
+        console.error(error)
+        Swal.fire(
+          `Ha ocurrido un error al ejecutar`,
+          `${error}`,
+          'error'
+        )
+
+      })
 
 
   }
@@ -320,9 +357,11 @@ const CreateSprint = () => {
       saveParameters()
     }
 
-    await updateCorrida()
+    const updateStatus = await updateCorrida()
 
-    executeCorrida()
+    if (updateStatus === 'success') {
+      await executeCorrida()
+    }
 
   }
 
@@ -371,7 +410,7 @@ const CreateSprint = () => {
 
           <Col md="12" className="mt-2">
             <h5>Seleccione el tipo de corrida:</h5>
-            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeValue} value={"2"} >
+            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess} value={"2"} >
               <FormGroup check>
                 <Label check>
                   <Input type="radio" name="radio1" value="1" />{' '}

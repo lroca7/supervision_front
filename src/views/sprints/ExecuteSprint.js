@@ -147,69 +147,7 @@ const ExecuteSprint = () => {
   return (
     <div id="parameters-container mb-4">
       <h2 className="mb-2">Lanzar corrida</h2>
-      <Col md="12">   
-        {/* <Button disabled={btnDisable} color="primary mr-2" onClick={createCorrida}>
-          {!btnDisable ? 'Generar' : <><Spinner color="white" size="sm" /><span className="ml-50">Generando...</span></>}
-        </Button> */}
-        <h5>Seleccione el tipo de corrida para los parametros:</h5>
-        <FormGroup tag="fieldset" onChange={onChangeValue} >
-          <FormGroup check>
-            <Label check>
-              <Input type="radio" name="radio1" value="1" />{' '}
-              PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
-            </Label>
-          </FormGroup>
-          <FormGroup check>
-            <Label check>
-              <Input type="radio" name="radio1" value="2" />{' '}
-              PBO - Márgenes - Valoración (Solo manual)
-            </Label>
-          </FormGroup>
-          <FormGroup check >
-            <Label check>
-              <Input type="radio" name="radio1" value="3"  />{' '}
-              Márgenes - Valoración
-            </Label>
-          </FormGroup>
-          <FormGroup check >
-            <Label check>
-              <Input type="radio" name="radio1" value="3"  />{' '}
-              Valoración
-            </Label>
-          </FormGroup>
-        </FormGroup>
-      </Col>
-      <Col md="3" className="mt-2">  
-        <h5>Fecha del proceso:</h5>
-        <Input class="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true}/>
-      </Col>
-
-      <Col md="6" className="mt-2">  
-        <h5>Parámetros de corrida:</h5>
-        <label>Usuario:</label>
-        <Input type="text" name="user" id="user" isRequired={true}/>
-        <label>Fecha:</label>
-        <Input type="text" name="fecha" id="fecha" isRequired={true}/>
-        <label>Tipo:</label>
-        <Select
-          id="select-group"
-          options={options}
-          placeholder="Seleccionar"
-          onChange={(e) => getParameters(e)}
-        />
-        <label>Grupo:</label>
-        <Input type="text" name="grupo" id="grupo" isRequired={true}/>
-        <label>Versión:</label>
-        <Input type="text" name="version" id="version" isRequired={true}/>
-      </Col>
-
-      {loader === true ? (
-        <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
-          
-        </Col>
-      ) : (
-       <p>{}</p>
-      )}
+     
     </div>
   )
 }
