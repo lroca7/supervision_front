@@ -56,9 +56,10 @@ const CreateSprint = () => {
     status: false,
     codigo: '',
     error: '',
-    detaller: ''
+    detalle: ''
   }
   const [error, setError] = useState(initialErrorState)
+  const [responseCorridaSucces, setResponseCorridaSucces] = useState(null)
 
   const [btnDisable, setbtnDisable] = useState(false)
   const [btnDisableLaunch, setbtnDisableLaunch] = useState(false)
@@ -69,7 +70,7 @@ const CreateSprint = () => {
     { value: "temporales", label: "Temporales" }
   ]
 
-  const [grupoParameter, setGrupoParameter] = useState(null)
+  const [grupoParameter, setGrupoParameter] = useState('Hola')
   const [typeParameter, setTypeParameter] = useState(null)
 
   const [parameters, setParameters] = useState([])
@@ -146,11 +147,11 @@ const CreateSprint = () => {
             fecProceso: result.result.corrida.fecProceso
           })
         }
-        // setbtnDisable(false)
+        setbtnDisable(false)
       })
-      .catch((errro) => {
+      .catch((error) => {
         console.error(error)
-
+        setbtnDisable(false)
       })
 
   }
@@ -231,7 +232,7 @@ const CreateSprint = () => {
 
   }
 
-  const updateCorrida = () => {
+  const updateCorrida = async () => {
 
     const body = {
       idCorrida : corrida.id,
@@ -285,12 +286,8 @@ const CreateSprint = () => {
     })
       .then((response) => response.json())
       .then((result) => {        
-        if (result.codigo === 201) {
-          Swal.fire(
-            `${result.result.mensaje}`,
-            ``,
-            'success'
-          )
+        if (result.codigo === 200) {
+          
         } else {
           Swal.fire(
             `${result.error}`,
@@ -305,16 +302,16 @@ const CreateSprint = () => {
             ``,
             'error'
           )
+          
         }
-
-        setbtnDisable(false)
+        setbtnDisableLaunch(false)
       })
 
 
   }
 
 
-  const launchCorrida = () => {
+  const launchCorrida = async () => {
 
     setbtnDisableLaunch(true)
 
@@ -323,7 +320,7 @@ const CreateSprint = () => {
       saveParameters()
     }
 
-    // updateCorrida()
+    await updateCorrida()
 
     executeCorrida()
 
@@ -352,8 +349,10 @@ const CreateSprint = () => {
             <Input type="text" name="user" id="user" value={dataCorrida.user} disabled/>
             <label>Fecha creación:</label>
             <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled/>
-            <h5>Fecha del proceso:</h5>
-            <Input class="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} onChange={onChangeFechaProceso}/>
+            <label>Fecha del proceso:</label>
+            <Input class="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} 
+              value={corrida.fecProceso}
+              onChange={onChangeFechaProceso}/>
             <label>Tipo:</label>
             <Select
               id="select-group"
@@ -361,12 +360,13 @@ const CreateSprint = () => {
               options={options}
               placeholder="Seleccionar"
               value={typeParameter}
+              isDisabled={true}
               onChange={(e) => getParameters(e)}
             />
             <label>Grupo: </label>
-            <Input type="text" name="grupo" id="grupo" vale={grupoParameter} />
+            <Input type="text" name="grupo" id="grupo" value={grupoParameter} disabled />
             <label>Versión:</label>
-            <Input type="text" name="version" id="version" value={dataCorrida.verParam}/>
+            <Input type="text" name="version" id="version" value={dataCorrida.verParam} disabled/>
           </Col>
 
           <Col md="12" className="mt-2">
@@ -469,6 +469,26 @@ const CreateSprint = () => {
             </Alert>
           </Col>
           
+        )
+      }
+
+      {
+        responseCorridaSucces !== null && (
+          <Col md="12">
+            <Alert color='success'>
+              <h4 className='alert-heading'>{responseCorridaSucces.result.mensaje}</h4>
+              <div className='alert-body'>
+                <p>Procesos lanzados: </p>
+                {responseCorridaSucces.result.procesosLanzados.length > 0 && (
+                  responseCorridaSucces.result.procesosLanzados.map(proceso => {
+                    return <div>
+                      <p>{proceso.processName}</p>
+                    </div>
+                  })
+                )}
+              </div>
+            </Alert>
+          </Col>
         )
       }
     </div>
