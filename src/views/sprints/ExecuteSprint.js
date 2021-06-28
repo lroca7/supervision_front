@@ -1,3 +1,4 @@
+/* eslint-disable multiline-ternary */
 import { useContext, useState, useEffect } from "react"
 import { List } from "react-feather"
 import { kFormatter } from "@utils"
@@ -43,6 +44,7 @@ import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import DatePicker from "react-flatpickr"
 
+import Swal from 'sweetalert2'
 
 const ExecuteSprint = () => {
   const { colors } = useContext(ThemeColors)
@@ -52,102 +54,97 @@ const ExecuteSprint = () => {
 
   const [loader, setLoader] = useState(false)
 
-  const [btnDisable, setbtnDisable] = useState(false)
+  const [resultEjecucion, setResultEjecucion] = useState(null)
 
-  //Analítica, Límites y Monitoreo
-  const options = [
-    { value: "oficiales", label: "Oficiales" },
-    { value: "temporales", label: "Temporales" }
-  ]
+  const executeCorrida = () => {
 
-  const [grupo, setGrupo] = useState(null)
-  const [parameters, setParameters] = useState([])
+    debugger
+   
 
-  const [subgrupos, setSubgrupos] = useState([])
+    const inputCorrida = document.getElementById("id_corrida")
+    const idCorrida = inputCorrida.value.trim()
 
-  const transFormData = (data) => {
-    const group = data.reduce((r, a) => {
-      r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
-      return r
-    }, {})
-    console.log("subgrupos -> ", group)
-    setSubgrupos(group)
-  }
+    if (idCorrida.length > 0) {
 
-  const getParameters = (e) => {
-    setLoader(true)
+      setLoader(true)
 
-    const grupo = e.value
-    setGrupo(grupo)
-    const url = `${URL_BASE}parametros/plantilla-parametros?grupo=${grupo}`
+      const url = `${URL_BASE}corridas/ejecutar-corrida?idCorrida=${idCorrida}`
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.codigo === 200) {
-          setParameters(result.result.parametros)
-          transFormData(result.result.parametros)
-          setLoader(false)
-        }
+      fetch(url, {
+        method: "GET"
       })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.codigo === 200) {
+          } else {
+            Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
+          }
+
+          if (result.codigo === undefined) {
+            Swal.fire(`${result.message}`, ``, "error")
+          }
+          setLoader(false)
+        })
+        .catch((error) => {
+          debugger
+          console.error(error)
+          Swal.fire(`Ha ocurrido un error al ejecutar`, `${error}`, "error")
+          setLoader(false)
+        })
+    }
   }
 
   useEffect(() => {
     // console.log('data inicial -> ', students)
   }, [])
 
-  const [gridApi, setGridApi] = useState(null)
-  const [gridColumnApi, setGridColumnApi] = useState(null)
-
-  const onGridReady = (params) => {
-    setGridApi(params.api)
-    setGridColumnApi(params.columnApi)
-  }
-
-  const onCellValueChanged = (event) => {
-    console.log('data after changes is: ', event.data)
-  }
-
-  const createCorrida = () => {
-
-    setbtnDisable(true)
-
-    const body = {
-      user: 'jlotero'
-    }
-
-    const url = `${URL_BASE}corridas`
-
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        debugger
-        if (result.codigo === 200) {
-          Swal.fire(
-            `Corrida generada con exito`,
-            `Versión: ${result.result.version} <br/>
-             Tipo: ${result.result.tipo} <br/>
-             Usuario: ${result.result.usuario} <br/>
-             Fecha: ${result.result.fechaCreacion} <br/>`,
-            'success'
-          )
-        }
-      })
-
-  }
-
-  const onChangeValue = (event) => {
-    debugger
-    console.log(event.target.value)
-  }
-
   return (
     <div id="parameters-container mb-4">
       <h2 className="mb-2">Lanzar corrida</h2>
-     
+
+      <Row className="d-flex align-items-end">
+        <Col md="6">
+          <label>Ingresa id de corrida:</label>
+          <Input
+            type="number"
+            name="id_corrida"
+            id="id_corrida"
+            isRequired={true}
+          />
+        </Col>
+        <Col md="2" className="pl-0">
+          <Button color="primary" onClick={(e) => executeCorrida(e)}>
+            {/* <Search size={12} /> */}
+            Lanzar
+          </Button>
+        </Col>
+      </Row>
+
+
+      {loader === true ? (
+        <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
+          <Button.Ripple color="primary">
+            <Spinner color="white" size="sm" />
+            <span className="ml-50">Cargando...</span>
+          </Button.Ripple>
+        </Col>
+      ) : (
+        <Col md="12" className="mt-2">          
+          {/* {
+            resultEjecucion !== null ? (
+              <Alert color='danger'>
+                <div className='alert-body'>
+                  <p>{error.status} : {error.codigo}</p>
+                  <p>{error.detalle}</p>
+                  <p>{error.error}</p>
+                </div>
+              </Alert>
+            )
+            : <p>No hay información</p>
+          } */}
+        </Col>
+      )}
+
     </div>
   )
 }
