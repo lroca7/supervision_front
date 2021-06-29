@@ -187,8 +187,6 @@ const CreateSprint = () => {
       type = 'oficiales'
     }
 
-    debugger
-
     const body = {
       grupo: grupoParameter,
       user: 'jlotero',
@@ -241,7 +239,6 @@ const CreateSprint = () => {
 
     let status = ''
 
-    debugger
     const body = {
       idCorrida : corrida.id,
       verParam : corrida.verParam,
@@ -290,7 +287,6 @@ const CreateSprint = () => {
         setbtnDisableLaunch(false)
       })
       .catch((error) => {
-        debugger
         console.error(error)
         Swal.fire(
           `Ha ocurrido un error al actualizar`,
@@ -333,8 +329,6 @@ const CreateSprint = () => {
         setbtnDisableLaunch(false)
       })
       .catch((error) => {
-
-        debugger
         console.error(error)
         Swal.fire(
           `Ha ocurrido un error al ejecutar`,

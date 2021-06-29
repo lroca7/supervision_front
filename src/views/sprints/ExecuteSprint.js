@@ -56,10 +56,7 @@ const ExecuteSprint = () => {
 
   const [resultEjecucion, setResultEjecucion] = useState(null)
 
-  const executeCorrida = () => {
-
-    debugger
-   
+  const executeCorrida = () => { 
 
     const inputCorrida = document.getElementById("id_corrida")
     const idCorrida = inputCorrida.value.trim()
@@ -86,7 +83,6 @@ const ExecuteSprint = () => {
           setLoader(false)
         })
         .catch((error) => {
-          debugger
           console.error(error)
           Swal.fire(`Ha ocurrido un error al ejecutar`, `${error}`, "error")
           setLoader(false)
