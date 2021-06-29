@@ -44,6 +44,12 @@ export default [
         title: 'Lanzar corrida',
         icon: <Circle size={12} />,
         navLink: '/execute/sprint'
+      },
+      {
+        id: 'executeCorrida',
+        title: 'Leer corrida',
+        icon: <Circle size={12} />,
+        navLink: '/read/sprint'
       }
     ]
   }
