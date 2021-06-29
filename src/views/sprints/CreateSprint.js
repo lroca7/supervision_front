@@ -157,7 +157,7 @@ const CreateSprint = () => {
   const onChangeTypeProccess = (event) => {
     setCorrida({
       ...corrida,
-      typeFlujo: event.target.value
+      idFlujo: event.target.value
     })
   }
 
@@ -168,7 +168,8 @@ const CreateSprint = () => {
     })
   }
 
-  const saveParameters = () => {   
+  const saveParameters = async () => {   
+
 
     const keys = Object.keys(subgrupos)
 
@@ -179,7 +180,6 @@ const CreateSprint = () => {
     })
     dataToUpdate = [].concat.apply([], dataToUpdate)
 
-    console.log('data para actualizar -> ', dataToUpdate)
 
     let type = 'temporales'
     const toogleType = document.getElementById('switch-parmeter-type')
@@ -196,106 +196,122 @@ const CreateSprint = () => {
 
     const url = `${URL_BASE}parametros`
 
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then((response) => response.json())
-      .then((result) => {        
-        if (result.codigo === 201) {
-          setCorrida({
-            ...corrida,
-            verParam: result.result.version
-          })
-          Swal.fire(
-            `${result.result.mensaje}`,
-            `Versión: ${result.result.version} <br/>
-             Tipo: ${result.result.tipo} <br/>
-             Usuario: ${result.result.usuario} <br/>
-             Fecha: ${result.result.fechaCreacion} <br/>`,
-            'success'
-          )
-        } else {
-          Swal.fire(
-            `${result.error}`,
-            `${result.detalle} <br/>`,
-            'error'
-          )
-        }
+    try {
 
-        if (result.codigo === undefined) {
-          Swal.fire(
-            `${result.message}`,
-            ``,
-            'error'
-          )
-        }
-
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(body)
       })
+
+      const result = await response.json()
+
+      if (result.codigo === 201) {
+        
+        debugger
+        setCorrida({
+          ...corrida,
+          verParam: result.result.version
+        })
+        Swal.fire(
+          `${result.result.mensaje}`,
+          `Versión: ${result.result.version} <br/>
+           Tipo: ${result.result.tipo} <br/>
+           Usuario: ${result.result.usuario} <br/>
+           Fecha: ${result.result.fechaCreacion} <br/>`,
+          'success'
+        )
+      } else {
+        Swal.fire(
+          `${result.error}`,
+          `${result.detalle} <br/>`,
+          'error'
+        )
+      }
+
+      if (result.codigo === undefined) {
+        Swal.fire(
+          `${result.message}`,
+          ``,
+          'error'
+        )
+      }
+
+      return result
+
+    } catch (error) {
+      console.error(error)
+    }
+    return []
 
   }
 
-  const updateCorrida = async () => {
+  const updateCorrida = async (parameters) => {
 
-    let status = ''
-
+    debugger
     const body = {
       idCorrida : corrida.id,
-      verParam : corrida.verParam,
+      verParam : parameters.version,
       idFlujo : corrida.idFlujo,
       fecProceso: corrida.fecProceso
     }
 
     const url = `${URL_BASE}corridas`
 
-    console.log('body -> ', body)
 
-    fetch(url, {
-      method: 'PUT',
-      body: JSON.stringify(body)
-    })
-      .then((response) => response.json())
-      .then((result) => {        
-        if (result.codigo === 201) {
-          Swal.fire(
-            `${result.result.mensaje}`,
-            ``,
-            'success'
-          )
+    try {
 
-          status = 'success'
-        } else {
-          Swal.fire(
-            `${result.error}`,
-            `${result.detalle} <br/>`,
-            'error'
-          )
-
-          status = 'error'
-        }
-
-        if (result.codigo === undefined) {
-          Swal.fire(
-            `${result.message}`,
-            ``,
-            'error'
-          )
-          status = 'error'
-        }
-        
-
-        setbtnDisableLaunch(false)
+      const response = await  fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(body)
       })
-      .catch((error) => {
-        console.error(error)
+
+      const result = await response.json()
+
+      if (result.codigo === 201) {
         Swal.fire(
-          `Ha ocurrido un error al actualizar`,
-          `${error}`,
+          `${result.result.mensaje}`,
+          ``,
+          'success'
+        )
+
+        status = 'success'
+      } else {
+        Swal.fire(
+          `${result.error}`,
+          `${result.detalle} <br/>`,
           'error'
         )
-        setbtnDisableLaunch(false)
-      })
 
+        status = 'error'
+      }
+
+      if (result.codigo === undefined) {
+        Swal.fire(
+          `${result.message}`,
+          ``,
+          'error'
+        )
+        status = 'error'
+      }
+      
+
+      setbtnDisableLaunch(false)
+
+
+      return result
+
+    } catch (error) {
+      console.error(error)
+
+      Swal.fire(
+        `Ha ocurrido un error al actualizar`,
+        `${error}`,
+        'error'
+      )
+      setbtnDisableLaunch(false)
+
+    }
+    return []
 
   }
 
@@ -345,16 +361,23 @@ const CreateSprint = () => {
   const launchCorrida = async () => {
 
     setbtnDisableLaunch(true)
-
+    
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
       alert('Crear nuevos parametros')
-      saveParameters()
-    }
 
-    const updateStatus = await updateCorrida()
+      debugger
+      const stateSaveParameters = await saveParameters()
+      if (stateSaveParameters.codigo ===  201) {
+        const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
+      }
 
-    if (updateStatus === 'success') {
-      await executeCorrida()
+    } else {
+      const updateStatus = await updateCorrida()
+
+      if (updateStatus === 'success') {
+        await executeCorrida()
+      }
+
     }
 
   }
@@ -383,7 +406,7 @@ const CreateSprint = () => {
             <label>Fecha creación:</label>
             <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled/>
             <label>Fecha del proceso:</label>
-            <Input class="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} 
+            <Input className="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} 
               value={corrida.fecProceso}
               onChange={onChangeFechaProceso}/>
             <label>Tipo:</label>
@@ -404,7 +427,7 @@ const CreateSprint = () => {
 
           <Col md="12" className="mt-2">
             <h5>Seleccione el tipo de corrida:</h5>
-            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess} value={"2"} >
+            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
               <FormGroup check>
                 <Label check>
                   <Input type="radio" name="radio1" value="1" />{' '}
