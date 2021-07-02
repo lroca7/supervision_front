@@ -1,56 +1,31 @@
 import { useContext, useState, useEffect, useRef } from "react"
-import { List } from "react-feather"
-import { kFormatter } from "@utils"
-import Avatar from "@components/avatar"
-import Timeline from "@components/timeline"
-import AvatarGroup from "@components/avatar-group"
-import jsonImg from "@src/assets/images/icons/json.png"
-import InvoiceList from "@src/views/apps/invoice/list"
-import ceo from "@src/assets/images/portrait/small/avatar-s-9.jpg"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
-import Sales from "@src/views/ui-elements/cards/analytics/Sales"
-import AvgSessions from "@src/views/ui-elements/cards/analytics/AvgSessions"
-import CardAppDesign from "@src/views/ui-elements/cards/advance/CardAppDesign"
-import SupportTracker from "@src/views/ui-elements/cards/analytics/SupportTracker"
 import {
   Row,
   Col,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  Media,
   Button,
   Spinner,
-  CardText,
   CustomInput,
   FormGroup,
   Label,
   Input
 } from "reactstrap"
-import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
-import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
-import SubscribersGained from "@src/views/ui-elements/cards/statistics/SubscribersGained"
 
 import Select from "react-select"
 
 import "@styles/react/libs/charts/apex-charts.scss"
 
-import { render } from "react-dom"
 import { AgGridColumn, AgGridReact } from "ag-grid-react"
 
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
 import Swal from 'sweetalert2'
-import { data } from "../tables/data-tables/data"
+
+import { URL_BACK } from "../../contants"
 
 const CreateSprint = () => {
   const { colors } = useContext(ThemeColors)
-
-  const URL_BASE =
-    "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
-  
   
   const initialErrorState = {
     status: false,
@@ -97,7 +72,7 @@ const CreateSprint = () => {
 
   const getParameters = (version) => {
 
-    const url = `${URL_BASE}parametros?version=${version}`
+    const url = `${URL_BACK}parametros?version=${version}`
 
     fetch(url)
       .then((response) => response.json())
@@ -124,7 +99,7 @@ const CreateSprint = () => {
       user: 'jlotero'
     }
 
-    const url = `${URL_BASE}corridas`
+    const url = `${URL_BACK}corridas`
 
     fetch(url, {
       method: 'POST',
@@ -157,7 +132,7 @@ const CreateSprint = () => {
   const onChangeTypeProccess = (event) => {
     setCorrida({
       ...corrida,
-      idFlujo: event.target.value
+      idFlujo: parseInt(event.target.value)
     })
   }
 
@@ -194,7 +169,7 @@ const CreateSprint = () => {
       parametros: dataToUpdate
     }
 
-    const url = `${URL_BASE}parametros`
+    const url = `${URL_BACK}parametros`
 
     try {
 
@@ -259,7 +234,7 @@ const CreateSprint = () => {
       body.verParam = parameters.version
     }
 
-    const url = `${URL_BASE}corridas`
+    const url = `${URL_BACK}corridas`
 
     try {
 
@@ -320,7 +295,7 @@ const CreateSprint = () => {
 
   const executeCorrida = () => {
 
-    const url = `${URL_BASE}corridas/ejecutar-corrida?idCorrida=${corrida.id}`
+    const url = `${URL_BACK}corridas/ejecutar-corrida?idCorrida=${corrida.id}`
 
     fetch(url, {
       method: 'GET'
@@ -421,7 +396,7 @@ const CreateSprint = () => {
             <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
               <FormGroup check>
                 <Label check>
-                  <Input type="radio" name="radio1" value="1" 
+                  <Input type="radio" name="radio1" value={1} 
                     checked={corrida.idFlujo === 1}
                   />
                   PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
@@ -429,19 +404,19 @@ const CreateSprint = () => {
               </FormGroup>
               <FormGroup check>
                 <Label check>
-                  <Input type="radio" name="radio1" value="2" checked={corrida.idFlujo === 2}/>
+                  <Input type="radio" name="radio1" value={2} checked={corrida.idFlujo === 2}/>
                   PBO - Márgenes - Valoración (Solo manual)
                 </Label>
               </FormGroup>
               <FormGroup check >
                 <Label check>
-                  <Input type="radio" name="radio1" value="3" checked={corrida.idFlujo === 3}/>
+                  <Input type="radio" name="radio1" value={3} checked={corrida.idFlujo === 3}/>
                   Márgenes - Valoración
                 </Label>
               </FormGroup>
               <FormGroup check >
                 <Label check>
-                  <Input type="radio" name="radio1" value="4" checked={corrida.idFlujo === 4}/>
+                  <Input type="radio" name="radio1" value={4} checked={corrida.idFlujo === 4}/>
                   Valoración
                 </Label>
               </FormGroup>

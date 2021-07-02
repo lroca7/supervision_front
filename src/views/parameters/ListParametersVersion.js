@@ -3,28 +3,19 @@ import { ThemeColors } from "@src/utility/context/ThemeColors"
 import {
   Row,
   Col,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  Media,
   Button,
   Spinner,
-  CardText,
-  CustomInput,
   Input
 } from "reactstrap"
-import { Search } from 'react-feather'
 import { AgGridColumn, AgGridReact } from "ag-grid-react"
 
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
+import { URL_BACK } from "../../contants"
+
 const ListParametersVersion = () => {
   const { colors } = useContext(ThemeColors)
-
-  const URL_BASE =
-    "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
 
   const [loader, setLoader] = useState(false)
  
@@ -45,7 +36,7 @@ const ListParametersVersion = () => {
     const version = (inputVersion.value).trim()
 
     if (version.length > 0) {
-      const url = `${URL_BASE}parametros?version=${version}`
+      const url = `${URL_BACK}parametros?version=${version}`
 
       fetch(url)
         .then((response) => response.json())

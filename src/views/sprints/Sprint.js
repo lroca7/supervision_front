@@ -1,57 +1,26 @@
 /* eslint-disable multiline-ternary */
 import { useContext, useState, useEffect } from "react"
-import { List } from "react-feather"
-import { kFormatter } from "@utils"
-import Avatar from "@components/avatar"
-import Timeline from "@components/timeline"
-import AvatarGroup from "@components/avatar-group"
-import jsonImg from "@src/assets/images/icons/json.png"
-import InvoiceList from "@src/views/apps/invoice/list"
-import ceo from "@src/assets/images/portrait/small/avatar-s-9.jpg"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
-import Sales from "@src/views/ui-elements/cards/analytics/Sales"
-import AvgSessions from "@src/views/ui-elements/cards/analytics/AvgSessions"
-import CardAppDesign from "@src/views/ui-elements/cards/advance/CardAppDesign"
-import SupportTracker from "@src/views/ui-elements/cards/analytics/SupportTracker"
 import {
   Row,
   Col,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  Media,
   Button,
   Spinner,
-  CardText,
-  CustomInput,
-  FormGroup,
-  Label,
   Input,
   Alert
 } from "reactstrap"
-import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
-import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
-import SubscribersGained from "@src/views/ui-elements/cards/statistics/SubscribersGained"
-
-import Select from "react-select"
 
 import "@styles/react/libs/charts/apex-charts.scss"
 
-import { render } from "react-dom"
-import { AgGridColumn, AgGridReact } from "ag-grid-react"
-
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
-import DatePicker from "react-flatpickr"
 
 import Swal from 'sweetalert2'
 
+import { URL_BACK } from "../../contants"
+
 const Sprint = () => {
   const { colors } = useContext(ThemeColors)
-
-  const URL_BASE =
-    "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
 
   const [loader, setLoader] = useState(false)
 
@@ -66,7 +35,7 @@ const Sprint = () => {
 
       setLoader(true)
 
-      const url = `${URL_BASE}corridas?idCorrida=${idCorrida}`
+      const url = `${URL_BACK}corridas?idCorrida=${idCorrida}`
 
       fetch(url, {
         method: "GET"
