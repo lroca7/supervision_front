@@ -1,44 +1,20 @@
 import { useContext, useState, useEffect } from "react"
-import { List } from "react-feather"
-import { kFormatter } from "@utils"
-import Avatar from "@components/avatar"
-import Timeline from "@components/timeline"
-import AvatarGroup from "@components/avatar-group"
-import jsonImg from "@src/assets/images/icons/json.png"
-import InvoiceList from "@src/views/apps/invoice/list"
-import ceo from "@src/assets/images/portrait/small/avatar-s-9.jpg"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
-import Sales from "@src/views/ui-elements/cards/analytics/Sales"
-import AvgSessions from "@src/views/ui-elements/cards/analytics/AvgSessions"
-import CardAppDesign from "@src/views/ui-elements/cards/advance/CardAppDesign"
-import SupportTracker from "@src/views/ui-elements/cards/analytics/SupportTracker"
 import {
   Row,
   Col,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  Media,
   Button,
   Spinner,
-  CardText,
-  CustomInput,
-  Alert
+  Alert,
+  Input
 } from "reactstrap"
-import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
-import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
-import SubscribersGained from "@src/views/ui-elements/cards/statistics/SubscribersGained"
-
 import Select from "react-select"
-
 import "@styles/react/libs/charts/apex-charts.scss"
-
-import { render } from "react-dom"
 import { AgGridColumn, AgGridReact } from "ag-grid-react"
-
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
+
+import { URL_BACK } from "../../contants"
 
 const ListParametersOficial = () => {
   const { colors } = useContext(ThemeColors)
@@ -50,9 +26,6 @@ const ListParametersOficial = () => {
     detaller: ''
   }
   const [error, setError] = useState(initialErrorState)
-
-  const URL_BASE =
-    "https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/"
 
   const [loader, setLoader] = useState(false)
   //Analítica, Límites y Monitoreo
@@ -80,13 +53,16 @@ const ListParametersOficial = () => {
     setLoader(true)
     setError(initialErrorState)
     const grupo = e.value
-    setGrupo(grupo)
-    const url = `${URL_BASE}parametros?grupo=${grupo}`
+    
+    const url = `${URL_BACK}parametros?grupo=${grupo}`
 
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
+
+          setGrupo(result.result)
+
           setParameters(result.result.parametros)
           transFormData(result.result.parametros)
           
@@ -113,13 +89,6 @@ const ListParametersOficial = () => {
     // console.log('data inicial -> ', students)
   }, [])
 
-  const [gridApi, setGridApi] = useState(null)
-  const [gridColumnApi, setGridColumnApi] = useState(null)
-
-  const onGridReady = (params) => {
-    setGridApi(params.api)
-    setGridColumnApi(params.columnApi)
-  }
 
   const onCellValueChanged = (event) => {
     console.log('data after changes is: ', event.data)
@@ -148,9 +117,22 @@ const ListParametersOficial = () => {
         </Col>
       ) : (
         <Col md="12" className="mt-2">
+
+          {
+            grupo !== null && (
+              <>
+                <h4 className="mt-2 mb-2">Información general</h4>
+                <p>Grupo: {grupo.grupo}</p>
+                <p>Fecha: {grupo.fecha}</p>
+                <p>Usuario: {grupo.user}</p>
+                <p>Versión: {grupo.version}</p>
+              </>
+            )
+          }
+
           {Object.entries(subgrupos).length > 0 ? (
             <>
-              <h4 className='mb-2'>Subgrupos</h4>
+              <h4 className='mt-2 mb-2'>Subgrupos</h4>
 
               {Object.entries(subgrupos).map(([key, value]) => {
                 return (
@@ -169,8 +151,8 @@ const ListParametersOficial = () => {
                           editable: false,
                           resizable: true
                         }}
-                        onGridReady={onGridReady}
-                        onCellValueChanged={onCellValueChanged}
+                        // onGridReady={onGridReady}
+                        // onCellValueChanged={onCellValueChanged}
                       >
                         <AgGridColumn field="nombre" editable="false"></AgGridColumn>
                         <AgGridColumn field="valor"></AgGridColumn>
@@ -192,7 +174,6 @@ const ListParametersOficial = () => {
         error.status && (
           <Col md="12">
             <Alert color='danger'>
-              {/* <h4 className='alert-heading'>Lorem ipsum dolor sit amet</h4> */}
               <div className='alert-body'>
                 <p>{error.status} : {error.codigo}</p>
                 <p>{error.detalle}</p>
