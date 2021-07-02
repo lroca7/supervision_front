@@ -34,7 +34,7 @@ const CreateSprint = () => {
     detalle: ''
   }
   const [error, setError] = useState(initialErrorState)
-  const [responseCorridaSucces, setResponseCorridaSucces] = useState(null)
+  const [responseCorrida, setResponseCorrida] = useState(null)
 
   const [btnDisable, setbtnDisable] = useState(false)
   const [btnDisableLaunch, setbtnDisableLaunch] = useState(false)
@@ -182,7 +182,6 @@ const CreateSprint = () => {
 
       if (result.codigo === 201) {
         
-        debugger
         setCorrida({
           ...corrida,
           verParam: result.result.version
@@ -222,7 +221,6 @@ const CreateSprint = () => {
 
   const updateCorrida = async (parameters) => {
 
-    debugger
     const body = {
       idCorrida : corrida.id,
       verParam: corrida.verParam,
@@ -303,7 +301,7 @@ const CreateSprint = () => {
       .then((response) => response.json())
       .then((result) => {        
         if (result.codigo === 200) {
-          
+          setResponseCorrida(response)
         } else {
           Swal.fire(
             `${result.error}`,
@@ -339,20 +337,19 @@ const CreateSprint = () => {
   const launchCorrida = async () => {
 
     setbtnDisableLaunch(true)
-    
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
-      alert('Crear nuevos parametros')
+  
 
-      debugger
       const stateSaveParameters = await saveParameters()
       if (stateSaveParameters.codigo ===  201) {
         const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
       }
 
     } else {
-      const updateStatus = await updateCorrida()
+      const updateState = await updateCorrida()
 
-      if (updateStatus === 'success') {
+      debugger
+      if (updateState.codigo === 201) {
         await executeCorrida()
       }
 
@@ -515,14 +512,14 @@ const CreateSprint = () => {
       }
 
       {
-        responseCorridaSucces !== null && (
+        responseCorrida !== null && (
           <Col md="12">
             <Alert color='success'>
-              <h4 className='alert-heading'>{responseCorridaSucces.result.mensaje}</h4>
+              <h4 className='alert-heading'>{responseCorrida.result.mensaje}</h4>
               <div className='alert-body'>
                 <p>Procesos lanzados: </p>
-                {responseCorridaSucces.result.procesosLanzados.length > 0 && (
-                  responseCorridaSucces.result.procesosLanzados.map(proceso => {
+                {responseCorrida.result.procesosLanzados.length > 0 && (
+                  responseCorrida.result.procesosLanzados.map(proceso => {
                     return <div>
                       <p>{proceso.processName}</p>
                     </div>

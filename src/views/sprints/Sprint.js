@@ -69,7 +69,7 @@ const Sprint = () => {
     <div className="container-sprint mb-4">
       <h2 className="mb-2">Leer corrida</h2>
 
-      <Row className="d-flex align-items-end">
+      <Row className="d-flex align-items-end justify-content-center">
         <Col md="6">
           <label>Ingresa id de corrida:</label>
           <Input
@@ -112,7 +112,7 @@ const Sprint = () => {
           <p>Observación : {resultEjecucion.observacion} </p>
           </div>
         )
-        : <p>No hay información</p>
+        : <p className="mt-4">No hay información</p>
       
       )}
 

@@ -60,7 +60,7 @@ const ExecuteSprint = () => {
     detalle: ''
   }
   const [error, setError] = useState(initialErrorState)
-  const [responseCorridaSucces, setResponseCorridaSucces] = useState(null)
+  const [responseCorrida, setResponseCorrida] = useState(null)
 
   const [btnDisable, setbtnDisable] = useState(false)
   const [btnDisableLaunch, setbtnDisableLaunch] = useState(false)
@@ -119,7 +119,6 @@ const ExecuteSprint = () => {
   }
 
   const onChangeTypeProccess = (event) => {
-    debugger
     setCorrida({
       ...corrida,
       idFlujo: parseInt(event.target.value)
@@ -172,7 +171,6 @@ const ExecuteSprint = () => {
 
       if (result.codigo === 201) {
         
-        debugger
         setCorrida({
           ...corrida,
           verParam: result.result.version
@@ -212,7 +210,6 @@ const ExecuteSprint = () => {
 
   const updateCorrida = async (parameters) => {
 
-    debugger
     const body = {
       idCorrida : corrida.id,
       verParam: corrida.verParam,
@@ -269,6 +266,7 @@ const ExecuteSprint = () => {
       return result
 
     } catch (error) {
+
       console.error(error)
 
       Swal.fire(
@@ -277,6 +275,7 @@ const ExecuteSprint = () => {
         'error'
       )
       setbtnDisableLaunch(false)
+
 
     }
     return []
@@ -293,7 +292,7 @@ const ExecuteSprint = () => {
       .then((response) => response.json())
       .then((result) => {        
         if (result.codigo === 200) {
-          
+          setResponseCorrida(response)
         } else {
           Swal.fire(
             `${result.error}`,
@@ -330,18 +329,17 @@ const ExecuteSprint = () => {
 
     setbtnDisableLaunch(true)
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
-      alert('Crear nuevos parametros')
+  
 
-      debugger
       const stateSaveParameters = await saveParameters()
       if (stateSaveParameters.codigo ===  201) {
         const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
       }
 
     } else {
-      const updateStatus = await updateCorrida()
+      const updateState = await updateCorrida()
 
-      if (updateStatus === 'success') {
+      if (updateState.codigo === 201) {
         await executeCorrida()
       }
 
@@ -367,24 +365,33 @@ const ExecuteSprint = () => {
         .then((result) => {
           if (result.codigo === 201) {
             
-            getParameters(result.result.verParam)
-            setDataCorrida(result.result)       
-            setCorrida({
-              ...corrida,
-              id: result.result.idCorrida,
-              verParam: result.result.verParam,
-              idFlujo : result.result.idFlujo,
-              fecProceso: result.result.fecProceso
-            })
+            if (result.result.estado === 'INI') {
+              getParameters(result.result.verParam)
+              setDataCorrida(result.result)       
+              setCorrida({
+                ...corrida,
+                id: result.result.idCorrida,
+                verParam: result.result.verParam,
+                idFlujo : result.result.idFlujo,
+                fecProceso: result.result.fecProceso
+              })
 
+            } else {
+              Swal.fire(`Error`, `La corrida no se puede lanzar <br/>`, "error")
+              setLoader(false)
+              setbtnDisable(false)
+            }
+  
           } else {
             Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
             setLoader(false)
+            setbtnDisable(false)
           }
 
           if (result.codigo === undefined) {
             Swal.fire(`${result.message}`, ``, "error")
             setLoader(false)
+            setbtnDisable(false)
           }
           
         })
@@ -392,6 +399,7 @@ const ExecuteSprint = () => {
           console.error(error)
           Swal.fire(`Ha ocurrido un error al ejecutar`, `${error}`, "error")
           setLoader(false)
+          setbtnDisable(false)
         })
     }
   }
@@ -559,6 +567,41 @@ const ExecuteSprint = () => {
           )} 
         </div>
       )}
+
+{
+        error.status && (
+          <Col md="12">
+            <Alert color='danger'>
+              <div className='alert-body'>
+                <p>{error.status} : {error.codigo}</p>
+                <p>{error.detalle}</p>
+                <p>{error.error}</p>
+              </div>
+            </Alert>
+          </Col>
+          
+        )
+      }
+
+      {
+        responseCorrida !== null && (
+          <Col md="12">
+            <Alert color='success'>
+              <h4 className='alert-heading'>{responseCorrida.result.mensaje}</h4>
+              <div className='alert-body'>
+                <p>Procesos lanzados: </p>
+                {responseCorrida.result.procesosLanzados.length > 0 && (
+                  responseCorrida.result.procesosLanzados.map(proceso => {
+                    return <div>
+                      <p>{proceso.processName}</p>
+                    </div>
+                  })
+                )}
+              </div>
+            </Alert>
+          </Col>
+        )
+      }
 
     </div>
   )
