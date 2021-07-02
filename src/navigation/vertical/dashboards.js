@@ -29,7 +29,7 @@ export default [
   },
   {
     id: 'process',
-    title: 'Proceso',
+    title: 'Corridas',
     // icon: <Home size={20} />,
     badge: 'light-warning',
     children: [

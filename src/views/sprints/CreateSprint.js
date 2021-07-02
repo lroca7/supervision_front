@@ -250,13 +250,16 @@ const CreateSprint = () => {
     debugger
     const body = {
       idCorrida : corrida.id,
-      verParam : parameters.version,
+      verParam: corrida.verParam,
       idFlujo : corrida.idFlujo,
       fecProceso: corrida.fecProceso
     }
 
-    const url = `${URL_BASE}corridas`
+    if (parameters !== undefined) {
+      body.verParam = parameters.version
+    }
 
+    const url = `${URL_BASE}corridas`
 
     try {
 
@@ -409,6 +412,44 @@ const CreateSprint = () => {
             <Input className="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} 
               value={corrida.fecProceso}
               onChange={onChangeFechaProceso}/>
+            
+          </Col>
+
+          <Col md="12" className="mt-2">
+            <h4 className="mb-2">Flujo a ejecutar</h4>
+            <p>Seleccione el tipo de corrida:</p>
+            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
+              <FormGroup check>
+                <Label check>
+                  <Input type="radio" name="radio1" value="1" 
+                    checked={corrida.idFlujo === 1}
+                  />
+                  PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
+                </Label>
+              </FormGroup>
+              <FormGroup check>
+                <Label check>
+                  <Input type="radio" name="radio1" value="2" checked={corrida.idFlujo === 2}/>
+                  PBO - Márgenes - Valoración (Solo manual)
+                </Label>
+              </FormGroup>
+              <FormGroup check >
+                <Label check>
+                  <Input type="radio" name="radio1" value="3" checked={corrida.idFlujo === 3}/>
+                  Márgenes - Valoración
+                </Label>
+              </FormGroup>
+              <FormGroup check >
+                <Label check>
+                  <Input type="radio" name="radio1" value="4" checked={corrida.idFlujo === 4}/>
+                  Valoración
+                </Label>
+              </FormGroup>
+            </FormGroup>
+          </Col>
+
+          <Col md="6" className="mt-2">
+            <h4 className="mb-2">Parámetros de la corrida</h4>
             <label>Tipo:</label>
             <Select
               id="select-group"
@@ -422,93 +463,64 @@ const CreateSprint = () => {
             <label>Grupo: </label>
             <Input type="text" name="grupo" id="grupo" value={grupoParameter} disabled />
             <label>Versión:</label>
-            <Input type="text" name="version" id="version" value={dataCorrida.verParam} disabled/>
+            <Input className="mb-2" type="text" name="version" id="version" value={dataCorrida.verParam} disabled/>
           </Col>
 
           <Col md="12" className="mt-2">
-            <h5>Seleccione el tipo de corrida:</h5>
-            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
-              <FormGroup check>
-                <Label check>
-                  <Input type="radio" name="radio1" value="1" />{' '}
-                  PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
-                </Label>
-              </FormGroup>
-              <FormGroup check>
-                <Label check>
-                  <Input type="radio" name="radio1" value="2" />{' '}
-                  PBO - Márgenes - Valoración (Solo manual)
-                </Label>
-              </FormGroup>
-              <FormGroup check >
-                <Label check>
-                  <Input type="radio" name="radio1" value="3"  />{' '}
-                  Márgenes - Valoración
-                </Label>
-              </FormGroup>
-              <FormGroup check >
-                <Label check>
-                  <Input type="radio" name="radio1" value="3"  />{' '}
-                  Valoración
-                </Label>
-              </FormGroup>
-            </FormGroup>
-          </Col>
-
-          <Col md="12" className="mt-2">
-          {Object.entries(subgrupos).length > 0 ? (
-            <>
-              {Object.entries(subgrupos).map(([key, value]) => {
-                return (
-                  <div>
-                    <h5>{key}</h5>
-                    <br />
-                    <div
-                      className="ag-theme-alpine"
-                      style={{ height: 200, width: "100%" }}
-                    >
-                      <AgGridReact
-                        rowData={value}
-                        defaultColDef={{
-                          flex: 1,
-                          minWidth: 110,
-                          editable: true,
-                          resizable: true
-                        }}
+            <h4 className="mb-2">Subgrupos</h4>
+            {Object.entries(subgrupos).length > 0 ? (
+              <>
+                {Object.entries(subgrupos).map(([key, value]) => {
+                  return (
+                    <div>
+                      <h5>{key}</h5>
+                      <br />
+                      <div
+                        className="ag-theme-alpine"
+                        style={{ height: 200, width: "100%" }}
                       >
-                        <AgGridColumn field="nombre" editable="false"></AgGridColumn>
-                        <AgGridColumn field="valor"></AgGridColumn>
-                        <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
-                      </AgGridReact>
+                        <AgGridReact
+                          rowData={value}
+                          defaultColDef={{
+                            flex: 1,
+                            minWidth: 110,
+                            editable: true,
+                            resizable: true
+                          }}
+                        >
+                          <AgGridColumn field="nombre" editable="false"></AgGridColumn>
+                          <AgGridColumn field="valor"></AgGridColumn>
+                          <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
+                        </AgGridReact>
+                      </div>
+                      <br />
                     </div>
-                    <br />
-                  </div>
-                )
-              })}
+                  )
+                })}
 
-              <h5 className="mt-2">Convertir parametros en oficiales</h5>
-              <CustomInput
-                className="custom-control-primary mb-4"
-                type="switch"
-                id="switch-parmeter-type"
-                name="oficiales"
-                inline
-              />
+                <h5 className="mt-2">Convertir parametros en oficiales</h5>
+                <CustomInput
+                  className="custom-control-primary mb-4"
+                  type="switch"
+                  id="switch-parmeter-type"
+                  name="oficiales"
+                  inline
+                />
 
-              <div className="d-flex justify-content-center mt-4 mb-4">
-                <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
-                  {!btnDisableLaunch ? 'Lanzar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
-                </Button>
-                <Button disabled={btnDisableLaunch} outline color="secondary">
-                  Cancelar
-                </Button>
-              </div>
+                <div className="d-flex justify-content-center mt-4 mb-4">
+                  <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
+                    {!btnDisableLaunch ? 'Lanzar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
+                  </Button>
+                  <Button disabled={btnDisableLaunch} outline color="secondary">
+                    Cancelar
+                  </Button>
+                </div>
 
-            </>
-          ) : (
-            <p>No hay datos para visualizar </p>
-          )}
-        </Col>
+              </>
+            ) : (
+              <p>No hay datos para visualizar </p>
+            )}
+          </Col>
         </>
       )} 
 
@@ -516,7 +528,6 @@ const CreateSprint = () => {
         error.status && (
           <Col md="12">
             <Alert color='danger'>
-              {/* <h4 className='alert-heading'>Lorem ipsum dolor sit amet</h4> */}
               <div className='alert-body'>
                 <p>{error.status} : {error.codigo}</p>
                 <p>{error.detalle}</p>
