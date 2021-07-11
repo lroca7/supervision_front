@@ -10,6 +10,7 @@ import ExtensionsRoutes from './Extensions'
 import PageLayoutsRoutes from './PageLayouts'
 import ParametersRoutes from './Parameters'
 import SprintsRoutes from './Sprints'
+import TitlesRoutes from './Titles'
 
 // ** Document title
 const TemplateTitle = '%s - Supervisor'
@@ -29,7 +30,8 @@ const Routes = [
   ...TablesRoutes,
   ...ChartMapsRoutes,
   ...ParametersRoutes,
-  ...SprintsRoutes
+  ...SprintsRoutes,
+  ...TitlesRoutes
 ]
 
 export { DefaultRoute, TemplateTitle, Routes }

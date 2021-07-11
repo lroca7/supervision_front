@@ -28,7 +28,7 @@ export default [
     ]
   },
   {
-    id: 'process',
+    id: 'corridas',
     title: 'Corridas',
     // icon: <Home size={20} />,
     badge: 'light-warning',
@@ -50,6 +50,19 @@ export default [
         title: 'Leer corrida',
         icon: <Circle size={12} />,
         navLink: '/read/sprint'
+      }
+    ]
+  },
+  {
+    id: 'titles',
+    title: 'Titulos',
+    badge: 'light-warning',
+    children: [
+      {
+        id: 'titles',
+        title: 'Aprobar titulos',
+        icon: <Circle size={12} />,
+        navLink: '/titles'
       }
     ]
   }
