@@ -87,8 +87,8 @@ const CreateTitle = () => {
   const [columnsDef, setColumnsDef] = useState([
     { field: "nemotecnico", headerName: "Nemotécnico", maxWidth: 120 },
     { field: "moneda", headerName: "Moneda", maxWidth: 90 },
-    { field: "fechaVencimiento", headerName: "F. vencimiento", maxWidth: 120 },
-    { field: "diasVencimiento", headerName: "Días vencimiento", maxWidth: 120 },
+    { field: "fechavencimiento", headerName: "F. vencimiento", maxWidth: 120 },
+    { field: "diasalvencimiento", headerName: "Días vencimiento", maxWidth: 120 },
     {
       field: "tir",
       headerName: "TIR",
@@ -97,8 +97,8 @@ const CreateTitle = () => {
         return (field.value * 100).toFixed(2)
       }
     },
-    { field: "precioSucio", headerName: "Precio sucio", minWidth: 100 },
-    { field: "mercadoOrigen", headerName: "Mercado origen", minWidth: 90 },
+    { field: "preciosucio", headerName: "Precio sucio", minWidth: 100 },
+    { field: "mkorigen", headerName: "Mercado origen", minWidth: 90 },
     {
       headerName: "Acciones",
       maxWidth: 110,
@@ -111,7 +111,7 @@ const CreateTitle = () => {
 
   const transFormData = (data) => {
     const group = data.reduce((r, a) => {
-      r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
+      r[a.grupo] = [...(r[a.grupo] || []), a]
       return r
     }, {})
     console.log("subgrupos -> ", group)
@@ -122,34 +122,36 @@ const CreateTitle = () => {
     const inputCorrida = document.getElementById("id_corrida")
     const idCorrida = inputCorrida.value.trim()
 
-    // if (idCorrida.length > 0) {
+    if (idCorrida.length > 0) {
 
-    //   setLoader(true)
+      setLoader(true)
 
-    //   const url = `${URL_BACK}titulos-nys?idCorrida=${idCorrida}&tipoTitulos=filtrados`
+      const url = `${URL_BACK}titulos-nys?idCorrida=${idCorrida}&tipoTitulos=filtrados`
 
-    //   fetch(url, {
-    //     method: "GET"
-    //   })
-    //     .then((response) => response.json())
-    //     .then((result) => {
-    //       if (result.codigo === 201) {
-    //         setResultEjecucion(result.result)
-    //       } else {
-    //         Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
-    //       }
+      fetch(url, {
+        method: "GET"
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.codigo === 200) {
+            
+            transFormData(result.result.titulos)
 
-    //       if (result.codigo === undefined) {
-    //         Swal.fire(`${result.message}`, ``, "error")
-    //       }
-    //       setLoader(false)
-    //     })
-    //     .catch((error) => {
-    //       console.error(error)
-    //       Swal.fire(`Ha ocurrido un error al consultar`, `${error}`, "error")
-    //       setLoader(false)
-    //     })
-    // }
+          } else {
+            Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
+          }
+
+          if (result.codigo === undefined) {
+            Swal.fire(`${result.message}`, ``, "error")
+          }
+          setLoader(false)
+        })
+        .catch((error) => {
+          console.error(error)
+          Swal.fire(`Ha ocurrido un error al consultar`, `${error}`, "error")
+          setLoader(false)
+        })
+    }
 
     const dummyData = {
       status: "ok",
@@ -187,8 +189,8 @@ const CreateTitle = () => {
       }
     }
 
-    setData(dummyData)
-    transFormData(dummyData.result.parametros)
+    // setData(dummyData)
+    // transFormData(dummyData.result.parametros)
   }
 
   const addTitle = () => {
@@ -218,8 +220,8 @@ const CreateTitle = () => {
           />
         </Col>
         <Col md="2" className="pl-0">
-          <Button color="primary" onClick={(e) => getFilterTitles(e)}>
-            Buscar
+          <Button disabled={loader} color="primary mr-2" onClick={(e) => getFilterTitles(e)}>
+            {!loader ? 'Buscar' :  <><Spinner color="white" size="sm" /></>}
           </Button>
         </Col>
       </Row>

@@ -40,7 +40,6 @@ const CreateTitle = (props) => {
       <h2 className="mb-2">Agregar operación teórica</h2>
       <h4 className="mb-2">Corrida {idCorrida}</h4>
 
-     
         <fieldset className="border pt-0 pl-2 pr-2 pb-2 mb-2">
           <legend className="w-auto">Título</legend>
 
