@@ -29,11 +29,10 @@ import { URL_BACK } from "../../../contants"
 const CreateTitle = () => {
   const { colors } = useContext(ThemeColors)
   const [loader, setLoader] = useState(false)
-  const [btnDisable, setbtnDisable] = useState(false)
-
-  const [data, setData] = useState(null)
 
   const [subgrupos, setSubgrupos] = useState(null)
+
+  const [idCorrida, setIdCorrida] = useState(null)
 
   const history = useHistory()
 
@@ -114,7 +113,6 @@ const CreateTitle = () => {
       r[a.grupo] = [...(r[a.grupo] || []), a]
       return r
     }, {})
-    console.log("subgrupos -> ", group)
     setSubgrupos(group)
   }
 
@@ -125,6 +123,7 @@ const CreateTitle = () => {
     if (idCorrida.length > 0) {
 
       setLoader(true)
+      setIdCorrida(idCorrida)
 
       const url = `${URL_BACK}titulos-nys?idCorrida=${idCorrida}&tipoTitulos=filtrados`
 
@@ -136,7 +135,7 @@ const CreateTitle = () => {
           if (result.codigo === 200) {
             
             transFormData(result.result.titulos)
-
+            
           } else {
             Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
           }
@@ -199,7 +198,7 @@ const CreateTitle = () => {
 
     history.push({
       pathname: '/create/title',
-      search: '?idCorrida=192'
+      search: `?idCorrida=${idCorrida}`
     })
   }
 
@@ -257,7 +256,7 @@ const CreateTitle = () => {
                   )
                 })}
 
-                <Row className="d-flex align-items-center justify-content-center mb-4">
+                <Row className="d-flex align-items-center justify-content-center mt-2 mb-4">
                   <Button className="mr-2" color="primary" 
                     onClick={(e) => addTitle(e)}>
                     Agregar título
