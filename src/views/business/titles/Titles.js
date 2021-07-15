@@ -221,7 +221,6 @@ const CreateTitle = () => {
             type="number"
             name="id_corrida"
             id="id_corrida"
-            isRequired={true}
           />
         </Col>
         <Col md="2" className="pl-0">

@@ -12,6 +12,8 @@ import {
   Form
 } from "reactstrap"
 
+import { AvForm, AvField } from 'availity-reactstrap-validation'
+
 import Select from "react-select"
 
 import "@styles/react/libs/charts/apex-charts.scss"
@@ -230,6 +232,7 @@ const CreateTitle = (props) => {
       })
   }
 
+  
   useEffect(() => {
 
     const id = props.history.location.search.split("idCorrida=")[1]
@@ -254,7 +257,6 @@ const CreateTitle = (props) => {
                 type="text"
                 name="nemotecnico"
                 id="nemotecnico"
-                isRequired={true}
               />
             </Col>
             <Col md="2" className="pl-0">
@@ -376,48 +378,49 @@ const CreateTitle = (props) => {
           </fieldset>
           <fieldset className="border pt-0 pl-2 pr-2 pb-2">
             <legend className="w-auto">Nueva operación</legend>
-            <Row className="d-flex align-items-start ">
-
-              <Col md="6" className="mt-1">
-                <label>Fecha operación:</label>
-                <Input className="pickadate" type="date" id="fechaoperacion" isRequired={true} 
-                />
-                <label>TIR:</label>
-                <Input type="number" name="tir" id="tir" isRequired={true} />
-                <label>Precio limpio:</label>
-                <Input type="number" name="preciolimpio" id="preciolimpio" isRequired={true}  />
-                <label>Precio sucio:</label>
-                <Input type="number" name="preciosucio" id="preciosucio" isRequired={true} />
-              </Col>
-              <Col md="6" className="mt-1">
-                <label>Nominal:</label>
-                <Input type="text" name="nominal" id="nominal" />
-                <label>Dias de cupón corrido:</label>
-                <Input type="text" name="diascuponcorrido" id="diascuponcorrido" isRequired={true}  />
-                <label>Cupón corrido:</label>
-                <Input type="text" name="cuponcorrido" id="cuponcorrido" isRequired={true} />
-              </Col>
             
+            <AvForm onValidSubmit={addOperation} >
+              
+              <Row className="d-flex align-items-start ">            
+                <Col md="6" className="mt-1">
+                  <label>Fecha operación:</label>
+                  <AvField className="pickadate" type="date" id="fechaoperacion" name="fechaoperacion" errorMessage='Campo requerido' required />
+                    
+                  <label>TIR:</label>
+                  <AvField id="tir" name="tir" type="number" errorMessage='Campo requerido' required />
+                  <label>Precio limpio:</label>
+                  <AvField type="number" name="preciolimpio" id="preciolimpio" errorMessage='Campo requerido' required  />
+                  <label>Precio sucio:</label>
+                  <AvField type="number" name="preciosucio" id="preciosucio" errorMessage='Campo requerido' required />
+                </Col>
+                <Col md="6" className="mt-1">
+                  <label>Nominal:</label>
+                  <AvField type="text" name="nominal" id="nominal" errorMessage='Campo requerido' required/>
+                  <label>Dias de cupón corrido:</label>
+                  <AvField type="text" name="diascuponcorrido" id="diascuponcorrido" errorMessage='Campo requerido' required />
+                  <label>Cupón corrido:</label>
+                  <AvField type="text" name="cuponcorrido" id="cuponcorrido" errorMessage='Campo requerido' required />
+              </Col>
+              </Row>
+
+              <Row className="d-flex align-items-center justify-content-center mt-4 mb-2">
+                <Button color="primary" className="mr-2">Agregar</Button>
+                <Button
+                  color="secondary"
+                  onClick={(e) => (e)}
+                >
+                  Cancelar
+                </Button>
             </Row>
+
+            </AvForm>
           
           </fieldset>
           
-          <Row className="d-flex align-items-center justify-content-center mt-4 mb-4">
-            <Button className="mr-2" color="primary" 
-              onClick={(e) => addOperation(e)}>
-              Agregar
-            </Button>
-            <Button
-              color="secondary"
-              onClick={(e) => (e)}
-            >
-              Cancelar
-            </Button>
-          </Row>
-
-          <h4 className="mb-2">Operaciones teóricas</h4>
+         
+          <h4 className="mt-2 mb-2">Operaciones teóricas</h4>
           <div
-              className="ag-theme-alpine"
+              className="ag-theme-alpine mb-4"
               style={{ height: 200, width: "100%" }}
             >
               <AgGridReact

@@ -12,7 +12,10 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
+import Swal from "sweetalert2"
+
 import { URL_BACK } from "../../contants"
+
 
 const ListParametersVersion = () => {
   const { colors } = useContext(ThemeColors)
@@ -44,8 +47,17 @@ const ListParametersVersion = () => {
           if (result.codigo === 200) {
             
             transFormData(result.result.parametros)
-            setLoader(false)
+            
+          } else {
+            Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
           }
+  
+          if (result.codigo === undefined) {
+            Swal.fire(`${result.message}`, ``, "error")
+          }
+
+          setLoader(false)
+
         })
         .catch(error => {
           console.error(error)
@@ -66,11 +78,10 @@ const ListParametersVersion = () => {
       <Row className="d-flex align-items-end">
         <Col md="6">
           <label>Ingresa la versión a consultar:</label>
-          <Input type="number" name="version" id="version" isRequired={true}/>
+          <Input type="number" name="version" id="version" />
         </Col>
         <Col md="2" className='pl-0'>
-          <Button color="primary" onClick={(e) => getParameters(e)}>
-            {/* <Search size={12} /> */}
+          <Button disabled={loader} color="primary mr-2" onClick={(e) => getParameters(e)}>
             Buscar
           </Button>
         </Col>

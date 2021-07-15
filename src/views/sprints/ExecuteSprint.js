@@ -419,7 +419,6 @@ const ExecuteSprint = () => {
             type="number"
             name="id_corrida"
             id="id_corrida"
-            isRequired={true}
           />
         </Col>
         <Col md="2" className="pl-0">
@@ -451,7 +450,7 @@ const ExecuteSprint = () => {
                 <label>Fecha creación:</label>
                 <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled/>
                 <label>Fecha del proceso:</label>
-                <Input className="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} 
+                <Input className="pickadate" type="date"  name="date-corrida" id="date-corrida"
                   value={corrida.fecProceso}
                   onChange={onChangeFechaProceso}/>
                 

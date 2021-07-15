@@ -380,7 +380,7 @@ const CreateSprint = () => {
             <label>Fecha creación:</label>
             <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled/>
             <label>Fecha del proceso:</label>
-            <Input className="pickadate" type="date"  name="date-corrida" id="date-corrida" isRequired={true} 
+            <Input className="pickadate" type="date"  name="date-corrida" id="date-corrida"  
               value={corrida.fecProceso}
               onChange={onChangeFechaProceso}/>
             

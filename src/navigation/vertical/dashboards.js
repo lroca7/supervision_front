@@ -46,7 +46,7 @@ export default [
         navLink: '/execute/sprint'
       },
       {
-        id: 'executeCorrida',
+        id: 'readCorrida',
         title: 'Leer corrida',
         icon: <Circle size={12} />,
         navLink: '/read/sprint'
