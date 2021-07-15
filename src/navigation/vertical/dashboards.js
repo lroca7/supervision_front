@@ -55,12 +55,12 @@ export default [
   },
   {
     id: 'titles',
-    title: 'Titulos',
+    title: 'Títulos',
     badge: 'light-warning',
     children: [
       {
         id: 'titles',
-        title: 'Aprobar titulos',
+        title: 'Aprobar títulos',
         icon: <Circle size={12} />,
         navLink: '/titles'
       }

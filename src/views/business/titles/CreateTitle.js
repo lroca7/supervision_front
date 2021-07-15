@@ -54,6 +54,9 @@ const CreateTitle = (props) => {
 
   const [infoNemotecnico, setInfoNemotecnico] = useState(null)
 
+  const [allTitles, setAllTitles] = useState([])
+  const [newTitle, setNewTitle] = useState(null)
+
   const searchNemotecnico = () => {
     const inputNemotecnico = document.getElementById("nemotecnico")
     const nemotecnico = inputNemotecnico.value.trim()
@@ -72,7 +75,6 @@ const CreateTitle = (props) => {
             
             setInfoNemotecnico(result.result)
 
-            debugger
             let operations = []
             operations = result.result.operTeoricas
             const completeOperations = operations.map(o => {
@@ -101,6 +103,47 @@ const CreateTitle = (props) => {
 
   }
 
+  const addTitle = (nTitle) => {
+
+    allTitles.push(nTitle)
+    setAllTitles(allTitles)
+
+    const url = `${URL_BACK}titulos-nys/aprobar-titulos-nys`
+
+    const body = {
+      idCorrida,
+      titulosAprobados: allTitles
+    }
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.codigo === 200) {
+          
+          Swal.fire(
+            ``,
+            `${result.result}`,
+            'success'
+          )        
+        } else {
+          Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
+        }
+
+        if (result.codigo === undefined) {
+          Swal.fire(`${result.message}`, ``, "error")
+        }
+
+      })
+      .catch((error) => {
+        console.error(error)
+        Swal.fire(`Ha ocurrido un error al aprobar titulos`, `${error}`, "error")
+        setbtnDisable(false)
+      })
+
+  }
+
   const addOperation = () => {
     const fechaoperacion = document.getElementById("fechaoperacion")
     const tir = document.getElementById("tir")
@@ -110,14 +153,12 @@ const CreateTitle = (props) => {
     const diascuponcorrido = document.getElementById("diascuponcorrido")
     const cuponcorrido = document.getElementById("cuponcorrido")
 
-    debugger
-
     const body = {
-      tipoInformacion : "OPadadadER",
+      tipoInformacion : "OPER",
       informacion :
       [
         {
-          "trade dt" : "2019-01-03",
+          "trade dt" : fechaoperacion.value,
           nemotecnico: infoNemotecnico.infoTitulo.nemotecnico,
           isin: infoNemotecnico.infoTitulo.isin,
           tir: tir.value,
@@ -144,24 +185,59 @@ const CreateTitle = (props) => {
             ``,
             `${result.result}`,
             'success'
-          )
+          )        
 
-          // operations.push(body.informacion[0])
-          // setOperations(operations)
-          
-          // console.log('operations -> ', operations)
+          const nTitle = {
+            nemotecnico: infoNemotecnico.infoTitulo.nemotecnico,
+            isin: infoNemotecnico.infoTitulo.isin,
+
+            moneda: infoNemotecnico.infoTitulo.moneda,
+            periodicidadcupon: infoNemotecnico.infoTitulo.periodicidadCupon,
+            fechaemision: infoNemotecnico.infoTitulo.fechaEmision,
+            fechavencimiento: infoNemotecnico.infoTitulo.fechaVencimiento,
+            tasacupon: infoNemotecnico.infoTitulo.tasaCupon,
+            basecalculodias: infoNemotecnico.infoTitulo.baseCalculoDias,
+            diasalvencimiento: infoNemotecnico.infoTitulo.diasAlVencimiento,
+
+            tir: tir.value,
+            precioLimpio: preciolimpio.value,
+            precioSucio: preciosucio.value,
+            nominal: nominal.value,
+            corrid: idCorrida,
+            cupon_corrido: cuponcorrido.value,
+
+            mkorigen: "Real", 
+            grupo: infoNemotecnico.infoTitulo.grupo
+            
+          }
+
+          addTitle(nTitle)
+         
+
+        } else {
+          Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
         }
-        // setbtnDisable(false)
+
+        if (result.codigo === undefined) {
+          Swal.fire(`${result.message}`, ``, "error")
+        }
+
       })
       .catch((error) => {
         console.error(error)
+        Swal.fire(`Ha ocurrido un error al agregar la operacion`, `${error}`, "error")
         setbtnDisable(false)
       })
   }
 
   useEffect(() => {
+
     const id = props.history.location.search.split("idCorrida=")[1]
+    const titulos = props.history.location.state.titulos
+    
     setIdCorrida(id)
+    setAllTitles(titulos)
+    
   }, [])
 
   return (
@@ -179,7 +255,6 @@ const CreateTitle = (props) => {
                 name="nemotecnico"
                 id="nemotecnico"
                 isRequired={true}
-                value={'MH32028'}
               />
             </Col>
             <Col md="2" className="pl-0">

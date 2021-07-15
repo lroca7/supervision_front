@@ -348,7 +348,6 @@ const CreateSprint = () => {
     } else {
       const updateState = await updateCorrida()
 
-      debugger
       if (updateState.codigo === 201) {
         await executeCorrida()
       }

@@ -34,6 +34,8 @@ const CreateTitle = () => {
 
   const [idCorrida, setIdCorrida] = useState(null)
 
+  const [titulos, setTitulos] = useState([])
+
   const history = useHistory()
 
   const actionCellRenderer = (params) => {
@@ -134,6 +136,8 @@ const CreateTitle = () => {
         .then((result) => {
           if (result.codigo === 200) {
             
+            setTitulos(result.result.titulos)
+
             transFormData(result.result.titulos)
             
           } else {
@@ -198,8 +202,10 @@ const CreateTitle = () => {
 
     history.push({
       pathname: '/create/title',
-      search: `?idCorrida=${idCorrida}`
+      search: `?idCorrida=${idCorrida}`,
+      state: {titulos}
     })
+
   }
 
   useEffect(() => {}, [])
@@ -264,7 +270,6 @@ const CreateTitle = () => {
                   <Button
                     outline 
                     color="primary"
-                    onClick={(e) => getFilterTitles(e)}
                   >
                     Ejecutar N & S
                   </Button>
