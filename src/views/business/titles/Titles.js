@@ -26,7 +26,7 @@ import Swal from "sweetalert2"
 
 import { URL_BACK } from "../../../contants"
 
-const CreateTitle = () => {
+const CreateTitle = (props) => {
   const { colors } = useContext(ThemeColors)
   const [loader, setLoader] = useState(false)
 
@@ -51,7 +51,7 @@ const CreateTitle = () => {
 
     return eGui
   }
-
+  
   const onCellClicked = (params) => {
     // Handle click event for action cells
     if (
@@ -109,7 +109,7 @@ const CreateTitle = () => {
       colId: "action"
     }
   ])
-
+  
   const transFormData = (data) => {
     const group = data.reduce((r, a) => {
       r[a.grupo] = [...(r[a.grupo] || []), a]
@@ -137,7 +137,7 @@ const CreateTitle = () => {
           if (result.codigo === 200) {
             
             setTitulos(result.result.titulos)
-
+            console.log('transFormData titulos', titulos)
             transFormData(result.result.titulos)
             
           } else {
@@ -195,7 +195,41 @@ const CreateTitle = () => {
     // setData(dummyData)
     // transFormData(dummyData.result.parametros)
   }
+  const aprobarTitulos = () => {
+    const url = `${URL_BACK}titulos-nys/aprobar-titulos-nys`
+    setLoader(true)
+    const body = {
+      idCorrida,
+      titulosAprobados: titulos
+    }
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.codigo === 200 || result.codigo === 201) {
+          
+          Swal.fire(
+            ``,
+            `${result.result.mensaje}`,
+            'success'
+          )        
+        } else {
+          Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
+        }
 
+        if (result.codigo === undefined) {
+          Swal.fire(`${result.message}`, ``, "error")
+        }
+        setLoader(false)
+      })
+      .catch((error) => {
+        console.error(error)
+        Swal.fire(`Ha ocurrido un error al aprobar titulos`, `${error}`, "error")
+        setLoader(false)
+      })
+  }
   const addTitle = () => {
     
     // history.push('/create/title')
@@ -208,7 +242,18 @@ const CreateTitle = () => {
 
   }
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    const id = props.history.location.search.split("idCorrida=")[1]
+    if (id && props.history.location.state) {
+      console.log('state', props.history.location.state)
+      const titulos = props.history.location.state.allTitles
+      document.getElementById("id_corrida").value = id
+      setTitulos(titulos)
+      console.log('titulos', titulos)
+      transFormData(titulos)
+      setIdCorrida(id)
+    }
+  }, [])
 
   return (
     <div id="parameters-container mb-4">
@@ -269,6 +314,7 @@ const CreateTitle = () => {
                   <Button
                     outline 
                     color="primary"
+                    onClick={(e) => aprobarTitulos(e)}>
                   >
                     Ejecutar N & S
                   </Button>

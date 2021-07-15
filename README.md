@@ -1,0 +1,1 @@
+docker run --rm -d --name supervision-app supervision

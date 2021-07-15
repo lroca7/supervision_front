@@ -14,6 +14,8 @@ import {
 
 import { AvForm, AvField } from 'availity-reactstrap-validation'
 
+import { useHistory } from "react-router-dom"
+
 import Select from "react-select"
 
 import "@styles/react/libs/charts/apex-charts.scss"
@@ -59,6 +61,8 @@ const CreateTitle = (props) => {
   const [allTitles, setAllTitles] = useState([])
   const [newTitle, setNewTitle] = useState(null)
 
+  const history = useHistory()
+
   const searchNemotecnico = () => {
     const inputNemotecnico = document.getElementById("nemotecnico")
     const nemotecnico = inputNemotecnico.value.trim()
@@ -79,12 +83,14 @@ const CreateTitle = (props) => {
 
             let operations = []
             operations = result.result.operTeoricas
-            const completeOperations = operations.map(o => {
-              const op = o
-              op.moneda = result.result.infoTitulo.moneda
-              return op
-            })
-            setOperations(completeOperations)
+            if (operations && operations.nemotecnico) {
+              const completeOperations = operations.map(o => {
+                const op = o
+                op.moneda = result.result.infoTitulo.moneda
+                return op
+              })
+              setOperations(completeOperations)
+            }
 
             
           } else {
@@ -110,7 +116,7 @@ const CreateTitle = (props) => {
     allTitles.push(nTitle)
     setAllTitles(allTitles)
 
-    const url = `${URL_BACK}titulos-nys/aprobar-titulos-nys`
+    /*const url = `${URL_BACK}titulos-nys/aprobar-titulos-nys`
 
     const body = {
       idCorrida,
@@ -142,7 +148,7 @@ const CreateTitle = (props) => {
         console.error(error)
         Swal.fire(`Ha ocurrido un error al aprobar titulos`, `${error}`, "error")
         setbtnDisable(false)
-      })
+      })*/
 
   }
 
@@ -160,14 +166,14 @@ const CreateTitle = (props) => {
       informacion :
       [
         {
-          "trade dt" : fechaoperacion.value,
-          nemotecnico: infoNemotecnico.infoTitulo.nemotecnico,
-          isin: infoNemotecnico.infoTitulo.isin,
-          tir: tir.value,
-          precioLimpio: preciolimpio.value,
-          precioSucio: preciosucio.value,
-          nominal: nominal.value,
-          corrid: idCorrida,
+          "trade dt" : fechaoperacion.value, 
+          nemotecnico: infoNemotecnico.infoTitulo.nemotecnico, 
+          isin: infoNemotecnico.infoTitulo.isin, 
+          tir: tir.value, 
+          precioLimpio: preciolimpio.value, 
+          precioSucio: preciosucio.value, 
+          nominal: nominal.value, 
+          corrid: idCorrida, 
           cupon_corrido: cuponcorrido.value
         }
       ]
@@ -202,18 +208,24 @@ const CreateTitle = (props) => {
             diasalvencimiento: infoNemotecnico.infoTitulo.diasAlVencimiento,
 
             tir: tir.value,
-            precioLimpio: preciolimpio.value,
-            precioSucio: preciosucio.value,
+            preciolimpio: preciolimpio.value,
+            preciosucio: preciosucio.value,
             nominal: nominal.value,
             corrid: idCorrida,
-            cupon_corrido: cuponcorrido.value,
+            cuponcorrido: cuponcorrido.value,
 
-            mkorigen: "Real", 
+            mkorigen: "Teórico", 
             grupo: infoNemotecnico.infoTitulo.grupo
             
           }
 
           addTitle(nTitle)
+          console.log('retornando')
+          history.push({
+            pathname: '/titles',
+            search: `?idCorrida=${idCorrida}`,
+            state: {allTitles}
+          })
          
 
         } else {
@@ -228,7 +240,7 @@ const CreateTitle = (props) => {
       .catch((error) => {
         console.error(error)
         Swal.fire(`Ha ocurrido un error al agregar la operacion`, `${error}`, "error")
-        setbtnDisable(false)
+        //setbtnDisable(false)
       })
   }
 

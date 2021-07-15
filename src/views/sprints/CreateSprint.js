@@ -8,7 +8,8 @@ import {
   CustomInput,
   FormGroup,
   Label,
-  Input
+  Input,
+  Alert
 } from "reactstrap"
 
 import Select from "react-select"
@@ -58,7 +59,7 @@ const CreateSprint = () => {
     idFlujo : null,
     fecProceso: null
   })
-
+  
   const inputEl = useRef(null)
 
   const transFormData = (data) => {
@@ -232,24 +233,18 @@ const CreateSprint = () => {
       body.verParam = parameters.version
     }
 
-    const url = `${URL_BACK}corridas`
+    const url = `${URL_BACK}corridas?operacion=1`
 
     try {
 
       const response = await  fetch(url, {
-        method: 'PUT',
+        method: 'POST',
         body: JSON.stringify(body)
       })
 
       const result = await response.json()
-
-      if (result.codigo === 201) {
-        Swal.fire(
-          `${result.result.mensaje}`,
-          ``,
-          'success'
-        )
-
+      if (result.codigo === 201 || result.codigo === 200) {
+        console.log('result', result.result)
         status = 'success'
       } else {
         Swal.fire(
@@ -270,10 +265,6 @@ const CreateSprint = () => {
         status = 'error'
       }
       
-
-      setbtnDisableLaunch(false)
-
-
       return result
 
     } catch (error) {
@@ -301,7 +292,13 @@ const CreateSprint = () => {
       .then((response) => response.json())
       .then((result) => {        
         if (result.codigo === 200) {
-          setResponseCorrida(response)
+          console.log('result executeCorrida', result)
+          Swal.fire(
+            `${result.result.mensaje}`,
+            ``,
+            'success'
+          )
+          setResponseCorrida(result)
         } else {
           Swal.fire(
             `${result.error}`,
@@ -311,6 +308,11 @@ const CreateSprint = () => {
         }
 
         if (result.codigo === undefined) {
+          Swal.fire(
+          `${result.result}`,
+          ``,
+          'success'
+        )
           Swal.fire(
             `${result.message}`,
             ``,
