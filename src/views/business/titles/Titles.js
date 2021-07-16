@@ -51,7 +51,7 @@ const CreateTitle = (props) => {
 
     return eGui
   }
-  
+
   const onCellClicked = (params) => {
     // Handle click event for action cells
     if (
@@ -69,13 +69,15 @@ const CreateTitle = (props) => {
       }
 
       if (action === "delete") {
-        alert("En desarrollo ...")
-        // params.api.applyTransaction({
-        //   remove: [params.node.data]
-        // })
-      }
-
-      if (action === "update") {
+        params.api.applyTransaction({
+          remove: [params.node.data]
+        })
+        console.log(titulos.findIndex)
+        const f = params.node.data
+        const isSameObject = (element => element.nemotecnico === f.nemotecnico && element.isin === f.isin)
+        const i = titulos.findIndex(isSameObject)
+        titulos.splice(i, 1)
+        console.log('encontrado', i)
         params.api.stopEditing(false)
       }
 
@@ -109,12 +111,28 @@ const CreateTitle = (props) => {
       colId: "action"
     }
   ])
-  
+
   const transFormData = (data) => {
     const group = data.reduce((r, a) => {
       r[a.grupo] = [...(r[a.grupo] || []), a]
       return r
     }, {})
+
+    function compare(a, b) {
+      if (parseInt(a.diasalvencimiento) < parseInt(b.diasalvencimiento)) {
+        return -1
+      }
+      if (parseInt(a.diasalvencimiento) > parseInt(b.diasalvencimiento)) {
+        return 1
+      }
+      return 0
+    }
+    console.log('group', group)
+    Object.keys(group).forEach(function (item) {
+      group[item].sort(compare)
+    })
+
+
     setSubgrupos(group)
   }
 
@@ -135,11 +153,11 @@ const CreateTitle = (props) => {
         .then((response) => response.json())
         .then((result) => {
           if (result.codigo === 200) {
-            
+
             setTitulos(result.result.titulos)
             console.log('transFormData titulos', titulos)
             transFormData(result.result.titulos)
-            
+
           } else {
             Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
           }
@@ -156,44 +174,6 @@ const CreateTitle = (props) => {
         })
     }
 
-    const dummyData = {
-      status: "ok",
-      codigo: 200,
-      result: {
-        grupo: "Analítica",
-        version: "93",
-        user: "jlotero",
-        fecha: "20210702192658",
-        tipo: "oficiales",
-        parametros: [
-          {
-            key: "uno",
-            nemotecnico: "BSDR2027",
-            moneda: "DOP",
-            fechaVencimiento: "2027-04-20",
-            diasVencimiento: "3028",
-            tir: 0.63465,
-            precioSucio: "117.000.000",
-            mercadoOrigen: "Real",
-            subgrupo: "Ministerio de hacienda DOP"
-          },
-          {
-            key: "dos",
-            nemotecnico: "BSDR2027",
-            moneda: "USD",
-            fechaVencimiento: "2027-04-20",
-            diasVencimiento: "3028",
-            tir: 0.63465,
-            precioSucio: "117.000.000",
-            mercadoOrigen: "Real",
-            subgrupo: "Ministerio de hacienda USD"
-          }
-        ]
-      }
-    }
-
-    // setData(dummyData)
-    // transFormData(dummyData.result.parametros)
   }
   const aprobarTitulos = () => {
     const url = `${URL_BACK}titulos-nys/aprobar-titulos-nys`
@@ -209,12 +189,11 @@ const CreateTitle = (props) => {
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200 || result.codigo === 201) {
-          
           Swal.fire(
             ``,
             `${result.result.mensaje}`,
             'success'
-          )        
+          )
         } else {
           Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
         }
@@ -231,13 +210,13 @@ const CreateTitle = (props) => {
       })
   }
   const addTitle = () => {
-    
+
     // history.push('/create/title')
 
     history.push({
       pathname: '/create/title',
       search: `?idCorrida=${idCorrida}`,
-      state: {titulos}
+      state: { titulos }
     })
 
   }
@@ -270,7 +249,7 @@ const CreateTitle = (props) => {
         </Col>
         <Col md="2" className="pl-0">
           <Button disabled={loader} color="primary mr-2" onClick={(e) => getFilterTitles(e)}>
-            {!loader ? 'Buscar' :  <><Spinner color="white" size="sm" /></>}
+            {!loader ? 'Buscar' : <><Spinner color="white" size="sm" /></>}
           </Button>
         </Col>
       </Row>
@@ -307,12 +286,12 @@ const CreateTitle = (props) => {
                 })}
 
                 <Row className="d-flex align-items-center justify-content-center mt-2 mb-4">
-                  <Button className="mr-2" color="primary" 
+                  <Button className="mr-2" color="primary"
                     onClick={(e) => addTitle(e)}>
                     Agregar título
                   </Button>
                   <Button
-                    outline 
+                    outline
                     color="primary"
                     onClick={(e) => aprobarTitulos(e)}>
                   >

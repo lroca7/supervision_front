@@ -42,7 +42,7 @@ const Sprint = () => {
       })
         .then((response) => response.json())
         .then((result) => {
-          if (result.codigo === 201) {
+          if (result.codigo === 200) {
             setResultEjecucion(result.result)
           } else {
             Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
