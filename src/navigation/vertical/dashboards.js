@@ -50,6 +50,12 @@ export default [
         title: 'Leer corrida',
         icon: <Circle size={12} />,
         navLink: '/read/sprint'
+      },
+      {
+        id: 'queryCorrida',
+        title: 'Consultar corridas',
+        icon: <Circle size={12} />,
+        navLink: '/query/sprint'
       }
     ]
   },

@@ -235,76 +235,80 @@ const CreateTitle = (props) => {
   }, [])
 
   return (
-    <div id="parameters-container mb-4">
-      <h2 className="mb-2">Aprobar Titulos para Nelson & Siegel</h2>
+    <div className="card">
+      <div class="card-header">
+        <h4 class="card-title">Aprobar Titulos para Nelson & Siegel</h4>
+      </div>
+      <div class="card-body">
+        <div id="parameters-container mb-4">
+          <Row className="d-flex align-items-end justify-content-center">
+            <Col md="6">
+              <label>Ingresa id de corrida:</label>
+              <Input
+                type="number"
+                name="id_corrida"
+                id="id_corrida"
+              />
+            </Col>
+            <Col md="2" className="pl-0">
+              <Button disabled={loader} color="primary mr-2" onClick={(e) => getFilterTitles(e)}>
+                {!loader ? 'Buscar' : <><Spinner color="white" size="sm" /></>}
+              </Button>
+            </Col>
+          </Row>
 
-      <Row className="d-flex align-items-end justify-content-center">
-        <Col md="6">
-          <label>Ingresa id de corrida:</label>
-          <Input
-            type="number"
-            name="id_corrida"
-            id="id_corrida"
-          />
-        </Col>
-        <Col md="2" className="pl-0">
-          <Button disabled={loader} color="primary mr-2" onClick={(e) => getFilterTitles(e)}>
-            {!loader ? 'Buscar' : <><Spinner color="white" size="sm" /></>}
-          </Button>
-        </Col>
-      </Row>
+          {subgrupos !== null && (
+            <>
+              <Col md="12" className="mt-2">
+                {Object.entries(subgrupos).length > 0 ? (
+                  <>
+                    {Object.entries(subgrupos).map(([key, value]) => {
+                      return (
+                        <div>
+                          <h5>{key}</h5>
+                          <br />
+                          <div
+                            className="ag-theme-alpine"
+                            style={{ height: 200, width: "100%" }}
+                          >
+                            <AgGridReact
+                              rowData={value}
+                              defaultColDef={{
+                                flex: 1,
+                                minWidth: 110,
+                                editable: false,
+                                resizable: true
+                              }}
+                              onCellClicked={onCellClicked}
+                              columnDefs={columnsDef}
+                            ></AgGridReact>
+                          </div>
+                          <br />
+                        </div>
+                      )
+                    })}
 
-      {subgrupos !== null && (
-        <>
-          <Col md="12" className="mt-2">
-            {Object.entries(subgrupos).length > 0 ? (
-              <>
-                {Object.entries(subgrupos).map(([key, value]) => {
-                  return (
-                    <div>
-                      <h5>{key}</h5>
-                      <br />
-                      <div
-                        className="ag-theme-alpine"
-                        style={{ height: 200, width: "100%" }}
-                      >
-                        <AgGridReact
-                          rowData={value}
-                          defaultColDef={{
-                            flex: 1,
-                            minWidth: 110,
-                            editable: false,
-                            resizable: true
-                          }}
-                          onCellClicked={onCellClicked}
-                          columnDefs={columnsDef}
-                        ></AgGridReact>
-                      </div>
-                      <br />
-                    </div>
-                  )
-                })}
-
-                <Row className="d-flex align-items-center justify-content-center mt-2 mb-4">
-                  <Button className="mr-2" color="primary"
-                    onClick={(e) => addTitle(e)}>
-                    Agregar título
-                  </Button>
-                  <Button
-                    outline
-                    color="primary"
-                    onClick={(e) => aprobarTitulos(e)}>
-                  >
-                    Ejecutar N & S
-                  </Button>
-                </Row>
-              </>
-            ) : (
-              <p>No hay datos para visualizar </p>
-            )}
-          </Col>
-        </>
-      )}
+                    <Row className="d-flex align-items-center justify-content-center mt-2 mb-4">
+                      <Button className="mr-2" color="primary"
+                        onClick={(e) => addTitle(e)}>
+                        Agregar título
+                      </Button>
+                      <Button
+                        outline
+                        color="primary"
+                        onClick={(e) => aprobarTitulos(e)}>
+                          Ejecutar N & S
+                      </Button>
+                    </Row>
+                  </>
+                ) : (
+                  <p>No hay datos para visualizar </p>
+                )}
+              </Col>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

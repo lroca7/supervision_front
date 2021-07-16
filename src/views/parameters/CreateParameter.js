@@ -91,7 +91,7 @@ const CreateParameter = () => {
 
     let dataToUpdate = []
 
-    keys.forEach(key => {      
+    keys.forEach(key => {
       dataToUpdate.push(subgrupos[key])
     })
     dataToUpdate = [].concat.apply([], dataToUpdate)
@@ -118,7 +118,7 @@ const CreateParameter = () => {
       body: JSON.stringify(body)
     })
       .then((response) => response.json())
-      .then((result) => {        
+      .then((result) => {
         if (result.codigo === 201) {
           Swal.fire(
             `${result.result.mensaje}`,
@@ -150,84 +150,90 @@ const CreateParameter = () => {
   }
 
   return (
-    <div id="parameters-container mb-4">
-      <h2 className="mb-2">Crear parámetros</h2>
-      <Col md="6">
-        <label>Seleccionar grupo:</label>
-        <Select
-          id="select-group"
-          options={options}
-          placeholder="Seleccionar"
-          onChange={(e) => getParameters(e)}
-        />
-      </Col>
+    <div className="card">
+      <div class="card-header">
+        <h4 class="card-title">Crear parámetros</h4>
+      </div>
+      <div class="card-body">
+        <div id="parameters-container mb-4">
+          <Col md="6">
+            <label>Seleccionar grupo:</label>
+            <Select
+              id="select-group"
+              options={options}
+              placeholder="Seleccionar"
+              onChange={(e) => getParameters(e)}
+            />
+          </Col>
 
-      {loader === true ? (
-        <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
-          <Button.Ripple color="primary">
-            <Spinner color="white" size="sm" />
-            <span className="ml-50">Cargando...</span>
-          </Button.Ripple>
-        </Col>
-      ) : (
-        <Col md="12" className="mt-2">
-          {Object.entries(subgrupos).length > 0 ? (
-            <>
-              <h4>Subgrupos</h4>
-
-              {Object.entries(subgrupos).map(([key, value]) => {
-                return (
-                  <div>
-                    <h5>{key}</h5>
-                    <br />
-                    <div
-                      className="ag-theme-alpine"
-                      style={{ height: 200, width: "100%" }}
-                    >
-                      <AgGridReact
-                        rowData={value}
-                        defaultColDef={{
-                          flex: 1,
-                          minWidth: 110,
-                          editable: true,
-                          resizable: true
-                        }}
-                        onGridReady={onGridReady}
-                        onCellValueChanged={onCellValueChanged}
-                      >
-                        <AgGridColumn field="nombre" editable="false"></AgGridColumn>
-                        <AgGridColumn field="valor"></AgGridColumn>
-                        <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
-                      </AgGridReact>
-                    </div>
-                    <br />
-                  </div>
-                )
-              })}
-
-              <h5 className="mt-2">Convertir parametros en oficiales</h5>
-              <CustomInput
-                className="custom-control-primary mb-4"
-                type="switch"
-                id="switch-parmeter-type"
-                name="oficiales"
-                inline
-              />
-
-              <div className="d-flex justify-content-center mt-4 mb-4">
-                <Button disabled={btnDisable} color="primary mr-2" onClick={saveParameters}>
-                  {!btnDisable ? 'Guardar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Guardando...</span></>}
-                </Button>
-                <Button disabled={btnDisable} outline color="secondary">
-                  Cancelar
-                </Button>
-              </div>
-            </>
+          {loader === true ? (
+            <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
+              <Button.Ripple color="primary">
+                <Spinner color="white" size="sm" />
+                <span className="ml-50">Cargando...</span>
+              </Button.Ripple>
+            </Col>
           ) : (
-            <p>No hay datos para visualizar </p>
+            <Col md="12" className="mt-2">
+              {Object.entries(subgrupos).length > 0 ? (
+                <>
+                  <h4>Subgrupos</h4>
+
+                  {Object.entries(subgrupos).map(([key, value]) => {
+                    return (
+                      <div>
+                        <h5>{key}</h5>
+                        <br />
+                        <div
+                          className="ag-theme-alpine"
+                          style={{ height: 200, width: "100%" }}
+                        >
+                          <AgGridReact
+                            rowData={value}
+                            defaultColDef={{
+                              flex: 1,
+                              minWidth: 110,
+                              editable: true,
+                              resizable: true
+                            }}
+                            onGridReady={onGridReady}
+                            onCellValueChanged={onCellValueChanged}
+                          >
+                            <AgGridColumn field="nombre" editable="false"></AgGridColumn>
+                            <AgGridColumn field="valor"></AgGridColumn>
+                            <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
+                          </AgGridReact>
+                        </div>
+                        <br />
+                      </div>
+                    )
+                  })}
+
+                  <h5 className="mt-2">Convertir parametros en oficiales</h5>
+                  <CustomInput
+                    className="custom-control-primary mb-4"
+                    type="switch"
+                    id="switch-parmeter-type"
+                    name="oficiales"
+                    inline
+                  />
+
+                  <div className="d-flex justify-content-center mt-4 mb-4">
+                    <Button disabled={btnDisable} color="primary mr-2" onClick={saveParameters}>
+                      {!btnDisable ? 'Guardar' : <><Spinner color="white" size="sm" /><span className="ml-50">Guardando...</span></>}
+                    </Button>
+                    <Button disabled={btnDisable} outline color="secondary">
+                      Cancelar
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <p>No hay datos para visualizar </p>
+              )}
+            </Col>
           )}
-        </Col>
-      )}
+        </div>
+      </div>
     </div>
   )
 }

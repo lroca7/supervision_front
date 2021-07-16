@@ -19,14 +19,14 @@ import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
 
-const Sprint = () => {
+const Sprint = (props) => {
   const { colors } = useContext(ThemeColors)
 
   const [loader, setLoader] = useState(false)
 
   const [resultEjecucion, setResultEjecucion] = useState(null)
 
-  const getCorrida = () => { 
+  const getCorrida = () => {
 
     const inputCorrida = document.getElementById("id_corrida")
     const idCorrida = inputCorrida.value.trim()
@@ -62,60 +62,71 @@ const Sprint = () => {
   }
 
   useEffect(() => {
-    // console.log('data inicial -> ', students)
+    const id = props.history.location.search.split("idCorrida=")[1]
+    console.log('id :>> ', id)
+    document.getElementById("id_corrida").value = id
+    getCorrida()
   }, [])
 
   return (
-    <div className="container-sprint mb-4">
-      <h2 className="mb-2">Leer corrida</h2>
+    <div className="card">
+      <div class="card-header">
+        <h4 class="card-title">Leer corrida</h4>
+      </div>
+      <div class="card-body">
+        <div className="container-sprint mb-4">
+          <Row className="d-flex align-items-end justify-content-center">
+            <Col md="6">
+              <label>Ingresa id de corrida:</label>
+              <Input
+                type="number"
+                name="id_corrida"
+                id="id_corrida"
+              />
+            </Col>
+            <Col md="2" className="pl-0">
+              <Button color="primary" onClick={(e) => getCorrida(e)}>
+                Buscar
+              </Button>
+            </Col>
+          </Row>
 
-      <Row className="d-flex align-items-end justify-content-center">
-        <Col md="6">
-          <label>Ingresa id de corrida:</label>
-          <Input
-            type="number"
-            name="id_corrida"
-            id="id_corrida"
-          />
-        </Col>
-        <Col md="2" className="pl-0">
-          <Button color="primary" onClick={(e) => getCorrida(e)}>
-            Buscar
-          </Button>
-        </Col>
-      </Row>
 
+          {loader === true ? (
+            <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
+              <Button.Ripple color="primary">
+                <Spinner color="white" size="sm" />
+                <span className="ml-50">Cargando...</span>
+              </Button.Ripple>
+            </Col>
+          ) : (
 
-      {loader === true ? (
-        <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
-          <Button.Ripple color="primary">
-            <Spinner color="white" size="sm" />
-            <span className="ml-50">Cargando...</span>
-          </Button.Ripple>
-        </Col>
-      ) : (     
-          
-        resultEjecucion !== null ? (
-          <div className="mt-2 p-2 info-corrida">
-          <p>Id Corrida : {resultEjecucion.idCorrida} </p>
-          <p>Estado : {resultEjecucion.estado} </p>
-          <p>Usuario : {resultEjecucion.user} </p>
-          <p>Fecha creación : {resultEjecucion.fecCreacion} </p>
-          <p>Parametros: {resultEjecucion.verParam} </p>
-          <p>Id flujo : {resultEjecucion.idFlujo} </p>
-          <p>Fecha proceso : {resultEjecucion.fecProceso} </p>
-          <p>Fecha de ejecución : {resultEjecucion.fecEjecucion} </p>
-          <p>Día de ejecucion : {resultEjecucion.diaEjecucion} </p>
-          <p>Nuemero día de ejecución : {resultEjecucion.numDiaEjecucion} </p>
-          {/* <p>consecRun : {resultEjecucion.consecRun} </p> */}
-          <p>Observación : {resultEjecucion.observacion} </p>
-          </div>
-        )
-        : <p className="mt-4">No hay información</p>
-      
-      )}
+            resultEjecucion !== null ? (
+              <div className="mt-2 p-2 info-corrida">
+                <p>Id Corrida : {resultEjecucion.idCorrida} </p>
+                <p>Estado : {resultEjecucion.estado} </p>
+                <p>Usuario : {resultEjecucion.user} </p>
+                <p>Fecha creación : {resultEjecucion.fecCreacion} </p>
+                <p>Parametros: {resultEjecucion.verParam} </p>
+                <p>Id flujo : {resultEjecucion.idFlujo} </p>
+                <p>Fecha proceso : {resultEjecucion.fecProceso} </p>
+                <p>Fecha de ejecución : {resultEjecucion.fecEjecucion} </p>
+                <p>Día de ejecucion : {resultEjecucion.diaEjecucion} </p>
+                <p>Nuemero día de ejecución : {resultEjecucion.numDiaEjecucion} </p>
+                {/* <p>consecRun : {resultEjecucion.consecRun} </p> */}
+                <p>Observación : {resultEjecucion.observacion} </p>
+              </div>
+            )
+              : 
+              <Alert color='secondary'>
+                <p className="mt-4">No hay información</p>
+              </Alert>
 
-    </div>
+          )}
+
+        </div>
+      </div>
+    </div >
   )
 }
 

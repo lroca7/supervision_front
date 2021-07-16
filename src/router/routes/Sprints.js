@@ -15,6 +15,11 @@ const SprintsRoutes = [
     path: '/read/sprint',
     component: lazy(() => import('../../views/sprints/Sprint.js')),
     exact: true
+  },
+  {
+    path: '/query/sprint',
+    component: lazy(() => import('../../views/sprints/ShowSprints.js')),
+    exact: true
   }
 ]
 
