@@ -66,9 +66,15 @@ export default [
     children: [
       {
         id: 'titles',
-        title: 'Aprobar títulos',
+        title: 'Aprobar títulos - quitar',
         icon: <Circle size={12} />,
         navLink: '/titles'
+      },
+      {
+        id: 'titles',
+        title: 'Aprobar Títulos',
+        icon: <Circle size={12} />,
+        navLink: '/titles/sprints'
       }
     ]
   }

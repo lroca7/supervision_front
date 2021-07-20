@@ -10,6 +10,11 @@ const TitlesRoutes = [
     path: '/create/title',
     component: lazy(() => import('../../views/business/titles/CreateTitle.js')),
     exact: true
+  },
+  {
+    path: '/title/sprints',
+    component: lazy(() => import('../../views/business/titles/ShowSprints.js')),
+    exact: true
   }
 ]
 

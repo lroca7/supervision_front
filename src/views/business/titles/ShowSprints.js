@@ -20,7 +20,7 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react"
 
 import Swal from 'sweetalert2'
 
-import { URL_BACK } from "../../contants"
+import { URL_BACK } from "../../../contants"
 
 import CustomTooltip from './customTooltip.js'
 
@@ -33,16 +33,6 @@ const Sprint = (props) => {
 
   const [resultEjecucion, setResultEjecucion] = useState(null)
 
-  const options = [
-    { value: "", label: "--Todas--" },
-    { value: "CAN", label: "Cancelado" },
-    { value: "ERR", label: "Con Error" },
-    { value: "ACT", label: "Ejecución" },
-    { value: "WAIT", label: "Espera" },
-    { value: "FOK", label: "Finalizado" },
-    { value: "INI", label: "Inicial" }
-  ]
-
   /** 
    * #INI : Inicil (estado inicial, No tiene datos completos para lanzar a ejecucion)
    * #ACT : Activo (En ejecucion)
@@ -51,15 +41,12 @@ const Sprint = (props) => {
    * #FOK : Finalizado OK
    * #ERR : Terminada con error*/
 
-  const consultarCorridas = (e) => {
+  const consultarCorridas = () => {
     setLoader(true)
 
     const estado = e.value
 
-    let url = `${URL_BACK}corridas`
-    if (estado) {
-      url = `${URL_BACK}corridas?filtro=estado='${estado}'`
-    }
+    const url = `${URL_BACK}corridas?filtro=estado='WAIT'`
 
     fetch(url)
       .then((response) => response.json())
@@ -85,7 +72,7 @@ const Sprint = (props) => {
       return cell.rowIndex === params.node.rowIndex
     })
     console.log('actionCellRenderer params', params)
-    eGui.innerHTML = `<button class="btn btn-primary btn-sm" size="sm" data-action="delete" > Detalle </button>`
+    eGui.innerHTML = `<button class="btn btn-primary btn-sm" size="sm" data-action="delete" > Aprobar </button>`
 
     return eGui
   }
@@ -146,29 +133,17 @@ const Sprint = (props) => {
   ])
 
   useEffect(() => {
+    consultarCorridas()
   }, [])
 
   return (
     <div className="card">
       <div class="card-header">
-        <h4 class="card-title">Leer corrida</h4>
+        <h4 class="card-title">Corridas en Espera de Aprobación</h4>
       </div>
       <div class="card-body">
 
         <div className="container-sprint mb-4">
-        <Row className="d-flex align-items-end justify-content-center">
-          <Col md="6">
-            <label className='form-label'>Seleccionar Estado:</label>
-                <Select className="ml-50"
-                  id="select-group"
-                  style={{ width: `400px` }}
-                  options={options}
-                  placeholder="Seleccionar Estado"
-                  onChange={(e) => consultarCorridas(e)}
-                />
-            </Col>
-
-          </Row>
           <br />
               {Object.entries(corridas).length > 0 ? (
                 <div className="grid-wrapper">

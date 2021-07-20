@@ -145,7 +145,7 @@ const CreateTitle = (props) => {
       setLoader(true)
       setIdCorrida(idCorrida)
 
-      const url = `${URL_BACK}titulos-nys?idCorrida=${idCorrida}&tipoTitulos=filtrados`
+      const url = `${URL_BACK}titulos-nys?idCoractionrida=${idCorrida}&tipoTitulos=filtrados`
 
       fetch(url, {
         method: "GET"
