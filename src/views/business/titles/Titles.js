@@ -91,7 +91,7 @@ const CreateTitle = (props) => {
     { field: "nemotecnico", headerName: "Nemotécnico", maxWidth: 120 },
     { field: "moneda", headerName: "Moneda", maxWidth: 90 },
     { field: "fechavencimiento", headerName: "F. vencimiento", maxWidth: 120 },
-    { field: "diasAlVencimiento", headerName: "Días vencimiento", maxWidth: 120 },
+    { field: "diasalvencimiento", headerName: "Días vencimiento", maxWidth: 120 },
     {
       field: "tir",
       headerName: "TIR",
@@ -119,10 +119,10 @@ const CreateTitle = (props) => {
     }, {})
 
     function compare(a, b) {
-      if (parseInt(a.diasAlVencimiento) < parseInt(b.diasAlVencimiento)) {
+      if (parseInt(a.diasalvencimiento) < parseInt(b.diasalvencimiento)) {
         return -1
       }
-      if (parseInt(a.diasAlVencimiento) > parseInt(b.diasAlVencimiento)) {
+      if (parseInt(a.diasalvencimiento) > parseInt(b.diasalvencimiento)) {
         return 1
       }
       return 0
