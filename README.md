@@ -15,6 +15,7 @@ docker tag supervision_front:latest 503553001946.dkr.ecr.us-east-1.amazonaws.com
 
 docker pull 503553001946.dkr.ecr.us-east-1.amazonaws.com/supervision_front:latest
 docker run --rm -d -p 5000:5000 --name supervision-app 503553001946.dkr.ecr.us-east-1.amazonaws.com/supervision_front
+
 ```
 
 # Detener contenedor
