@@ -28,7 +28,7 @@ const CreateParameter = () => {
   //Analítica, Límites y Monitoreo
   const options = [
     { value: "Analítica", label: "Analítica" },
-    { value: "Límites", label: "Límites RF" },
+    { value: "Límites RF", label: "Límites RF" },
     { value: "Monitoreo", label: "Monitoreo" }
   ]
 
