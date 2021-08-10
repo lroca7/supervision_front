@@ -15,6 +15,11 @@ const TitlesRoutes = [
     path: '/corridaspendientes',
     component: lazy(() => import('../../views/business/titles/PendingSprints.js')),
     exact: true
+  },
+  {
+    path: '/title/sprints',
+    component: lazy(() => import('../../views/business/titles/ShowSprints.js')),
+    exact: true
   }
 ]
 

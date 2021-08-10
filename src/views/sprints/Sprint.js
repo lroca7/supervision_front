@@ -19,14 +19,14 @@ import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
 
-const Sprint = () => {
+const Sprint = (props) => {
   const { colors } = useContext(ThemeColors)
 
   const [loader, setLoader] = useState(false)
 
   const [resultEjecucion, setResultEjecucion] = useState(null)
 
-  const getCorrida = () => { 
+  const getCorrida = () => {
 
     const inputCorrida = document.getElementById("id_corrida")
     const idCorrida = inputCorrida.value.trim()
@@ -42,8 +42,6 @@ const Sprint = () => {
       })
         .then((response) => response.json())
         .then((result) => {
-
-          debugger
           if (result.codigo === 200) {
             setResultEjecucion(result.result)
           } else {
@@ -64,7 +62,10 @@ const Sprint = () => {
   }
 
   useEffect(() => {
-    // console.log('data inicial -> ', students)
+    const id = props.history.location.search.split("idCorrida=")[1]
+    console.log('id :>> ', id)
+    document.getElementById("id_corrida").value = id
+    getCorrida()
   }, [])
 
   return (

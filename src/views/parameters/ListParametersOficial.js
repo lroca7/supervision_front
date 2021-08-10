@@ -31,7 +31,7 @@ const ListParametersOficial = () => {
   //Analítica, Límites y Monitoreo
   const options = [
     { value: "Analítica", label: "Analítica" },
-    { value: "Límites", label: "Límites" },
+    { value: "Límites RF", label: "Límites RF" },
     { value: "Monitoreo", label: "Monitoreo" }
   ]
 
@@ -95,8 +95,12 @@ const ListParametersOficial = () => {
   }
 
   return (
+    <div className="card">
+      <div class="card-header">
+        <h4 class="card-title">Parámetros oficiales</h4>
+      </div>
+      <div class="card-body">
     <div id="parameters-container mb-4">
-      <h2 className="mb-2">Parámetros oficiales</h2>
 
       <Col md="6">
         <label>Seleccionar grupo:</label>
@@ -165,7 +169,9 @@ const ListParametersOficial = () => {
               })}
             </>
           ) : (
-            <p>No hay datos para visualizar </p>
+            <Alert color='secondary'>
+              <p>No hay datos para visualizar </p>
+            </Alert>
           )}
         </Col>
       )}
@@ -184,6 +190,8 @@ const ListParametersOficial = () => {
           
         )
       }
+    </div>
+    </div>
     </div>
   )
 }

@@ -9,7 +9,8 @@ import {
   CustomInput,
   FormGroup,
   Label,
-  Input
+  Input,
+  Alert
 } from "reactstrap"
 
 import Select from "react-select"
@@ -25,9 +26,11 @@ import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
 
+import { useHistory } from "react-router-dom"
+
 const CreateSprint = () => {
   const { colors } = useContext(ThemeColors)
-  
+
   const initialErrorState = {
     status: false,
     codigo: '',
@@ -54,11 +57,13 @@ const CreateSprint = () => {
   const [subgrupos, setSubgrupos] = useState([])
   const [dataCorrida, setDataCorrida] = useState(null)
   const [corrida, setCorrida] = useState({
-    id : null,
-    verParam : null,
-    idFlujo : null,
+    id: null,
+    verParam: null,
+    idFlujo: null,
     fecProceso: null
   })
+
+  const history = useHistory()
 
   const inputEl = useRef(null)
 
@@ -110,14 +115,14 @@ const CreateSprint = () => {
       .then((result) => {
         if (result.codigo === 200) {
 
-          
+
           getParameters(result.result.corrida.verParam)
-          setDataCorrida(result.result.corrida)       
+          setDataCorrida(result.result.corrida)
           setCorrida({
             ...corrida,
             id: result.result.corrida.idCorrida,
             verParam: result.result.corrida.verParam,
-            idFlujo : result.result.corrida.idFlujo,
+            idFlujo: result.result.corrida.idFlujo,
             fecProceso: result.result.corrida.fecProceso
           })
         }
@@ -144,14 +149,21 @@ const CreateSprint = () => {
     })
   }
 
-  const saveParameters = async () => {   
+  const verCorrida = () => {
+    history.push({
+      pathname: '/read/sprint',
+      search: `?idCorrida=${corrida.id}`
+    })
+  }
+
+  const saveParameters = async () => {
 
 
     const keys = Object.keys(subgrupos)
 
     let dataToUpdate = []
 
-    keys.forEach(key => {      
+    keys.forEach(key => {
       dataToUpdate.push(subgrupos[key])
     })
     dataToUpdate = [].concat.apply([], dataToUpdate)
@@ -182,7 +194,7 @@ const CreateSprint = () => {
       const result = await response.json()
 
       if (result.codigo === 201) {
-        
+
         setCorrida({
           ...corrida,
           verParam: result.result.version
@@ -223,9 +235,9 @@ const CreateSprint = () => {
   const updateCorrida = async (parameters) => {
 
     const body = {
-      idCorrida : corrida.id,
+      idCorrida: corrida.id,
       verParam: corrida.verParam,
-      idFlujo : corrida.idFlujo,
+      idFlujo: corrida.idFlujo,
       fecProceso: corrida.fecProceso
     }
 
@@ -233,24 +245,18 @@ const CreateSprint = () => {
       body.verParam = parameters.version
     }
 
-    const url = `${URL_BACK}corridas`
+    const url = `${URL_BACK}corridas?operacion=1`
 
     try {
 
-      const response = await  fetch(url, {
-        method: 'PUT',
+      const response = await fetch(url, {
+        method: 'POST',
         body: JSON.stringify(body)
       })
 
       const result = await response.json()
-
-      if (result.codigo === 201) {
-        Swal.fire(
-          `${result.result.mensaje}`,
-          ``,
-          'success'
-        )
-
+      if (result.codigo === 201 || result.codigo === 200) {
+        console.log('result', result.result)
         status = 'success'
       } else {
         Swal.fire(
@@ -270,10 +276,6 @@ const CreateSprint = () => {
         )
         status = 'error'
       }
-      
-
-      setbtnDisableLaunch(false)
-
 
       return result
 
@@ -300,9 +302,15 @@ const CreateSprint = () => {
       method: 'GET'
     })
       .then((response) => response.json())
-      .then((result) => {        
+      .then((result) => {
         if (result.codigo === 200) {
-          setResponseCorrida(response)
+          console.log('result executeCorrida', result)
+          Swal.fire(
+            `${result.result.mensaje}`,
+            ``,
+            'success'
+          )
+          setResponseCorrida(result)
         } else {
           Swal.fire(
             `${result.error}`,
@@ -313,11 +321,16 @@ const CreateSprint = () => {
 
         if (result.codigo === undefined) {
           Swal.fire(
+            `${result.result}`,
+            ``,
+            'success'
+          )
+          Swal.fire(
             `${result.message}`,
             ``,
             'error'
           )
-          
+
         }
         setbtnDisableLaunch(false)
       })
@@ -339,10 +352,10 @@ const CreateSprint = () => {
 
     setbtnDisableLaunch(true)
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
-  
+
 
       const stateSaveParameters = await saveParameters()
-      if (stateSaveParameters.codigo ===  201) {
+      if (stateSaveParameters.codigo === 201) {
         const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
       }
 
@@ -363,173 +376,186 @@ const CreateSprint = () => {
   }, [])
 
   return (
-    <div id="parameters-container mb-4">
-      <h2 className="mb-2">Crear corrida</h2>
-      <Col md="12" className="d-flex align-items-center justify-content-center">   
-        <Button disabled={btnDisable} color="primary mr-2" onClick={createCorrida}>
-          {!btnDisable ? 'Generar' : <><Spinner color="white" size="sm" /><span className="ml-50">Generando...</span></>}
-        </Button>
-      </Col>   
-
-      {(dataCorrida !== null && Object.entries(subgrupos).length > 0) && (
-        <>
-          <Col md="6" className="mt-2">  
-            <h5 className="mt-2 mb-2">No de Corrida: {dataCorrida.idCorrida}</h5>
-            <h5>Parámetros de corrida:</h5>
-            <label>Usuario:</label>
-            <Input type="text" name="user" id="user" value={dataCorrida.user} disabled/>
-            <label>Fecha creación:</label>
-            <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled/>
-            <label>Fecha del proceso:</label>
-            <Input className="pickadate" type="date"  name="date-corrida" id="date-corrida"  
-              value={corrida.fecProceso}
-              onChange={onChangeFechaProceso}/>
-            
+    <div className="card">
+      <div class="card-header">
+        <h4 class="card-title">Crear corrida</h4>
+      </div>
+      <div class="card-body">
+        <div id="parameters-container mb-4">
+          <Col md="12" className="d-flex align-items-center justify-content-center">
+            <Button disabled={btnDisable} color="primary mr-2" onClick={createCorrida}>
+              {!btnDisable ? 'Generar' : <><Spinner color="white" size="sm" /><span className="ml-50">Generando...</span></>}
+            </Button>
           </Col>
 
-          <Col md="12" className="mt-2">
-            <h4 className="mb-2">Flujo a ejecutar</h4>
-            <p>Seleccione el tipo de corrida:</p>
-            <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
-              <FormGroup check>
-                <Label check>
-                  <Input type="radio" name="radio1" value={1} 
-                    checked={corrida.idFlujo === 1}
-                  />
-                  PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
-                </Label>
-              </FormGroup>
-              <FormGroup check>
-                <Label check>
-                  <Input type="radio" name="radio1" value={2} checked={corrida.idFlujo === 2}/>
-                  PBO - Márgenes - Valoración (Solo manual)
-                </Label>
-              </FormGroup>
-              <FormGroup check >
-                <Label check>
-                  <Input type="radio" name="radio1" value={3} checked={corrida.idFlujo === 3}/>
-                  Márgenes - Valoración
-                </Label>
-              </FormGroup>
-              <FormGroup check >
-                <Label check>
-                  <Input type="radio" name="radio1" value={4} checked={corrida.idFlujo === 4}/>
-                  Valoración
-                </Label>
-              </FormGroup>
-            </FormGroup>
-          </Col>
+          {(dataCorrida !== null && Object.entries(subgrupos).length > 0) && (
+            <>
+              <Col md="6" className="mt-2">
+                <h5 className="mt-2 mb-2">No de Corrida: {dataCorrida.idCorrida}</h5>
+                <h5>Parámetros de corrida:</h5>
+                <label>Usuario:</label>
+                <Input type="text" name="user" id="user" value={dataCorrida.user} disabled />
+                <label>Fecha creación:</label>
+                <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled />
+                <label>Fecha del proceso:</label>
+                <Input className="pickadate" type="date" name="date-corrida" id="date-corrida"
+                  value={corrida.fecProceso}
+                  onChange={onChangeFechaProceso} />
 
-          <Col md="6" className="mt-2">
-            <h4 className="mb-2">Parámetros de la corrida</h4>
-            <label>Tipo:</label>
-            <Select
-              id="select-group"
-              ref={inputEl}
-              options={options}
-              placeholder="Seleccionar"
-              value={typeParameter}
-              isDisabled={true}
-              onChange={(e) => getParameters(e)}
-            />
-            <label>Grupo: </label>
-            <Input type="text" name="grupo" id="grupo" value={grupoParameter} disabled />
-            <label>Versión:</label>
-            <Input className="mb-2" type="text" name="version" id="version" value={dataCorrida.verParam} disabled/>
-          </Col>
+              </Col>
 
-          <Col md="12" className="mt-2">
-            <h4 className="mb-2">Subgrupos</h4>
-            {Object.entries(subgrupos).length > 0 ? (
-              <>
-                {Object.entries(subgrupos).map(([key, value]) => {
-                  return (
-                    <div>
-                      <h5>{key}</h5>
-                      <br />
-                      <div
-                        className="ag-theme-alpine"
-                        style={{ height: 200, width: "100%" }}
-                      >
-                        <AgGridReact
-                          rowData={value}
-                          defaultColDef={{
-                            flex: 1,
-                            minWidth: 110,
-                            editable: true,
-                            resizable: true
-                          }}
-                        >
-                          <AgGridColumn field="nombre" editable="false"></AgGridColumn>
-                          <AgGridColumn field="valor"></AgGridColumn>
-                          <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
-                        </AgGridReact>
-                      </div>
-                      <br />
-                    </div>
-                  )
-                })}
+              <Col md="12" className="mt-2">
+                <h4 className="mb-2">Flujo a ejecutar</h4>
+                <p>Seleccione el tipo de corrida:</p>
+                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="radio1" value={1}
+                        checked={corrida.idFlujo === 1}
+                      />
+                      PBO/N&S - Márgenes - Valoración (manual y automático, FDS arranca directamente en valoración)
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="radio1" value={2} checked={corrida.idFlujo === 2} />
+                      PBO - Márgenes - Valoración (Solo manual)
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check >
+                    <Label check>
+                      <Input type="radio" name="radio1" value={3} checked={corrida.idFlujo === 3} />
+                      Márgenes - Valoración
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check >
+                    <Label check>
+                      <Input type="radio" name="radio1" value={4} checked={corrida.idFlujo === 4} />
+                      Valoración
+                    </Label>
+                  </FormGroup>
+                </FormGroup>
+              </Col>
 
-                <h5 className="mt-2">Convertir parametros en oficiales</h5>
-                <CustomInput
-                  className="custom-control-primary mb-4"
-                  type="switch"
-                  id="switch-parmeter-type"
-                  name="oficiales"
-                  inline
+              <Col md="6" className="mt-2">
+                <h4 className="mb-2">Parámetros de la corrida</h4>
+                <label>Tipo:</label>
+                <Select
+                  id="select-group"
+                  ref={inputEl}
+                  options={options}
+                  placeholder="Seleccionar"
+                  value={typeParameter}
+                  isDisabled={true}
+                  onChange={(e) => getParameters(e)}
                 />
+                <label>Grupo: </label>
+                <Input type="text" name="grupo" id="grupo" value={grupoParameter} disabled />
+                <label>Versión:</label>
+                <Input className="mb-2" type="text" name="version" id="version" value={dataCorrida.verParam} disabled />
+              </Col>
 
+              <Col md="12" className="mt-2">
+                <h4 className="mb-2">Subgrupos</h4>
+                {Object.entries(subgrupos).length > 0 ? (
+                  <>
+                    {Object.entries(subgrupos).map(([key, value]) => {
+                      return (
+                        <div>
+                          <h5>{key}</h5>
+                          <br />
+                          <div
+                            className="ag-theme-alpine"
+                            style={{ height: 200, width: "100%" }}
+                          >
+                            <AgGridReact
+                              rowData={value}
+                              defaultColDef={{
+                                flex: 1,
+                                minWidth: 110,
+                                editable: true,
+                                resizable: true
+                              }}
+                            >
+                              <AgGridColumn field="nombre" editable="false"></AgGridColumn>
+                              <AgGridColumn field="valor"></AgGridColumn>
+                              <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
+                            </AgGridReact>
+                          </div>
+                          <br />
+                        </div>
+                      )
+                    })}
+
+                    <h5 className="mt-2">Convertir parametros en oficiales</h5>
+                    <CustomInput
+                      className="custom-control-primary mb-4"
+                      type="switch"
+                      id="switch-parmeter-type"
+                      name="oficiales"
+                      inline
+                    />
+
+                    <div className="d-flex justify-content-center mt-4 mb-4">
+                      <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
+                        {!btnDisableLaunch ? 'Lanzar' : <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
+                      </Button>
+                      <Button disabled={btnDisableLaunch} outline color="secondary">
+                        Cancelar
+                      </Button>
+                    </div>
+
+                  </>
+                ) : (
+                  <p>No hay datos para visualizar </p>
+                )}
+              </Col>
+            </>
+          )}
+
+          {
+            error.status && (
+              <Col md="12">
+                <Alert color='danger'>
+                  <div className='alert-body'>
+                    <p>{error.status} : {error.codigo}</p>
+                    <p>{error.detalle}</p>
+                    <p>{error.error}</p>
+                  </div>
+                </Alert>
+              </Col>
+
+            )
+          }
+
+          {
+            responseCorrida !== null && (
+              <>
+                <Col md="12">
+                  <Alert color='success'>
+                    <h4 className='alert-heading'>{responseCorrida.result.mensaje}</h4>
+                    <div className='alert-body'>
+                      <p>Procesos lanzados: </p>
+                      {responseCorrida.result.procesosLanzados.length > 0 && (
+                        responseCorrida.result.procesosLanzados.map(proceso => {
+                          return <div>
+                            <p>{proceso.processName}</p>
+                          </div>
+                        })
+                      )}
+                    </div>
+                  </Alert>
+                </Col>
                 <div className="d-flex justify-content-center mt-4 mb-4">
-                  <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
-                    {!btnDisableLaunch ? 'Lanzar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
-                  </Button>
-                  <Button disabled={btnDisableLaunch} outline color="secondary">
-                    <Link to='/create/sprint'>Cancelar</Link>
+                  <Button outline color="primary" onClick={verCorrida}>
+                    Ver Corrida
                   </Button>
                 </div>
-
               </>
-            ) : (
-              <p>No hay datos para visualizar </p>
-            )}
-          </Col>
-        </>
-      )} 
-
-      {
-        error.status && (
-          <Col md="12">
-            <Alert color='danger'>
-              <div className='alert-body'>
-                <p>{error.status} : {error.codigo}</p>
-                <p>{error.detalle}</p>
-                <p>{error.error}</p>
-              </div>
-            </Alert>
-          </Col>
-          
-        )
-      }
-
-      {
-        responseCorrida !== null && (
-          <Col md="12">
-            <Alert color='success'>
-              <h4 className='alert-heading'>{responseCorrida.result.mensaje}</h4>
-              <div className='alert-body'>
-                <p>Procesos lanzados: </p>
-                {responseCorrida.result.procesosLanzados.length > 0 && (
-                  responseCorrida.result.procesosLanzados.map(proceso => {
-                    return <div>
-                      <p>{proceso.processName}</p>
-                    </div>
-                  })
-                )}
-              </div>
-            </Alert>
-          </Col>
-        )
-      }
+            )
+          }
+        </div>
+      </div>
     </div>
   )
 }

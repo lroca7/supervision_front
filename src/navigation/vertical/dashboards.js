@@ -50,6 +50,12 @@ export default [
         title: 'Leer corrida',
         icon: <Circle size={12} />,
         navLink: '/read/sprint'
+      },
+      {
+        id: 'queryCorrida',
+        title: 'Consultar corridas',
+        icon: <Circle size={12} />,
+        navLink: '/query/sprint'
       }
     ]
   },
@@ -60,7 +66,7 @@ export default [
     children: [
       {
         id: 'titles',
-        title: 'Aprobar títulos',
+        title: 'Aprobar títulos - quitar',
         icon: <Circle size={12} />,
         navLink: '/titles'
       },
@@ -69,6 +75,12 @@ export default [
         title: 'Corridas pendientes',
         icon: <Circle size={12} />,
         navLink: '/corridaspendientes'
+      },
+      {
+        id: 'titles',
+        title: 'Aprobar Títulos',
+        icon: <Circle size={12} />,
+        navLink: '/titles/sprints'
       }
     ]
   }

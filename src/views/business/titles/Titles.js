@@ -26,7 +26,7 @@ import Swal from "sweetalert2"
 
 import { URL_BACK } from "../../../contants"
 
-const CreateTitle = () => {
+const CreateTitle = (props) => {
   const { colors } = useContext(ThemeColors)
   const [loader, setLoader] = useState(false)
 
@@ -69,13 +69,15 @@ const CreateTitle = () => {
       }
 
       if (action === "delete") {
-        alert("En desarrollo ...")
-        // params.api.applyTransaction({
-        //   remove: [params.node.data]
-        // })
-      }
-
-      if (action === "update") {
+        params.api.applyTransaction({
+          remove: [params.node.data]
+        })
+        console.log(titulos.findIndex)
+        const f = params.node.data
+        const isSameObject = (element => element.nemotecnico === f.nemotecnico && element.isin === f.isin)
+        const i = titulos.findIndex(isSameObject)
+        titulos.splice(i, 1)
+        console.log('encontrado', i)
         params.api.stopEditing(false)
       }
 
@@ -115,6 +117,22 @@ const CreateTitle = () => {
       r[a.grupo] = [...(r[a.grupo] || []), a]
       return r
     }, {})
+
+    function compare(a, b) {
+      if (parseInt(a.diasalvencimiento) < parseInt(b.diasalvencimiento)) {
+        return -1
+      }
+      if (parseInt(a.diasalvencimiento) > parseInt(b.diasalvencimiento)) {
+        return 1
+      }
+      return 0
+    }
+    console.log('group', group)
+    Object.keys(group).forEach(function (item) {
+      group[item].sort(compare)
+    })
+
+
     setSubgrupos(group)
   }
 
@@ -135,11 +153,11 @@ const CreateTitle = () => {
         .then((response) => response.json())
         .then((result) => {
           if (result.codigo === 200) {
-            
-            setTitulos(result.result.titulos)
 
+            setTitulos(result.result.titulos)
+            console.log('transFormData titulos', titulos)
             transFormData(result.result.titulos)
-            
+
           } else {
             Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
           }
@@ -156,61 +174,68 @@ const CreateTitle = () => {
         })
     }
 
-    const dummyData = {
-      status: "ok",
-      codigo: 200,
-      result: {
-        grupo: "Analítica",
-        version: "93",
-        user: "jlotero",
-        fecha: "20210702192658",
-        tipo: "oficiales",
-        parametros: [
-          {
-            key: "uno",
-            nemotecnico: "BSDR2027",
-            moneda: "DOP",
-            fechaVencimiento: "2027-04-20",
-            diasVencimiento: "3028",
-            tir: 0.63465,
-            precioSucio: "117.000.000",
-            mercadoOrigen: "Real",
-            subgrupo: "Ministerio de hacienda DOP"
-          },
-          {
-            key: "dos",
-            nemotecnico: "BSDR2027",
-            moneda: "USD",
-            fechaVencimiento: "2027-04-20",
-            diasVencimiento: "3028",
-            tir: 0.63465,
-            precioSucio: "117.000.000",
-            mercadoOrigen: "Real",
-            subgrupo: "Ministerio de hacienda USD"
-          }
-        ]
-      }
-    }
-
-    // setData(dummyData)
-    // transFormData(dummyData.result.parametros)
   }
+  const aprobarTitulos = () => {
+    const url = `${URL_BACK}titulos-nys/aprobar-titulos-nys`
+    setLoader(true)
+    const body = {
+      idCorrida,
+      titulosAprobados: titulos
+    }
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.codigo === 200 || result.codigo === 201) {
+          Swal.fire(
+            ``,
+            `${result.result.mensaje}`,
+            'success'
+          )
+        } else {
+          Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
+        }
 
+        if (result.codigo === undefined) {
+          Swal.fire(`${result.message}`, ``, "error")
+        }
+        setLoader(false)
+      })
+      .catch((error) => {
+        console.error(error)
+        Swal.fire(`Ha ocurrido un error al aprobar titulos`, `${error}`, "error")
+        setLoader(false)
+      })
+  }
   const addTitle = () => {
-    
+
     // history.push('/create/title')
 
     history.push({
       pathname: '/create/title',
       search: `?idCorrida=${idCorrida}`,
-      state: {titulos}
+      state: { titulos }
     })
 
   }
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    const id = props.history.location.search.split("idCorrida=")[1]
+    if (id && props.history.location.state) {
+      console.log('state', props.history.location.state)
+      const titulos = props.history.location.state.allTitles
+      document.getElementById("id_corrida").value = id
+      setTitulos(titulos)
+      console.log('titulos', titulos)
+      transFormData(titulos)
+      setIdCorrida(id)
+    }
+  }, [])
 
   return (
+<<<<<<< HEAD
     <div id="parameters-container mb-4">
       <h2 className="mb-2">Aprobar Titulos para Nelson & Siegel</h2>
 
@@ -281,6 +306,82 @@ const CreateTitle = () => {
           </Col>
         </>
       )}
+=======
+    <div className="card">
+      <div class="card-header">
+        <h4 class="card-title">Aprobar Titulos para Nelson & Siegel</h4>
+      </div>
+      <div class="card-body">
+        <div id="parameters-container mb-4">
+          <Row className="d-flex align-items-end justify-content-center">
+            <Col md="6">
+              <label>Ingresa id de corrida:</label>
+              <Input
+                type="number"
+                name="id_corrida"
+                id="id_corrida"
+              />
+            </Col>
+            <Col md="2" className="pl-0">
+              <Button disabled={loader} color="primary mr-2" onClick={(e) => getFilterTitles(e)}>
+                {!loader ? 'Buscar' : <><Spinner color="white" size="sm" /></>}
+              </Button>
+            </Col>
+          </Row>
+
+          {subgrupos !== null && (
+            <>
+              <Col md="12" className="mt-2">
+                {Object.entries(subgrupos).length > 0 ? (
+                  <>
+                    {Object.entries(subgrupos).map(([key, value]) => {
+                      return (
+                        <div>
+                          <h5>{key}</h5>
+                          <br />
+                          <div
+                            className="ag-theme-alpine"
+                            style={{ height: 200, width: "100%" }}
+                          >
+                            <AgGridReact
+                              rowData={value}
+                              defaultColDef={{
+                                flex: 1,
+                                minWidth: 110,
+                                editable: false,
+                                resizable: true
+                              }}
+                              onCellClicked={onCellClicked}
+                              columnDefs={columnsDef}
+                            ></AgGridReact>
+                          </div>
+                          <br />
+                        </div>
+                      )
+                    })}
+
+                    <Row className="d-flex align-items-center justify-content-center mt-2 mb-4">
+                      <Button className="mr-2" color="primary"
+                        onClick={(e) => addTitle(e)}>
+                        Agregar título
+                      </Button>
+                      <Button
+                        outline
+                        color="primary"
+                        onClick={(e) => aprobarTitulos(e)}>
+                          Ejecutar N & S
+                      </Button>
+                    </Row>
+                  </>
+                ) : (
+                  <p>No hay datos para visualizar </p>
+                )}
+              </Col>
+            </>
+          )}
+        </div>
+      </div>
+>>>>>>> bd2dd8f427f8121fb1bcb2404f68bb33a62f9583
     </div>
   )
 }
