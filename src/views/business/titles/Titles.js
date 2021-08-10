@@ -269,6 +269,7 @@ const CreateTitle = () => {
                   <Button
                     outline 
                     color="primary"
+                    onClick={(e) => alert('En desarrollo')}
                   >
                     Ejecutar N & S
                   </Button>

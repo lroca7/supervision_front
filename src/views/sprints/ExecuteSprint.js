@@ -1,18 +1,7 @@
 /* eslint-disable multiline-ternary */
 import { useContext, useState, useEffect, useRef } from "react"
-import { List } from "react-feather"
-import { kFormatter } from "@utils"
-import Avatar from "@components/avatar"
-import Timeline from "@components/timeline"
-import AvatarGroup from "@components/avatar-group"
-import jsonImg from "@src/assets/images/icons/json.png"
-import InvoiceList from "@src/views/apps/invoice/list"
-import ceo from "@src/assets/images/portrait/small/avatar-s-9.jpg"
+import { Link } from "react-router-dom"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
-import Sales from "@src/views/ui-elements/cards/analytics/Sales"
-import AvgSessions from "@src/views/ui-elements/cards/analytics/AvgSessions"
-import CardAppDesign from "@src/views/ui-elements/cards/advance/CardAppDesign"
-import SupportTracker from "@src/views/ui-elements/cards/analytics/SupportTracker"
 import {
   Row,
   Col,
@@ -27,22 +16,18 @@ import {
   CustomInput,
   FormGroup,
   Label,
-  Input
+  Input,
+  Alert
 } from "reactstrap"
-import OrdersReceived from "@src/views/ui-elements/cards/statistics/OrdersReceived"
-import CardCongratulations from "@src/views/ui-elements/cards/advance/CardCongratulations"
-import SubscribersGained from "@src/views/ui-elements/cards/statistics/SubscribersGained"
 
 import Select from "react-select"
 
 import "@styles/react/libs/charts/apex-charts.scss"
 
-import { render } from "react-dom"
 import { AgGridColumn, AgGridReact } from "ag-grid-react"
 
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
-import DatePicker from "react-flatpickr"
 
 import Swal from 'sweetalert2'
 
@@ -290,15 +275,27 @@ const ExecuteSprint = () => {
       method: 'GET'
     })
       .then((response) => response.json())
-      .then((result) => {        
+      .then((result) => {
         if (result.codigo === 200) {
-          setResponseCorrida(response)
+          console.log('result->', result.result)
+          console.log('state->', responseCorrida)
+          
+          const rCorrida = result.result
+          setResponseCorrida({
+            ...responseCorrida,
+            mensaje: rCorrida.mensaje,
+            procesosLanzados: rCorrida.procesosLanzados
+          })
+          console.log('result->', rCorrida)
+          console.log('state->', responseCorrida)
+          
         } else {
           Swal.fire(
             `${result.error}`,
             `${result.detalle} <br/>`,
             'error'
           )
+          setResponseCorrida(null)
         }
 
         if (result.codigo === undefined) {
@@ -307,7 +304,7 @@ const ExecuteSprint = () => {
             ``,
             'error'
           )
-          
+          setResponseCorrida(null)
         }
         setbtnDisableLaunch(false)
       })
@@ -318,7 +315,7 @@ const ExecuteSprint = () => {
           `${error}`,
           'error'
         )
-
+        setResponseCorrida(null)
       })
 
 
@@ -337,11 +334,11 @@ const ExecuteSprint = () => {
       }
 
     } else {
-      const updateState = await updateCorrida()
+      // const updateState = await updateCorrida()
 
-      if (updateState.codigo === 201) {
+      // if (updateState.codigo === 201) {
         await executeCorrida()
-      }
+      // }
 
     }
 
@@ -363,7 +360,7 @@ const ExecuteSprint = () => {
       })
         .then((response) => response.json())
         .then((result) => {
-          if (result.codigo === 201) {
+          if (result.codigo === 200) {
             
             if (result.result.estado === 'INI') {
               getParameters(result.result.verParam)
@@ -383,6 +380,7 @@ const ExecuteSprint = () => {
             }
   
           } else {
+
             Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
             setLoader(false)
             setbtnDisable(false)
@@ -404,9 +402,6 @@ const ExecuteSprint = () => {
     }
   }
 
-  useEffect(() => {
-
-  }, [])
 
   return (
     <div id="parameters-container mb-4">
@@ -553,7 +548,7 @@ const ExecuteSprint = () => {
                         {!btnDisableLaunch ? 'Lanzar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
                       </Button>
                       <Button disabled={btnDisableLaunch} outline color="secondary">
-                        Cancelar
+                        <Link to='/execute/sprint'>Cancelar</Link>                        
                       </Button>
                     </div>
 
@@ -567,7 +562,7 @@ const ExecuteSprint = () => {
         </div>
       )}
 
-{
+      {
         error.status && (
           <Col md="12">
             <Alert color='danger'>
@@ -583,7 +578,7 @@ const ExecuteSprint = () => {
       }
 
       {
-        responseCorrida !== null && (
+        responseCorrida !== null && responseCorrida.result !== undefined && (          
           <Col md="12">
             <Alert color='success'>
               <h4 className='alert-heading'>{responseCorrida.result.mensaje}</h4>

@@ -26,11 +26,13 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Swal from "sweetalert2"
 
 import { URL_BACK } from "../../../contants"
+import { Link } from "react-router-dom"
 
 const CreateTitle = (props) => {
   const { colors } = useContext(ThemeColors)
 
   const [loader, setLoader] = useState(false)
+  const [loaderOperation, setLoaderOperation] = useState(false)
 
   const [idCorrida, setIdCorrida] = useState(null)
 
@@ -79,13 +81,14 @@ const CreateTitle = (props) => {
 
             let operations = []
             operations = result.result.operTeoricas
-            const completeOperations = operations.map(o => {
-              const op = o
-              op.moneda = result.result.infoTitulo.moneda
-              return op
-            })
-            setOperations(completeOperations)
-
+            if (operations.length > 0) {
+              const completeOperations = operations.map(o => {
+                const op = o
+                op.moneda = result.result.infoTitulo.moneda
+                return op
+              })
+              setOperations(completeOperations)
+            }
             
           } else {
             Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
@@ -137,16 +140,22 @@ const CreateTitle = (props) => {
           Swal.fire(`${result.message}`, ``, "error")
         }
 
+        setLoaderOperation(false)
+
       })
       .catch((error) => {
         console.error(error)
         Swal.fire(`Ha ocurrido un error al aprobar titulos`, `${error}`, "error")
         setbtnDisable(false)
+        setLoaderOperation(false)
       })
 
   }
 
   const addOperation = () => {
+
+    setLoaderOperation(true)
+
     const fechaoperacion = document.getElementById("fechaoperacion")
     const tir = document.getElementById("tir")
     const preciolimpio = document.getElementById("preciolimpio")
@@ -213,9 +222,11 @@ const CreateTitle = (props) => {
             
           }
 
-          addTitle(nTitle)
+          setTimeout(() => {
+            addTitle(nTitle)
+          }, 1000)
+          
          
-
         } else {
           Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
         }
@@ -229,6 +240,7 @@ const CreateTitle = (props) => {
         console.error(error)
         Swal.fire(`Ha ocurrido un error al agregar la operacion`, `${error}`, "error")
         setbtnDisable(false)
+        setLoaderOperation(false)
       })
   }
 
@@ -384,8 +396,9 @@ const CreateTitle = (props) => {
               <Row className="d-flex align-items-start ">            
                 <Col md="6" className="mt-1">
                   <label>Fecha operación:</label>
-                  <AvField className="pickadate" type="date" id="fechaoperacion" name="fechaoperacion" errorMessage='Campo requerido' required />
-                    
+                  <AvField className="pickadate" type="date" id="fechaoperacion" name="fechaoperacion" 
+                    errorMessage='Campo requerido' required defaultValue={infoNemotecnico.infoCorrida.fechaProceso}
+                  />                   
                   <label>TIR:</label>
                   <AvField id="tir" name="tir" type="number" errorMessage='Campo requerido' required />
                   <label>Precio limpio:</label>
@@ -404,12 +417,11 @@ const CreateTitle = (props) => {
               </Row>
 
               <Row className="d-flex align-items-center justify-content-center mt-4 mb-2">
-                <Button color="primary" className="mr-2">Agregar</Button>
-                <Button
-                  color="secondary"
-                  onClick={(e) => (e)}
-                >
-                  Cancelar
+                <Button color="primary" className="mr-2" disabled={loaderOperation}>
+                  {!loaderOperation ? 'Agregar' :  <><Spinner color="white" size="sm" /></>}
+                </Button>
+                <Button type="button" outline color="secondary">
+                  <Link to='/titles'>Cancelar</Link> 
                 </Button>
             </Row>
 

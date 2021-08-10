@@ -63,6 +63,12 @@ export default [
         title: 'Aprobar títulos',
         icon: <Circle size={12} />,
         navLink: '/titles'
+      },
+      {
+        id: 'pendingCorrida',
+        title: 'Corridas pendientes',
+        icon: <Circle size={12} />,
+        navLink: '/corridaspendientes'
       }
     ]
   }

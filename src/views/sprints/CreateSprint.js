@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, useRef } from "react"
+import { Link } from "react-router-dom"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
 import {
   Row,
@@ -483,7 +484,7 @@ const CreateSprint = () => {
                     {!btnDisableLaunch ? 'Lanzar' :  <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
                   </Button>
                   <Button disabled={btnDisableLaunch} outline color="secondary">
-                    Cancelar
+                    <Link to='/create/sprint'>Cancelar</Link>
                   </Button>
                 </div>
 

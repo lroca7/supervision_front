@@ -42,10 +42,12 @@ const Sprint = () => {
       })
         .then((response) => response.json())
         .then((result) => {
-          if (result.codigo === 201) {
+
+          debugger
+          if (result.codigo === 200) {
             setResultEjecucion(result.result)
           } else {
-            Swal.fire(`${result.error}`, `${result.detalle} <br/>`, "error")
+            Swal.fire(`${result.error}`, `${result.detalle !== undefined ? result.detalle : ''} <br/>`, "error")
           }
 
           if (result.codigo === undefined) {
@@ -79,41 +81,34 @@ const Sprint = () => {
           />
         </Col>
         <Col md="2" className="pl-0">
-          <Button color="primary" onClick={(e) => getCorrida(e)}>
-            Buscar
+          <Button color="primary" disabled={loader} onClick={(e) => getCorrida(e)}>
+            {!loader ? 'Buscar' :  <><Spinner color="white" size="sm" /></>}
           </Button>
         </Col>
       </Row>
 
 
-      {loader === true ? (
-        <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
-          <Button.Ripple color="primary">
-            <Spinner color="white" size="sm" />
-            <span className="ml-50">Cargando...</span>
-          </Button.Ripple>
-        </Col>
-      ) : (     
+      { 
           
         resultEjecucion !== null ? (
           <div className="mt-2 p-2 info-corrida">
-          <p>Id Corrida : {resultEjecucion.idCorrida} </p>
-          <p>Estado : {resultEjecucion.estado} </p>
-          <p>Usuario : {resultEjecucion.user} </p>
-          <p>Fecha creación : {resultEjecucion.fecCreacion} </p>
-          <p>Parametros: {resultEjecucion.verParam} </p>
-          <p>Id flujo : {resultEjecucion.idFlujo} </p>
-          <p>Fecha proceso : {resultEjecucion.fecProceso} </p>
-          <p>Fecha de ejecución : {resultEjecucion.fecEjecucion} </p>
-          <p>Día de ejecucion : {resultEjecucion.diaEjecucion} </p>
-          <p>Nuemero día de ejecución : {resultEjecucion.numDiaEjecucion} </p>
-          {/* <p>consecRun : {resultEjecucion.consecRun} </p> */}
-          <p>Observación : {resultEjecucion.observacion} </p>
+          <p><b>Id Corrida :</b> {resultEjecucion.idCorrida} </p>
+          <p><b>Estado :</b> {resultEjecucion.estado} </p>
+          <p><b>Usuario :</b> {resultEjecucion.user} </p>
+          <p><b>Fecha creación :</b> {resultEjecucion.fecCreacion} </p>
+          <p><b>Parametros:</b> {resultEjecucion.verParam} </p>
+          <p><b>Id flujo :</b> {resultEjecucion.idFlujo} </p>
+          <p><b>Fecha proceso :</b> {resultEjecucion.fecProceso} </p>
+          <p><b>Fecha de ejecución :</b> {resultEjecucion.fecEjecucion} </p>
+          <p><b>Día de ejecucion :</b> {resultEjecucion.diaEjecucion} </p>
+          <p><b>Nuemero día de ejecución :</b> {resultEjecucion.numDiaEjecucion} </p>
+          {/*<b> <p>consecRun :</b> {resultEjecucion.consecRun} </p> */}
+          <p><b>Observación :</b> {resultEjecucion.observacion} </p>
           </div>
         )
         : <p className="mt-4">No hay información</p>
       
-      )}
+      }
 
     </div>
   )
