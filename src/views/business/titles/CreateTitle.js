@@ -173,7 +173,7 @@ const CreateTitle = (props) => {
             precioLimpio: preciolimpio.value,
             precioSucio: preciosucio.value,
             nominal: nominal.value,
-            corrid: idCorrida,
+            corrid: diascuponcorrido.value,
             cupon_corrido: cuponcorrido.value
           }
         ]
