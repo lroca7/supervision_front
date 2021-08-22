@@ -264,7 +264,7 @@ const CreateTitle = (props) => {
   return (
     <div className="card">
       <div class="card-header">
-        <h4 class="card-title">Crear corrida</h4>
+        <h4 class="card-title">Crear corrida 1</h4>
       </div>
       <div class="card-body">
         <div id="parameters-container mb-4">

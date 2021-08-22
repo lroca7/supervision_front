@@ -29,9 +29,11 @@ const CreateParameter = () => {
   const options = [
     { value: "Analítica", label: "Analítica" },
     { value: "Límites RF", label: "Límites RF" },
-    { value: "Monitoreo", label: "Monitoreo" }
+    { value: "Límites RV", label: "Límites RV" },
+    { value: "Indices RV", label: "Indices RV" },
+    { value: "Indices RF", label: "Indices RF" }
   ]
-
+  
   const [btnDisable, setbtnDisable] = useState(false)
 
   const [grupo, setGrupo] = useState(null)

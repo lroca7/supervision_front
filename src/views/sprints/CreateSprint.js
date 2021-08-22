@@ -30,6 +30,8 @@ import { useHistory } from "react-router-dom"
 const CreateSprint = () => {
   const { colors } = useContext(ThemeColors)
 
+  const [loader, setLoader] = useState(false)
+
   const initialErrorState = {
     status: false,
     codigo: '',
@@ -61,6 +63,15 @@ const CreateSprint = () => {
     idFlujo: null,
     fecProceso: null
   })
+
+  //Analítica, Límites RF o Límites RV, Indices RV, Indices RF
+  const optionsType = [
+    { value: "Analítica", label: "Analítica" },
+    { value: "Límites RF", label: "Límites RF" },
+    { value: "Límites RV", label: "Límites RV" },
+    { value: "Indices RV", label: "Indices RV" },
+    { value: "Indices RF", label: "Indices RF" }
+  ]
 
   const history = useHistory()
 
@@ -96,42 +107,58 @@ const CreateSprint = () => {
       })
   }
 
-  const createCorrida = () => {
+  const createCorrida = (e) => {
 
+    debugger
     setbtnDisable(true)
+    setLoader(true)
 
-    const body = {
-      user: 'jlotero'
+    // const selectTypeCorrida = document.getElementById("select-type-corrida")
+    const tipoCorrida = e.value
+
+    if (tipoCorrida.length > 0) {
+      const body = {
+        user: 'jlotero',
+        tipoCorrida
+      }
+  
+      const url = `${URL_BACK}corridas`
+  
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(body)
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.codigo === 200 || result.codigo === 201) {
+  
+  
+            getParameters(result.result.corrida.verParam)
+            setDataCorrida(result.result.corrida)
+            setCorrida({
+              ...corrida,
+              id: result.result.corrida.idCorrida,
+              verParam: result.result.corrida.verParam,
+              idFlujo: result.result.corrida.idFlujo,
+              fecProceso: result.result.corrida.fecProceso
+            })
+
+            setLoader(false)
+          }
+          // setbtnDisable(false)
+        })
+        .catch((error) => {
+          console.error(error)
+          setbtnDisable(false)
+          setLoader(false)
+        })
+    } else {
+      Swal.fire(
+        `Error`,
+        `Debes seleccionar un tipo`,
+        'error'
+      )
     }
-
-    const url = `${URL_BACK}corridas`
-
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.codigo === 200) {
-
-
-          getParameters(result.result.corrida.verParam)
-          setDataCorrida(result.result.corrida)
-          setCorrida({
-            ...corrida,
-            id: result.result.corrida.idCorrida,
-            verParam: result.result.corrida.verParam,
-            idFlujo: result.result.corrida.idFlujo,
-            fecProceso: result.result.corrida.fecProceso
-          })
-        }
-        // setbtnDisable(false)
-      })
-      .catch((error) => {
-        console.error(error)
-        setbtnDisable(false)
-      })
-
   }
 
   const onChangeTypeProccess = (event) => {
@@ -377,15 +404,36 @@ const CreateSprint = () => {
   return (
     <div className="card">
       <div class="card-header">
-        <h4 class="card-title">Crear corrida</h4>
+        <h4 class="card-title">Crear corrida 2</h4>
       </div>
       <div class="card-body">
         <div id="parameters-container mb-4">
-          <Col md="12" className="d-flex align-items-center justify-content-center">
-            <Button disabled={btnDisable} color="primary mr-2" onClick={createCorrida}>
-              {!btnDisable ? 'Generar' : <><Spinner color="white" size="sm" /><span className="ml-50">Generando...</span></>}
-            </Button>
-          </Col>
+          <div className="d-flex align-items-end">
+            <Col md="6">
+              <label>Seleccionar tipo:</label>
+              <Select
+                id="select-type-corrida"
+                options={optionsType}
+                placeholder="Seleccionar"
+                onChange={(e) => createCorrida(e)}
+              />
+            </Col>
+
+            {/* <Col md="2" className="d-flex align-items-center justify-content-center">
+              <Button disabled={btnDisable} color="primary mr-2" onClick={createCorrida}>
+                {!btnDisable ? 'Generar' : <><Spinner color="white" size="sm" /><span className="ml-50">Generando...</span></>}
+              </Button>
+            </Col> */}
+          </div>
+          
+          {loader === true && 
+            <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
+              <Button.Ripple color="primary">
+                <Spinner color="white" size="sm" />
+                <span className="ml-50">Generando...</span>
+              </Button.Ripple>
+            </Col>
+          }
 
           {(dataCorrida !== null && Object.entries(subgrupos).length > 0) && (
             <>
