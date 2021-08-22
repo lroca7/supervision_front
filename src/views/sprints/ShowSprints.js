@@ -1,14 +1,7 @@
 /* eslint-disable multiline-ternary */
 import { useContext, useState, useEffect } from "react"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
-import {
-  Row,
-  Col,
-  Button,
-  Spinner,
-  Input,
-  Alert
-} from "reactstrap"
+import { Row, Col, Button, Spinner, Input, Alert } from "reactstrap"
 
 import "@styles/react/libs/charts/apex-charts.scss"
 
@@ -18,20 +11,24 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Select from "react-select"
 import { AgGridColumn, AgGridReact } from "ag-grid-react"
 
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2"
 
 import { URL_BACK } from "../../contants"
 
-import CustomTooltip from './customTooltip.js'
+import CustomTooltip from "./customTooltip.js"
+
+import { useHistory } from "react-router-dom"
 
 const Sprint = (props) => {
   const { colors } = useContext(ThemeColors)
+
+  const history = useHistory()
 
   const [loader, setLoader] = useState(false)
 
   const [corridas, setCorridas] = useState([])
 
-  const [resultEjecucion, setResultEjecucion] = useState(null)
+  const [infoCorrida, setInfoCorrida] = useState(null)
 
   const options = [
     { value: "", label: "--Todas--" },
@@ -43,7 +40,7 @@ const Sprint = (props) => {
     { value: "INI", label: "Inicial" }
   ]
 
-  /** 
+  /**
    * #INI : Inicil (estado inicial, No tiene datos completos para lanzar a ejecucion)
    * #ACT : Activo (En ejecucion)
    * #CAN : Cancelado (cuando manualmente se detiene el proceso)
@@ -66,11 +63,15 @@ const Sprint = (props) => {
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
-          console.log('Resultado', result.result)
+          console.log("Resultado", result.result)
           setCorridas(result.result)
           setLoader(false)
         } else {
-          Swal.fire(`${result.error}`, `${result.detalle !== undefined ? result.detalle : ''} <br/>`, "error")
+          Swal.fire(
+            `${result.error}`,
+            `${result.detalle !== undefined ? result.detalle : ""} <br/>`,
+            "error"
+          )
         }
 
         if (result.codigo === undefined) {
@@ -97,8 +98,8 @@ const Sprint = (props) => {
     const isCurrentRowEditing = editingCells.some((cell) => {
       return cell.rowIndex === params.node.rowIndex
     })
-    console.log('actionCellRenderer params', params)
-    eGui.innerHTML = `<button class="btn btn-primary btn-sm" size="sm" data-action="delete" > Detalle </button>`
+    console.log("actionCellRenderer params", params)
+    eGui.innerHTML = `<button class="btn btn-primary btn-sm" size="sm" data-action="detail" > Detalle </button>`
 
     return eGui
   }
@@ -110,33 +111,15 @@ const Sprint = (props) => {
       params.event.target.dataset.action
     ) {
       const action = params.event.target.dataset.action
-      
-      /*
-      if (action === "edit") {
-        params.api.startEditingCell({
-          rowIndex: params.node.rowIndex,
-          // gets the first columnKey
-          colKey: params.columnApi.getDisplayedCenterColumns()[0].colId
+
+      if (action === "detail") {
+        debugger
+        // getCorrida(params.node.data.idCorrida)
+        history.push({
+          pathname: `/read/sprint`,
+          search: `?idCorrida=${params.node.data.idCorrida}`
         })
-      }*/
-
-      if (action === "delete") {
-        // params.api.applyTransaction({
-        //   remove: [params.node.data]
-        // })
-        // debugger
-        // // console.log(titulos.findIndex)
-        // const f = params.node.data
-        // const isSameObject = (element => element.nemotecnico === f.nemotecnico && element.isin === f.isin)
-        // const i = corridas.findIndex(isSameObject)
-        // corridas.splice(i, 1)
-        // console.log('encontrado', i)
-        // params.api.stopEditing(false)
       }
-
-      /*if (action === "cancel") {
-        params.api.stopEditing(true)
-      }*/
     }
   }
 
@@ -149,7 +132,7 @@ const Sprint = (props) => {
     { field: "flujo", headerName: "Flujo", maxWidth: 240 },
     { field: "avance", headerName: "Avance", maxWidth: 90 },
     { field: "resultados", headerName: "Resultados", maxWidth: 100 },
-    { field: "observacion", headerName: "Observación"},
+    { field: "observacion", headerName: "Observación" },
     {
       headerName: "Acciones",
       maxWidth: 120,
@@ -160,8 +143,7 @@ const Sprint = (props) => {
     }
   ])
 
-  useEffect(() => {
-  }, [])
+  useEffect(() => {}, [])
 
   return (
     <div className="card">
@@ -169,20 +151,19 @@ const Sprint = (props) => {
         <h4 class="card-title">Consultar corridas</h4>
       </div>
       <div class="card-body">
-
         <div className="container-sprint mb-4">
-        <Row className="d-flex align-items-end justify-content-center">
-          <Col md="6">
-            <label className='form-label'>Seleccionar estado:</label>
-                <Select className="ml-50"
-                  id="select-group"
-                  style={{ width: `400px` }}
-                  options={options}
-                  placeholder="Seleccionar Estado"
-                  onChange={(e) => consultarCorridas(e)}
-                />
+          <Row className="d-flex align-items-end justify-content-center">
+            <Col md="6">
+              <label className="form-label">Seleccionar estado:</label>
+              <Select
+                className="ml-50"
+                id="select-group"
+                style={{ width: `400px` }}
+                options={options}
+                placeholder="Seleccionar Estado"
+                onChange={(e) => consultarCorridas(e)}
+              />
             </Col>
-
           </Row>
           <br />
 
@@ -193,47 +174,44 @@ const Sprint = (props) => {
                 <span className="ml-50">Cargando...</span>
               </Button.Ripple>
             </Col>
-            )
-          }
+          )}
 
           {Object.entries(corridas).length > 0 ? (
-                <div className="grid-wrapper">
-                <div
-                  id="myGrid"
-                  style={{
-                    height: '450px',
-                    width: '100%'
+            <div className="grid-wrapper">
+              <div
+                id="myGrid"
+                style={{
+                  height: "450px",
+                  width: "100%"
+                }}
+                className="ag-theme-alpine"
+              >
+                <AgGridReact
+                  rowData={corridas}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 50,
+                    editable: false,
+                    resizable: true,
+                    wrapText: true,
+                    tooltipComponent: "customTooltip"
                   }}
-                  className="ag-theme-alpine"
-                >
-                   <AgGridReact
-                    rowData={corridas}
-                    defaultColDef={{
-                      flex: 1,
-                      minWidth: 50,
-                      editable: false,
-                      resizable: true,
-                      wrapText: true,
-                      tooltipComponent: 'customTooltip'
-                    }}
-                    onCellClicked={onCellClicked}
-                    columnDefs={columnsDef}
-                    tooltipShowDelay={0}
-                    frameworkComponents={{ customTooltip: CustomTooltip }}
-                  >
-                    
-                  </AgGridReact> 
-                </div>
-                </div>
-              ) : (
-                <Alert color='secondary'>
-                  <p className='p-2'>No hay datos para visualizar </p>
-                </Alert>
-              )}
+                  onCellClicked={onCellClicked}
+                  columnDefs={columnsDef}
+                  tooltipShowDelay={0}
+                  frameworkComponents={{ customTooltip: CustomTooltip }}
+                ></AgGridReact>
+              </div>
+            </div>
+          ) : (
+            <Alert color="secondary">
+              <p className="p-2">No hay datos para visualizar </p>
+            </Alert>
+          )}
+
         </div>
       </div>
     </div>
-
   )
 }
 
