@@ -32,6 +32,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
+import { FALSE } from "node-sass"
 
 const ExecuteSprint = () => {
   const { colors } = useContext(ThemeColors)
@@ -49,6 +50,7 @@ const ExecuteSprint = () => {
 
   const [btnDisable, setbtnDisable] = useState(false)
   const [btnDisableLaunch, setbtnDisableLaunch] = useState(false)
+  const [btnChangeParameters, setBtnChangeParameters] = useState(false)
 
   //Analítica, Límites y Monitoreo
   const options = [
@@ -64,18 +66,22 @@ const ExecuteSprint = () => {
   const [subgrupos, setSubgrupos] = useState([])
 
   const [columnsDef, setColumnsDef] = useState([
-    { field: "nombre", headerName: "Nombre", maxWidth: 120 },
-    { field: "valor", headerName: "Valor", maxWidth: 120 },
-    { field: "descripcion", headerName: "Descripción", minWidth: 100 }
+    { field: "nombre", headerName: "Nombre", editable: false, maxWidth: 150 },
+    { field: "valor", headerName: "Valor", maxWidth: 150 },
+    { field: "descripcion", headerName: "Descripción", editable: false, minWidth: 100, wrapText: true, autoHeight: true }
   ])
 
   const [dataCorrida, setDataCorrida] = useState(null)
   const [corrida, setCorrida] = useState({
-    id: null,
-    verParam: null,
-    idFlujo: null,
-    fecProceso: null
+    id: null
+    // verParam: null,
+    // idFlujo: null,
+    // fecProceso: null
   })
+  
+  const [verParam, setVerParam] = useState(null)
+  const [idFlujo, setIdFlujo] = useState(null)
+  const [fecProceso, setFecProceso] = useState(null)
 
   const inputEl = useRef(null)
 
@@ -90,15 +96,19 @@ const ExecuteSprint = () => {
 
   const getParameters = (version) => {
 
+    // debugger
     const url = `${URL_BACK}parametros?version=${version}`
 
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
+          // debugger
+          setVerParam(version)
           setParameters(result.result.parametros)
           setParametersInitial(JSON.parse(JSON.stringify(result.result.parametros)))
 
+          setSubgrupos([])
           transFormData(result.result.parametros)
 
           setGrupoParameter(result.result.grupo)
@@ -106,22 +116,31 @@ const ExecuteSprint = () => {
 
           setbtnDisable(false)
           setLoader(false)
+          setBtnChangeParameters(false)
         }
+      })
+      .catch(error => {
+        console.error(error)
+        setbtnDisable(false)
+        setLoader(false)
+        setBtnChangeParameters(false)
       })
   }
 
   const onChangeTypeProccess = (event) => {
-    setCorrida({
-      ...corrida,
-      idFlujo: parseInt(event.target.value)
-    })
+    // setCorrida({
+    //   ...corrida,
+    //   idFlujo: parseInt(event.target.value)
+    // })
+    setIdFlujo(parseInt(event.target.value))
   }
 
   const onChangeFechaProceso = (event) => {
-    setCorrida({
-      ...corrida,
-      fecProceso: event.target.value
-    })
+    // setCorrida({
+    //   ...corrida,
+    //   fecProceso: event.target.value
+    // })
+    setFecProceso(event.target.value)
   }
 
   const saveParameters = async () => {
@@ -163,10 +182,11 @@ const ExecuteSprint = () => {
 
       if (result.codigo === 201) {
 
-        setCorrida({
-          ...corrida,
-          verParam: result.result.version
-        })
+        // setCorrida({
+        //   ...corrida,
+        //   verParam: result.result.version
+        // })
+        setVerParam(result.result.version)
         Swal.fire(
           `${result.result.mensaje}`,
           `Versión: ${result.result.version} <br/>
@@ -202,11 +222,18 @@ const ExecuteSprint = () => {
 
   const updateCorrida = async (parameters) => {
 
+    // const body = {
+    //   idCorrida: corrida.id,
+    //   verParam: corrida.verParam,
+    //   idFlujo: corrida.idFlujo,
+    //   fecProceso: corrida.fecProceso
+    // }
+
     const body = {
       idCorrida: corrida.id,
-      verParam: corrida.verParam,
-      idFlujo: corrida.idFlujo,
-      fecProceso: corrida.fecProceso
+      verParam,
+      idFlujo,
+      fecProceso
     }
 
     if (parameters !== undefined) {
@@ -331,21 +358,23 @@ const ExecuteSprint = () => {
 
   const launchCorrida = async () => {
 
+    // debugger
     setbtnDisableLaunch(true)
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
-
+      // debugger
       const stateSaveParameters = await saveParameters()
       if (stateSaveParameters.codigo === 201) {
         const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
       }
 
     } else {
-      // const updateState = await updateCorrida()
+      // debugger
+      const updateState = await updateCorrida()
 
-      // if (updateState.codigo === 201) {
-        await executeCorrida()
-      // }
+      if (updateState.codigo === 201) {
+        // await executeCorrida()
+      }
 
     }
 
@@ -367,6 +396,7 @@ const ExecuteSprint = () => {
       })
         .then((response) => response.json())
         .then((result) => {
+          // debugger
           if (result.codigo === 201 || result.codigo === 200) {
 
             if (result.result.estado === 'INI') {
@@ -374,11 +404,14 @@ const ExecuteSprint = () => {
               setDataCorrida(result.result)
               setCorrida({
                 ...corrida,
-                id: result.result.idCorrida,
-                verParam: result.result.verParam,
-                idFlujo: result.result.idFlujo,
-                fecProceso: result.result.fecProceso
+                id: result.result.idCorrida
+                // verParam: result.result.verParam,
+                // idFlujo: result.result.idFlujo,
+                // fecProceso: result.result.fecProceso
               })
+              setVerParam(result.result.verParam)
+              setIdFlujo(result.result.idFlujo)
+              setFecProceso(result.result.fecProceso)
 
             } else {
               Swal.fire(`Error`, `La corrida no se puede lanzar <br/>`, "error")
@@ -409,6 +442,19 @@ const ExecuteSprint = () => {
     }
   }
 
+  const searchParameters = () => {
+
+    setBtnChangeParameters(true)
+
+    const inputVersion = document.getElementById('version')
+    const version = inputVersion.value
+    
+    if (version.length > 0) {
+      getParameters(version)
+    }
+
+  }
+
 
   return (
     <div className="card">
@@ -430,7 +476,7 @@ const ExecuteSprint = () => {
             <Col md="2" className="pl-0">
               {!btnDisableLaunch && (
                 <Button disabled={btnDisable} color="primary mr-2" onClick={(e) => getCorrida(e)}>
-                  {!btnDisable ? 'Buscar' : <><Spinner color="white" size="sm" /><span className="ml-50">Buscando...</span></>}
+                  {!btnDisable ? 'Buscar' : <><Spinner color="white" size="sm" /></>}
                 </Button>
               )}
             </Col>
@@ -509,12 +555,23 @@ const ExecuteSprint = () => {
                     />
                     <label>Grupo: </label>
                     <Input type="text" name="grupo" id="grupo" value={grupoParameter} disabled />
+                  </Col>
+                  <Col md="12" className="mt-2">
                     <label>Versión:</label>
-                    <Input className="mb-2" type="text" name="version" id="version" value={dataCorrida.verParam} disabled />
+                    <div className="d-flex">
+                      <Col md="6" className="m-0 pl-0">
+                        <Input className="mb-2" type="text" name="version" id="version" placeholder={verParam} /> 
+                      </Col>
+                      <Col md="4" className="m-0 pl-0">
+                        <Button disabled={btnChangeParameters} color="primary mr-2" outline onClick={(e) => searchParameters(e)}>
+                          {!btnChangeParameters ? 'Cambiar parametros' : <><Spinner color="blue" size="sm" /></>}
+                        </Button>
+                      </Col>                     
+                    </div>                  
                   </Col>
 
                   <Col md="12" className="mt-2">
-                    <h4 className="mb-2">Subgrupos jaja</h4>
+                    <h4 className="mb-2">Subgrupos</h4>
                     {Object.entries(subgrupos).length > 0 ? (
                       <>
                         {Object.entries(subgrupos).map(([key, value]) => {
