@@ -32,7 +32,6 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
-import { FALSE } from "node-sass"
 
 const ExecuteSprint = () => {
   const { colors } = useContext(ThemeColors)
@@ -497,6 +496,8 @@ const ExecuteSprint = () => {
                   <Col md="6" className="mt-2">
                     <h5 className="mt-2 mb-2">No de Corrida: {dataCorrida.idCorrida}</h5>
                     <h5>Parámetros de corrida:</h5>
+                    <label>Tipo:</label>
+                    <Input type="text" name="type" id="type" value={dataCorrida.tipoCorrida} disabled />
                     <label>Usuario:</label>
                     <Input type="text" name="user" id="user" value={dataCorrida.user} disabled />
                     <label>Fecha creación:</label>
@@ -510,34 +511,80 @@ const ExecuteSprint = () => {
 
                   <Col md="12" className="mt-2">
                     <h4 className="mb-2">Flujo a ejecutar</h4>
-                    <p>Seleccione el tipo de corrida:</p>
-                    <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
-                      <FormGroup check>
-                        <Label check>
-                          <Input type="radio" name="radio1" value={1}
-                            checked={corrida.idFlujo === 1}
-                          />
-                          PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
-                        </Label>
-                      </FormGroup>
-                      <FormGroup check>
-                        <Label check>
-                          <Input type="radio" name="radio1" value={2} checked={corrida.idFlujo === 2} />
-                          PBO - Márgenes - Valoración (Solo manual)
-                        </Label>
-                      </FormGroup>
-                      <FormGroup check >
-                        <Label check>
-                          <Input type="radio" name="radio1" value={3} checked={corrida.idFlujo === 3} />
-                          Márgenes - Valoración
-                        </Label>
-                      </FormGroup>
-                      <FormGroup check >
-                        <Label check>
-                          <Input type="radio" name="radio1" value={4} checked={corrida.idFlujo === 4} />
-                          Valoración
-                        </Label>
-                      </FormGroup>
+                    <p>Seleccione el tipo de flujo:</p>
+                    <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}>
+                      {
+                        corrida.tipoCorrida === 'Analítica' && (
+                          <>
+                            <FormGroup check>
+                              <Label check>
+                                <Input type="radio" name="radio1" value={1}
+                                  checked={corrida.idFlujo === 1}
+                                />
+                                PBO/N&S - Márgenes - Evaluación (manual y automático, FDS arranca directamente en valoración)
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Label check>
+                                <Input type="radio" name="radio1" value={2} checked={corrida.idFlujo === 2} />
+                                PBO - Márgenes - Valoración (Solo manual)
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check >
+                              <Label check>
+                                <Input type="radio" name="radio1" value={3} checked={corrida.idFlujo === 3} />
+                                Márgenes - Valoración
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check >
+                              <Label check>
+                                <Input type="radio" name="radio1" value={4} checked={corrida.idFlujo === 4} />
+                                Valoración
+                              </Label>
+                            </FormGroup>                    
+                          </>
+                        )
+                      }
+                      {
+                        corrida.tipoCorrida === 'Límites RF' && (
+                          <FormGroup check >
+                            <Label check>
+                              <Input type="radio" name="radio1" value={5} checked={corrida.idFlujo === 5} />
+                              Triggers RF
+                            </Label>
+                          </FormGroup> 
+                        )
+                      }
+                      {
+                        corrida.tipoCorrida === 'Indices RF' && (
+                          <FormGroup check >
+                            <Label check>
+                              <Input type="radio" name="radio1" value={6} checked={corrida.idFlujo === 6} />
+                              Indices RF
+                            </Label>
+                          </FormGroup> 
+                        )
+                      }
+                      {
+                        corrida.tipoCorrida === 'Límites RV' && (
+                          <FormGroup check >
+                            <Label check>
+                              <Input type="radio" name="radio1" value={7} checked={corrida.idFlujo === 7} />
+                              Triggers RV
+                            </Label>
+                          </FormGroup> 
+                        )
+                      }
+                      {
+                        corrida.tipoCorrida === 'Indices RV' && (
+                          <FormGroup check >
+                            <Label check>
+                              <Input type="radio" name="radio1" value={8} checked={corrida.idFlujo === 8} />
+                              Indices RV
+                            </Label>
+                          </FormGroup> 
+                        )
+                      }
                     </FormGroup>
                   </Col>
 
