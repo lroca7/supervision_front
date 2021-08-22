@@ -146,12 +146,18 @@ const PendingSprints = (props) => {
   return (
     <div id="parameters-container mb-4">
       <h2>Corridas con acción pendiente</h2>
-      {loader === true && (
+      {loader === true ? (
         <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
           <Button.Ripple color="primary">
             <Spinner color="white" size="sm" />
             <span className="ml-50">Cargando...</span>
           </Button.Ripple>
+        </Col>
+      ) : (
+        <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
+          <Button disabled={loader} color="primary mr-2" onClick={(e) => getCorridas()}>
+            {!loader ? 'Buscar' : <><Spinner color="white" size="sm" /></>}
+          </Button>
         </Col>
       )}
       {corridas.length > 0 ? (
@@ -169,9 +175,11 @@ const PendingSprints = (props) => {
           ></AgGridReact>
         </div>
       ) : (
-        <Alert color="secondary" className="mt-2">
-          <p className="p-2">No hay datos para visualizar </p>
-        </Alert>
+        <>
+          <Alert color="secondary" className="mt-2">
+            <p className="p-2">No hay datos para visualizar </p>
+          </Alert>
+        </>
       )}
     </div>
   )
