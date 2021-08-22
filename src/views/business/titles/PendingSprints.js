@@ -9,10 +9,11 @@ import {
   FormGroup,
   Label,
   Input,
-  Form
+  Form,
+  Alert
 } from "reactstrap"
 
-import { AvForm, AvField } from 'availity-reactstrap-validation'
+import { AvForm, AvField } from "availity-reactstrap-validation"
 
 import Select from "react-select"
 
@@ -34,8 +35,7 @@ const PendingSprints = (props) => {
 
   const [corridas, setCorridas] = useState([])
 
-  const getCorridas = () => { 
-
+  const getCorridas = () => {
     setLoader(true)
 
     const url = `${URL_BACK}corridas?filtro=estado='INI'`
@@ -45,23 +45,23 @@ const PendingSprints = (props) => {
     })
       .then((response) => response.json())
       .then((result) => {
-
         debugger
         if (result.codigo === 200) {
-          
           // transFormData(result.result)
-          
+
           const rowData = [
-            {make: "Toyota", model: "Celica", price: 35000},
-            {make: "Ford", model: "Mondeo", price: 32000},
-            {make: "Porsche", model: "Boxter", price: 72000}
+            { make: "Toyota", model: "Celica", price: 35000 },
+            { make: "Ford", model: "Mondeo", price: 32000 },
+            { make: "Porsche", model: "Boxter", price: 72000 }
           ]
 
           setCorridas(result.result)
-
-          
         } else {
-          Swal.fire(`${result.error}`, `${result.detalle !== undefined ? result.detalle : ''} <br/>`, "error")
+          Swal.fire(
+            `${result.error}`,
+            `${result.detalle !== undefined ? result.detalle : ""} <br/>`,
+            "error"
+          )
         }
 
         if (result.codigo === undefined) {
@@ -74,7 +74,6 @@ const PendingSprints = (props) => {
         Swal.fire(`Ha ocurrido un error al consultar`, `${error}`, "error")
         setLoader(false)
       })
-    
   }
 
   const actionCellRenderer = (params) => {
@@ -126,11 +125,11 @@ const PendingSprints = (props) => {
 
   const [columnsDef, setColumnsDef] = useState([
     { field: "idCorrida", headerName: "Id corrida", maxWidth: 120 },
-    { field: "user", headerName: "Usuario"},
-    { field: "fecCreacion", headerName: "F. creación"},
-    { field: "verParam", headerName: "Versión parametros"},
-    { field: "idFlujo", headerName: "Id flujo", maxWidth: 120},
-    { field: "observacion", headerName: "Observación"},
+    { field: "user", headerName: "Usuario" },
+    { field: "fecCreacion", headerName: "F. creación" },
+    { field: "verParam", headerName: "Versión parametros" },
+    { field: "idFlujo", headerName: "Id flujo", maxWidth: 120 },
+    { field: "observacion", headerName: "Observación" },
     {
       headerName: "Acciones",
       minWidth: 150,
@@ -139,12 +138,9 @@ const PendingSprints = (props) => {
       colId: "action"
     }
   ])
-  
 
   useEffect(() => {
-
     getCorridas()
-
   }, [])
 
   return (
@@ -157,25 +153,26 @@ const PendingSprints = (props) => {
             <span className="ml-50">Cargando...</span>
           </Button.Ripple>
         </Col>
-        )
-      }
-      {
-        corridas.length > 0 && (
-          <div className="ag-theme-alpine" style={{height: 400, width: '100%'}}>
-               <AgGridReact
-                  rowData={corridas}
-                  defaultColDef={{
-                    flex: 1,
-                    minWidth: 110,
-                    editable: false,
-                    resizable: true
-                  }}
-                  onCellClicked={onCellClicked}
-                  columnDefs={columnsDef}
-                ></AgGridReact>
-          </div>
-        )
-      }
+      )}
+      {corridas.length > 0 ? (
+        <div className="ag-theme-alpine" style={{ height: 400, width: "100%" }}>
+          <AgGridReact
+            rowData={corridas}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 110,
+              editable: false,
+              resizable: true
+            }}
+            onCellClicked={onCellClicked}
+            columnDefs={columnsDef}
+          ></AgGridReact>
+        </div>
+      ) : (
+        <Alert color="secondary" className="mt-2">
+          <p className="p-2">No hay datos para visualizar </p>
+        </Alert>
+      )}
     </div>
   )
 }

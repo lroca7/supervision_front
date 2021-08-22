@@ -70,17 +70,18 @@ export default [
         icon: <Circle size={12} />,
         navLink: '/titles'
       },
-      {
-        id: 'pendingCorrida',
-        title: 'Corridas pendientes',
-        icon: <Circle size={12} />,
-        navLink: '/corridaspendientes'
-      },
+      // {
+      //   id: 'pendingCorrida',
+      //   title: 'Corridas pendientes',
+      //   icon: <Circle size={12} />,
+      //   navLink: '/corridaspendientes'
+      // },
       {
         id: 'titles',
         title: 'Aprobar Títulos',
         icon: <Circle size={12} />,
-        navLink: '/titles/sprints'
+        // navLink: '/titles/sprints'
+        navLink: '/titles/pending'
       }
     ]
   }

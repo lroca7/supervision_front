@@ -12,7 +12,7 @@ const TitlesRoutes = [
     exact: true
   },
   {
-    path: '/corridaspendientes',
+    path: '/titles/pending',
     component: lazy(() => import('../../views/business/titles/PendingSprints.js')),
     exact: true
   },
