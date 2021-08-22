@@ -63,7 +63,6 @@ const Sprint = (props) => {
 
   useEffect(() => {
     const id = props.history.location.search.split("idCorrida=")[1]
-    console.log('id :>> ', id)
     document.getElementById("id_corrida").value = id
     getCorrida()
   }, [])
@@ -93,18 +92,20 @@ const Sprint = (props) => {
           
         resultEjecucion !== null ? (
           <div className="mt-2 p-2 info-corrida">
-          <p><b>Id Corrida :</b> {resultEjecucion.idCorrida} </p>
-          <p><b>Estado :</b> {resultEjecucion.estado} </p>
-          <p><b>Usuario :</b> {resultEjecucion.user} </p>
-          <p><b>Fecha creación :</b> {resultEjecucion.fecCreacion} </p>
+          <p><b>Id Corrida: </b> {resultEjecucion.idCorrida} </p>
+          <p><b>Tipo de corrida: </b>{resultEjecucion.tipoCorrida}</p>
+          <p><b>Estado: </b> {resultEjecucion.estado} </p>
+          <p><b>Usuario: </b> {resultEjecucion.user} </p>
+          <p><b>Fecha creación: </b> {resultEjecucion.fecCreacion} </p>
           <p><b>Parametros:</b> {resultEjecucion.verParam} </p>
-          <p><b>Id flujo :</b> {resultEjecucion.idFlujo} </p>
-          <p><b>Fecha proceso :</b> {resultEjecucion.fecProceso} </p>
-          <p><b>Fecha de ejecución :</b> {resultEjecucion.fecEjecucion} </p>
-          <p><b>Día de ejecucion :</b> {resultEjecucion.diaEjecucion} </p>
-          <p><b>Nuemero día de ejecución :</b> {resultEjecucion.numDiaEjecucion} </p>
-          {/*<b> <p>consecRun :</b> {resultEjecucion.consecRun} </p> */}
-          <p><b>Observación :</b> {resultEjecucion.observacion} </p>
+          <p><b>Id flujo: </b> {resultEjecucion.idFlujo} </p>
+          <p><b>Flujo: </b> {resultEjecucion.flujo} </p>
+          <p><b>Fecha proceso: </b> {resultEjecucion.fecProceso} </p>
+          <p><b>Fecha de ejecución: </b> {resultEjecucion.fecEjecucion} </p>
+          <p><b>Día de ejecucion: </b> {resultEjecucion.diaEjecucion} </p>
+          <p><b>Nuemero día de ejecución: </b> {resultEjecucion.numDiaEjecucion} </p>
+          <p><b>Resultados: </b> {resultEjecucion.resultados} </p>
+          <p><b>Observación: </b> {resultEjecucion.observacion} </p>
           </div>
         )
         : <p className="mt-4">No hay información</p>

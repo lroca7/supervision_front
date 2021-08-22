@@ -128,11 +128,12 @@ const Sprint = (props) => {
 
   const [columnsDef, setColumnsDef] = useState([
     { field: "idCorrida", headerName: "Id Corrida", maxWidth: 100 },
-    { field: "user", headerName: "Usuario", maxWidth: 120 },
-    { field: "verParam", headerName: "Parámetros", maxWidth: 150 },
-    { field: "fecProceso", headerName: "Fecha Proceso", maxWidth: 140 },
+    // { field: "user", headerName: "Usuario", maxWidth: 120 },
+    { field: "tipoCorrida", headerName: "Tipo corrida", maxWidth: 115 },
+    { field: "verParam", headerName: "Parámetros", maxWidth: 110 },
+    { field: "fecProceso", headerName: "Fecha Proceso", maxWidth: 120 },
     { field: "flujo", headerName: "Flujo", maxWidth: 240 },
-    { field: "avance", headerName: "Avance", maxWidth: 100 },
+    { field: "avance", headerName: "Avance", maxWidth: 90 },
     { field: "resultados", headerName: "Resultados", maxWidth: 100 },
     { field: "observacion", headerName: "Observación"},
     {
@@ -151,14 +152,14 @@ const Sprint = (props) => {
   return (
     <div className="card">
       <div class="card-header">
-        <h4 class="card-title">Leer corrida</h4>
+        <h4 class="card-title">Consultar corridas</h4>
       </div>
       <div class="card-body">
 
         <div className="container-sprint mb-4">
         <Row className="d-flex align-items-end justify-content-center">
           <Col md="6">
-            <label className='form-label'>Seleccionar Estado:</label>
+            <label className='form-label'>Seleccionar estado:</label>
                 <Select className="ml-50"
                   id="select-group"
                   style={{ width: `400px` }}
@@ -170,7 +171,18 @@ const Sprint = (props) => {
 
           </Row>
           <br />
-              {Object.entries(corridas).length > 0 ? (
+
+          {loader === true && (
+            <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
+              <Button.Ripple color="primary">
+                <Spinner color="white" size="sm" />
+                <span className="ml-50">Cargando...</span>
+              </Button.Ripple>
+            </Col>
+            )
+          }
+
+          {Object.entries(corridas).length > 0 ? (
                 <div className="grid-wrapper">
                 <div
                   id="myGrid"
@@ -201,7 +213,7 @@ const Sprint = (props) => {
                 </div>
               ) : (
                 <Alert color='secondary'>
-                  <p>No hay datos para visualizar </p>
+                  <p className='p-2'>No hay datos para visualizar </p>
                 </Alert>
               )}
         </div>

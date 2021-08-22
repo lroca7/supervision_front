@@ -62,6 +62,13 @@ const ExecuteSprint = () => {
   const [parameters, setParameters] = useState([])
   const [parametersInitial, setParametersInitial] = useState([])
   const [subgrupos, setSubgrupos] = useState([])
+
+  const [columnsDef, setColumnsDef] = useState([
+    { field: "nombre", headerName: "Nombre", maxWidth: 120 },
+    { field: "valor", headerName: "Valor", maxWidth: 120 },
+    { field: "descripcion", headerName: "Descripción", minWidth: 100 }
+  ])
+
   const [dataCorrida, setDataCorrida] = useState(null)
   const [corrida, setCorrida] = useState({
     id: null,
@@ -360,13 +367,8 @@ const ExecuteSprint = () => {
       })
         .then((response) => response.json())
         .then((result) => {
-<<<<<<< HEAD
-          if (result.codigo === 200) {
-            
-=======
-          if (result.codigo === 201) {
+          if (result.codigo === 201 || result.codigo === 200) {
 
->>>>>>> bd2dd8f427f8121fb1bcb2404f68bb33a62f9583
             if (result.result.estado === 'INI') {
               getParameters(result.result.verParam)
               setDataCorrida(result.result)
@@ -512,7 +514,7 @@ const ExecuteSprint = () => {
                   </Col>
 
                   <Col md="12" className="mt-2">
-                    <h4 className="mb-2">Subgrupos</h4>
+                    <h4 className="mb-2">Subgrupos jaja</h4>
                     {Object.entries(subgrupos).length > 0 ? (
                       <>
                         {Object.entries(subgrupos).map(([key, value]) => {
@@ -532,10 +534,11 @@ const ExecuteSprint = () => {
                                     editable: true,
                                     resizable: true
                                   }}
+                                  columnDefs={columnsDef}
                                 >
-                                  <AgGridColumn field="nombre" editable="false"></AgGridColumn>
+                                  {/* <AgGridColumn field="nombre" editable="false"></AgGridColumn>
                                   <AgGridColumn field="valor"></AgGridColumn>
-                                  <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
+                                  <AgGridColumn field="descripcion" editable="false"></AgGridColumn> */}
                                 </AgGridReact>
                               </div>
                               <br />

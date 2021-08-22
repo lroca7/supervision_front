@@ -176,7 +176,7 @@ const Sprint = (props) => {
                 </div>
               ) : (
                 <Alert color='secondary'>
-                  <p>No hay datos para visualizar </p>
+                  <p className='m-2'>No hay datos para visualizar </p>
                 </Alert>
               )}
         </div>
