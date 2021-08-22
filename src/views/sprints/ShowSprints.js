@@ -52,6 +52,7 @@ const Sprint = (props) => {
    * #ERR : Terminada con error*/
 
   const consultarCorridas = (e) => {
+    setCorridas([])
     setLoader(true)
 
     const estado = e.value
@@ -68,7 +69,19 @@ const Sprint = (props) => {
           console.log('Resultado', result.result)
           setCorridas(result.result)
           setLoader(false)
+        } else {
+          Swal.fire(`${result.error}`, `${result.detalle !== undefined ? result.detalle : ''} <br/>`, "error")
         }
+
+        if (result.codigo === undefined) {
+          Swal.fire(`${result.message}`, ``, "error")
+        }
+        setLoader(false)
+      })
+      .catch((error) => {
+        console.error(error)
+        Swal.fire(`Ha ocurrido un error al ejecutar`, `${error}`, "error")
+        setLoader(false)
       })
   }
 
@@ -108,16 +121,17 @@ const Sprint = (props) => {
       }*/
 
       if (action === "delete") {
-        params.api.applyTransaction({
-          remove: [params.node.data]
-        })
-        console.log(titulos.findIndex)
-        const f = params.node.data
-        const isSameObject = (element => element.nemotecnico === f.nemotecnico && element.isin === f.isin)
-        const i = titulos.findIndex(isSameObject)
-        titulos.splice(i, 1)
-        console.log('encontrado', i)
-        params.api.stopEditing(false)
+        // params.api.applyTransaction({
+        //   remove: [params.node.data]
+        // })
+        // debugger
+        // // console.log(titulos.findIndex)
+        // const f = params.node.data
+        // const isSameObject = (element => element.nemotecnico === f.nemotecnico && element.isin === f.isin)
+        // const i = corridas.findIndex(isSameObject)
+        // corridas.splice(i, 1)
+        // console.log('encontrado', i)
+        // params.api.stopEditing(false)
       }
 
       /*if (action === "cancel") {
