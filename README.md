@@ -22,3 +22,5 @@ docker run --rm -d -p 5000:5000 --name supervision-app 503553001946.dkr.ecr.us-e
 ```
 docker stop supervision-app
 ```
+
+* Limpiar imagenes que no estan en ejecucion: "docker rmi -f $(docker images -a -q)"
