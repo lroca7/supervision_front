@@ -45,7 +45,6 @@ const PendingSprints = (props) => {
     })
       .then((response) => response.json())
       .then((result) => {
-        debugger
         if (result.codigo === 200) {
           // transFormData(result.result)
 

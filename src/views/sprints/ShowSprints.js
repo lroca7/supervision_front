@@ -113,7 +113,6 @@ const Sprint = (props) => {
       const action = params.event.target.dataset.action
 
       if (action === "detail") {
-        debugger
         // getCorrida(params.node.data.idCorrida)
         history.push({
           pathname: `/read/sprint`,

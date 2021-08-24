@@ -109,7 +109,6 @@ const CreateSprint = () => {
 
   const createCorrida = (e) => {
 
-    debugger
     setbtnDisable(true)
     setLoader(true)
 

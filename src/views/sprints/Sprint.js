@@ -67,7 +67,6 @@ const Sprint = (props) => {
   ])
 
   useEffect(() => {
-    debugger
     const id = props.history.location.search.split("idCorrida=")[1]
     const input = document.getElementById("id_corrida")
    
