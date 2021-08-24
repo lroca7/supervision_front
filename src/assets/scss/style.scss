@@ -66,13 +66,16 @@ legend {
 		th {
 			color: white;
 			font-weight: bold;
-			height: 32px;
+			height: 40px;
 		}
 
 	}
 	th, td {
-		padding: 0 5px;
+		padding: 5px 5px;
 		height: 32px;
+	}
+	tr {
+		border: 1px solid lightgray;
 	}
 
 }
