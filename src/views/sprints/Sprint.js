@@ -5,6 +5,8 @@ import { Row, Col, Button, Spinner, Input, Alert } from "reactstrap"
 
 import "@styles/react/libs/charts/apex-charts.scss"
 
+import { AgGridColumn, AgGridReact } from "ag-grid-react"
+
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
@@ -34,6 +36,7 @@ const Sprint = (props) => {
       })
         .then((response) => response.json())
         .then((result) => {
+          debugger
           if (result.codigo === 200) {
             setResultEjecucion(result.result)
           } else {
@@ -56,6 +59,12 @@ const Sprint = (props) => {
         })
     }
   }
+
+  const [columnsDef, setColumnsDef] = useState([
+    { field: "nombreproceso", headerName: "Proceso", maxWidth: 120 },
+    { field: "fechareporte", headerName: "Fecha", maxWidth: 100 },
+    { field: "detalle", headerName: "Detalle", minWidth: 120 }
+  ])
 
   useEffect(() => {
     debugger
@@ -152,11 +161,38 @@ const Sprint = (props) => {
             <b>Nuemero día de ejecución: </b> {resultEjecucion.numDiaEjecucion}{" "}
           </p>
           <p>
-            <b>Resultados: </b> {resultEjecucion.resultados}{" "}
-          </p>
-          <p>
             <b>Observación: </b> {resultEjecucion.observacion}{" "}
           </p>
+          {
+            resultEjecucion.detalleResultados.length > 0 && (
+              <>
+                <p>
+                  <b>Resultados reportados: </b> {resultEjecucion.resultados}{" "}
+                </p>
+
+                <table className='table-detalle-corrida mt-2'>
+                  <thead>
+                    <tr>
+                      <th>Proceso</th>
+                      <th>Fecha</th>
+                      <th>Descripción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {resultEjecucion.detalleResultados.map(r => {
+                    return (
+                      <tr>
+                        <td>{r.nombreproceso}</td>
+                        <td>{r.fechareporte}</td>
+                        <td>{r.detalle}</td>
+                      </tr>
+                    )
+                  })}
+                  </tbody>
+                </table>
+              </>
+            ) 
+          }
         </div>
       ) : (
         <Alert color="secondary" className="mt-2">

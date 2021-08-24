@@ -56,3 +56,23 @@ legend {
     width:180px;
     word-wrap:break-word;
 }
+
+
+.table-detalle-corrida {
+	width: 100%;
+	border: 1px solid lightgray;
+	thead {
+		background: cornflowerblue;
+		th {
+			color: white;
+			font-weight: bold;
+			height: 32px;
+		}
+
+	}
+	th, td {
+		padding: 0 5px;
+		height: 32px;
+	}
+
+}
