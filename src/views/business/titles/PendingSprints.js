@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, useRef } from "react"
+import { useHistory } from "react-router-dom"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
 import {
   Row,
@@ -33,12 +34,15 @@ const PendingSprints = (props) => {
 
   const [loader, setLoader] = useState(false)
 
+  const history = useHistory()
+
   const [corridas, setCorridas] = useState([])
 
   const getCorridas = () => {
     setLoader(true)
 
-    const url = `${URL_BACK}corridas?filtro=estado='INI'`
+    //const url = `${URL_BACK}corridas?filtro=estado='WAIT'`
+    const url = `${URL_BACK}corridas`
 
     fetch(url, {
       method: "GET"
@@ -106,7 +110,15 @@ const PendingSprints = (props) => {
       }
 
       if (action === "delete") {
-        alert("En desarrollo ...")
+        // alert("En desarrollo ...")
+
+        debugger
+        history.push({
+          pathname: '/read/title',
+          search: `?idCorrida=${params.data.idCorrida}`
+          // state: { titulos }
+        })
+
         // params.api.applyTransaction({
         //   remove: [params.node.data]
         // })
@@ -123,12 +135,13 @@ const PendingSprints = (props) => {
   }
 
   const [columnsDef, setColumnsDef] = useState([
-    { field: "idCorrida", headerName: "Id corrida", maxWidth: 120 },
-    { field: "user", headerName: "Usuario" },
-    { field: "fecCreacion", headerName: "F. creación" },
-    { field: "verParam", headerName: "Versión parametros" },
-    { field: "idFlujo", headerName: "Id flujo", maxWidth: 120 },
-    { field: "observacion", headerName: "Observación" },
+    { field: "idCorrida", headerName: "Id corrida", maxWidth: 100 },
+    { field: "user", headerName: "Usuario", maxWidth: 90  },
+    { field: "fecCreacion", headerName: "F. creación", maxWidth: 120  },
+    { field: "verParam", headerName: "Versión parametros", maxWidth: 100  },
+    // { field: "idFlujo", headerName: "Id flujo", maxWidth: 100 },
+    { field: "flujo", headerName: "Flujo", minWidth: 120 },
+    { field: "observacion", headerName: "Observación", minWidth: 120 },
     {
       headerName: "Acciones",
       minWidth: 150,

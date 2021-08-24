@@ -7,6 +7,11 @@ const TitlesRoutes = [
     exact: true
   },
   {
+    path: '/read/title',
+    component: lazy(() => import('../../views/business/titles/Titles.js')),
+    exact: true
+  },
+  {
     path: '/create/title',
     component: lazy(() => import('../../views/business/titles/CreateTitle.js')),
     exact: true

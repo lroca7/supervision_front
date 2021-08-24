@@ -223,7 +223,10 @@ const CreateTitle = (props) => {
   }
 
   useEffect(() => {
+    
+    debugger
     const id = props.history.location.search.split("idCorrida=")[1]
+
     if (id && props.history.location.state) {
       console.log('state', props.history.location.state)
       const titulos = props.history.location.state.allTitles
@@ -232,7 +235,17 @@ const CreateTitle = (props) => {
       console.log('titulos', titulos)
       transFormData(titulos)
       setIdCorrida(id)
+    } else {
+
+      const input = document.getElementById("id_corrida")
+   
+      if (id) {
+        input.value = id
+        getFilterTitles()
+      }
+      
     }
+
   }, [])
 
   return (
