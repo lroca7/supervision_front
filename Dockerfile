@@ -3,6 +3,7 @@ WORKDIR /
 ADD . /
 
 EXPOSE 5000
+RUN rm -rf node_modules
 RUN npm install
 RUN npm run build
 RUN rm -rf node_modules
