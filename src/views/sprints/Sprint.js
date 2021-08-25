@@ -36,7 +36,6 @@ const Sprint = (props) => {
       })
         .then((response) => response.json())
         .then((result) => {
-          debugger
           if (result.codigo === 200) {
             setResultEjecucion(result.result)
           } else {

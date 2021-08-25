@@ -112,7 +112,6 @@ const PendingSprints = (props) => {
       if (action === "delete") {
         // alert("En desarrollo ...")
 
-        debugger
         history.push({
           pathname: '/read/title',
           search: `?idCorrida=${params.data.idCorrida}`

@@ -224,7 +224,6 @@ const CreateTitle = (props) => {
 
   useEffect(() => {
     
-    debugger
     const id = props.history.location.search.split("idCorrida=")[1]
 
     if (id && props.history.location.state) {

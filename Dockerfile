@@ -4,9 +4,9 @@ ADD . /
 
 EXPOSE 5000
 
-RUN npm cache clean --force
-RUN npm cache verify
-RUN rm -rf node_modules package-lock.json
+#RUN npm cache clean --force
+#RUN npm cache verify
+#RUN rm -rf node_modules package-lock.json
 RUN npm install
 RUN npm run build
 RUN rm -rf node_modules package-lock.json
