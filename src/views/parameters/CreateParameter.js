@@ -31,7 +31,8 @@ const CreateParameter = () => {
     { value: "Límites RF", label: "Límites RF" },
     { value: "Límites RV", label: "Límites RV" },
     { value: "Indices RV", label: "Indices RV" },
-    { value: "Indices RF", label: "Indices RF" }
+    { value: "Indices RF", label: "Indices RF" },
+    { value: "Monitoreo", label: "Monitoreo" }
   ]
   
   const [btnDisable, setbtnDisable] = useState(false)
