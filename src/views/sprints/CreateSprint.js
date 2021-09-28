@@ -453,7 +453,7 @@ const CreateSprint = () => {
               <Col md="12" className="mt-2">
                 <h4 className="mb-2">Flujo a ejecutar</h4>
                 <p>Seleccione el tipo de corrida:</p>
-                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  disabled= {corrida.idFlujo in (1,2,3,4)} >
+                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  disabled={corrida.idFlujo < 5} >
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" name="radio1" value={1}
