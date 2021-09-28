@@ -511,7 +511,6 @@ const ExecuteSprint = () => {
 
                   <Col md="12" className="mt-2">
                     <h4 className="mb-2">Flujo a ejecutar</h4>
-                    <p>Seleccione el flujo a ejecutar:</p>
                     {corrida.idFlujo < 5 &&
                       <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess} >
                       <FormGroup check>
