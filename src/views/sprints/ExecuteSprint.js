@@ -403,10 +403,10 @@ const ExecuteSprint = () => {
               setDataCorrida(result.result)
               setCorrida({
                 ...corrida,
-                id: result.result.idCorrida
-                // verParam: result.result.verParam,
-                // idFlujo: result.result.idFlujo,
-                // fecProceso: result.result.fecProceso
+                id: result.result.idCorrida,
+                verParam: result.result.verParam,
+                idFlujo: result.result.idFlujo,
+                fecProceso: result.result.fecProceso
               })
               setVerParam(result.result.verParam)
               setIdFlujo(result.result.idFlujo)
@@ -511,7 +511,7 @@ const ExecuteSprint = () => {
 
                   <Col md="12" className="mt-2">
                     <h4 className="mb-2">Flujo a ejecutar</h4>
-                    <p>Seleccione el tipo de corrida:</p>
+                    <p>Seleccione el flujo a ejecutar:</p>
                     {corrida.idFlujo < 5 &&
                       <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess} >
                       <FormGroup check>
