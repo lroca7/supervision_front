@@ -453,7 +453,7 @@ const CreateSprint = () => {
               <Col md="12" className="mt-2">
                 <h4 className="mb-2">Flujo a ejecutar</h4>
                 <p>Seleccione el tipo de corrida:</p>
-                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
+                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  disabled= {corrida.idFlujo in (1,2,3,4)} >
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" name="radio1" value={1}
@@ -478,6 +478,46 @@ const CreateSprint = () => {
                     <Label check>
                       <Input type="radio" name="radio1" value={4} checked={corrida.idFlujo === 4} />
                       Valoración
+                    </Label>
+                  </FormGroup>
+                </FormGroup>
+                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  disabled= {corrida.idFlujo === 5} >
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="radio1" value={5}
+                        checked={corrida.idFlujo === 5}
+                      />
+                      Límites RF
+                    </Label>
+                  </FormGroup>
+                </FormGroup>
+                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  disabled= {corrida.idFlujo === 6} >
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="radio1" value={6}
+                        checked={corrida.idFlujo === 6}
+                      />
+                      Indices RF
+                    </Label>
+                  </FormGroup>
+                </FormGroup>
+                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  disabled= {corrida.idFlujo === 7} >
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="radio1" value={7}
+                        checked={corrida.idFlujo === 7}
+                      />
+                      Límites RV
+                    </Label>
+                  </FormGroup>
+                </FormGroup>
+                <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  disabled= {corrida.idFlujo === 8} >
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="radio1" value={8}
+                        checked={corrida.idFlujo === 8}
+                      />
+                      Indices RV
                     </Label>
                   </FormGroup>
                 </FormGroup>

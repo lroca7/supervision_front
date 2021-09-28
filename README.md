@@ -24,3 +24,9 @@ docker stop supervision-app
 ```
 
 * Limpiar imagenes que no estan en ejecucion: "docker rmi -f $(docker images -a -q)"
+
+# Comandos git
+https://desarrolloweb.com/articulos/trabajar-ramas-git.html
+git branch
+git show-branch
+git checkout dev
