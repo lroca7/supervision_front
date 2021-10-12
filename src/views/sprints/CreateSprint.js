@@ -50,7 +50,7 @@ const CreateSprint = () => {
     { value: "temporales", label: "Temporales" }
   ]
 
-  const [grupoParameter, setGrupoParameter] = useState('Hola')
+  const [grupoParameter, setGrupoParameter] = useState('')
   const [typeParameter, setTypeParameter] = useState(null)
 
   const [parameters, setParameters] = useState([])
@@ -395,10 +395,21 @@ const CreateSprint = () => {
 
   }
 
-  useEffect(() => {
-
-
-  }, [])
+  const handleCandel = () => {  
+    setResponseCorrida(null)  
+    setGrupoParameter('')
+    setTypeParameter(null)  
+    setParameters([])
+    setParametersInitial([])
+    setSubgrupos([])
+    setDataCorrida(null)
+    setCorrida({
+      id: null,
+      verParam: null,
+      idFlujo: null,
+      fecProceso: null
+    })
+  }
 
   return (
     <div className="card">
@@ -595,7 +606,7 @@ const CreateSprint = () => {
                       <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
                         {!btnDisableLaunch ? 'Lanzar' : <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
                       </Button>
-                      <Button disabled={btnDisableLaunch} outline color="secondary">
+                      <Button disabled={btnDisableLaunch} outline color="secondary" onClick={handleCandel}>
                         Cancelar
                       </Button>
                     </div>

@@ -454,6 +454,23 @@ const ExecuteSprint = () => {
 
   }
 
+  const handleCandel = () => {    
+
+    setGrupoParameter('')
+    setTypeParameter(null)  
+    setParameters([])
+    setParametersInitial([])
+    setSubgrupos([])  
+    setDataCorrida(null)
+    setCorrida({
+      id: null
+    })    
+    setVerParam(null)
+    setIdFlujo(null)
+    setFecProceso(null)
+
+  }
+
 
   return (
     <div className="card">
@@ -666,7 +683,7 @@ const ExecuteSprint = () => {
                           <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
                             {!btnDisableLaunch ? 'Lanzar' : <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
                           </Button>
-                          <Button disabled={btnDisableLaunch} outline color="secondary">
+                          <Button disabled={btnDisableLaunch} outline color="secondary" onClick={handleCandel}>
                             Cancelar
                           </Button>
                         </div>

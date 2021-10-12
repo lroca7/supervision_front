@@ -261,6 +261,14 @@ const CreateTitle = (props) => {
 
   }, [])
 
+  const handleCandel = () => {    
+    setIdCorrida(null)
+    setOperations([])  
+    setInfoNemotecnico(null)  
+    setAllTitles([])
+    setNewTitle(null)
+  }
+
   return (
     <div className="card">
       <div class="card-header">
@@ -434,7 +442,7 @@ const CreateTitle = (props) => {
                   </Button>
                     <Button
                       color="secondary"
-                      onClick={(e) => (e)}
+                      onClick={handleCandel}
                     >
                       Cancelar
                     </Button>

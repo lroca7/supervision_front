@@ -69,10 +69,6 @@ const CreateParameter = () => {
       })
   }
 
-  useEffect(() => {
-    // console.log('data inicial -> ', students)
-  }, [])
-
   const [gridApi, setGridApi] = useState(null)
   const [gridColumnApi, setGridColumnApi] = useState(null)
 
@@ -151,6 +147,12 @@ const CreateParameter = () => {
       })
 
   }
+  
+  const handleCandel = () => {    
+    setGrupo(null)
+    setParameters([])
+    setSubgrupos([])
+  }
 
   return (
     <div className="card">
@@ -225,7 +227,7 @@ const CreateParameter = () => {
                     <Button disabled={btnDisable} color="primary mr-2" onClick={saveParameters}>
                       {!btnDisable ? 'Guardar' : <><Spinner color="white" size="sm" /><span className="ml-50">Guardando...</span></>}
                     </Button>
-                    <Button disabled={btnDisable} outline color="secondary">
+                    <Button disabled={btnDisable} outline color="secondary" onClick={handleCandel}>
                       Cancelar
                     </Button>
                   </div>
