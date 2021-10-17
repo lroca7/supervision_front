@@ -101,11 +101,12 @@ const ListParametersOficial = () => {
   const milesFormat = (params) => {
     debugger
     const value = params.value
-    // const name = params.data.nombre
-   
-    const valueFormat = Intl.NumberFormat().format(value)
-    // console.log(numberFormat2.format(group.valor))
-
+    
+    let valueFormat = value
+    if (!value.includes('.')) {
+      valueFormat = Intl.NumberFormat().format(value)
+    }
+    
     return valueFormat
   }
 
