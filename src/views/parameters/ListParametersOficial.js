@@ -49,6 +49,7 @@ const ListParametersOficial = () => {
       return r
     }, {})
     console.log("subgrupos -> ", group)
+   
     setSubgrupos(group)
   }
 
@@ -96,6 +97,27 @@ const ListParametersOficial = () => {
   const onCellValueChanged = (event) => {
     console.log('data after changes is: ', event.data)
   }
+
+  const milesFormat = (params) => {
+    debugger
+    const value = params.value
+    // const name = params.data.nombre
+   
+    const valueFormat = Intl.NumberFormat().format(value)
+    // console.log(numberFormat2.format(group.valor))
+
+    return valueFormat
+  }
+
+  const [columnsDef, setColumnsDef] = useState([
+    { field: "nombre", headerName: "Nombre"},
+    { 
+      field: "valor", 
+      headerName: "Valor",
+      valueFormatter: milesFormat
+    },
+    { field: "descripcion", headerName: "Descripción"}
+  ])
 
   return (
     <div className="card">
@@ -160,10 +182,11 @@ const ListParametersOficial = () => {
                         }}
                         // onGridReady={onGridReady}
                         // onCellValueChanged={onCellValueChanged}
+                        columnDefs={columnsDef}
                       >
-                        <AgGridColumn field="nombre" editable="false"></AgGridColumn>
+                        {/* <AgGridColumn field="nombre" editable="false"></AgGridColumn>
                         <AgGridColumn field="valor"></AgGridColumn>
-                        <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
+                        <AgGridColumn field="descripcion" editable="false"></AgGridColumn> */}
                       </AgGridReact>
                     </div>
                     <br />
@@ -172,7 +195,7 @@ const ListParametersOficial = () => {
               })}
             </>
           ) : (
-            <Alert color='secondary'>
+            <Alert color='secondary' className='p-2'>
               <p>No hay datos para visualizar </p>
             </Alert>
           )}
