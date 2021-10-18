@@ -23,7 +23,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
 import Swal from 'sweetalert2'
 
-import { URL_BACK } from "../../contants"
+import { columnsParametros, URL_BACK } from "../../contants"
 
 import { useHistory } from "react-router-dom"
 
@@ -58,10 +58,10 @@ const CreateSprint = () => {
   const [subgrupos, setSubgrupos] = useState([])
   const [dataCorrida, setDataCorrida] = useState(null)
   const [corrida, setCorrida] = useState({
-    id: null,
-    verParam: null,
-    idFlujo: null,
-    fecProceso: null
+    id: null
+    // verParam: null,
+    // idFlujo: null,
+    // fecProceso: null
   })
 
   //Analítica, Límites RF o Límites RV, Indices RV, Indices RF
@@ -72,6 +72,12 @@ const CreateSprint = () => {
     { value: "Indices RV", label: "Indices RV" },
     { value: "Indices RF", label: "Indices RF" }
   ]
+
+  const [verParam, setVerParam] = useState(null)
+  const [idFlujo, setIdFlujo] = useState(null)
+  const [fecProceso, setFecProceso] = useState(null)
+
+  const [btnChangeParameters, setBtnChangeParameters] = useState(false)
 
   const history = useHistory()
 
@@ -94,15 +100,33 @@ const CreateSprint = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
+          // setParameters(result.result.parametros)
+          // setParametersInitial(JSON.parse(JSON.stringify(result.result.parametros)))
+
+          // transFormData(result.result.parametros)
+
+          // setGrupoParameter(result.result.grupo)
+          // setTypeParameter({ value: result.result.tipo, label: result.result.tipo })
+
+          // setbtnDisable(false)
+
+
+          //////////////////
+
+          setVerParam(version)
           setParameters(result.result.parametros)
           setParametersInitial(JSON.parse(JSON.stringify(result.result.parametros)))
 
+          setSubgrupos([])
           transFormData(result.result.parametros)
 
           setGrupoParameter(result.result.grupo)
           setTypeParameter({ value: result.result.tipo, label: result.result.tipo })
 
           setbtnDisable(false)
+          setLoader(false)
+          setBtnChangeParameters(false)
+
         }
       })
   }
@@ -141,6 +165,9 @@ const CreateSprint = () => {
               idFlujo: result.result.corrida.idFlujo,
               fecProceso: result.result.corrida.fecProceso
             })
+            setVerParam(result.result.corrida.verParam)
+            setIdFlujo(result.result.corrida.idFlujo)
+            setFecProceso(result.result.corrida.fecProceso)
 
             setLoader(false)
           }
@@ -160,18 +187,21 @@ const CreateSprint = () => {
     }
   }
 
+
   const onChangeTypeProccess = (event) => {
-    setCorrida({
-      ...corrida,
-      idFlujo: parseInt(event.target.value)
-    })
+    // setCorrida({
+    //   ...corrida,
+    //   idFlujo: parseInt(event.target.value)
+    // })
+    setIdFlujo(parseInt(event.target.value))
   }
 
   const onChangeFechaProceso = (event) => {
-    setCorrida({
-      ...corrida,
-      fecProceso: event.target.value
-    })
+    // setCorrida({
+    //   ...corrida,
+    //   fecProceso: event.target.value
+    // })
+    setFecProceso(event.target.value)
   }
 
   const verCorrida = () => {
@@ -220,10 +250,11 @@ const CreateSprint = () => {
 
       if (result.codigo === 201) {
 
-        setCorrida({
-          ...corrida,
-          verParam: result.result.version
-        })
+        // setCorrida({
+        //   ...corrida,
+        //   verParam: result.result.version
+        // })
+        setVerParam(result.result.version)
         Swal.fire(
           `${result.result.mensaje}`,
           `Versión: ${result.result.version} <br/>
@@ -259,11 +290,18 @@ const CreateSprint = () => {
 
   const updateCorrida = async (parameters) => {
 
+    // const body = {
+    //   idCorrida: corrida.id,
+    //   verParam: corrida.verParam,
+    //   idFlujo: corrida.idFlujo,
+    //   fecProceso: corrida.fecProceso
+    // }
+
     const body = {
       idCorrida: corrida.id,
-      verParam: corrida.verParam,
-      idFlujo: corrida.idFlujo,
-      fecProceso: corrida.fecProceso
+      verParam,
+      idFlujo,
+      fecProceso
     }
 
     if (parameters !== undefined) {
@@ -409,6 +447,22 @@ const CreateSprint = () => {
       idFlujo: null,
       fecProceso: null
     })
+  }
+
+  const searchParameters = () => {
+
+    setBtnChangeParameters(true)
+
+    const inputVersion = document.getElementById('version')
+    const version = inputVersion.value
+    
+    if (version.length > 0) {
+      getParameters(version)
+    } else {
+      setBtnChangeParameters(false)
+      Swal.fire(``, `Ingrese una versión de parametros valida`, "warning")
+    }
+
   }
 
   return (
@@ -557,8 +611,25 @@ const CreateSprint = () => {
                 />
                 <label>Grupo: </label>
                 <Input type="text" name="grupo" id="grupo" value={grupoParameter} disabled />
+                {/* <label>Versión 1:</label>
+                <Input className="mb-2" type="text" name="version" id="version" value={dataCorrida.verParam} disabled /> */}
+
+                
+              </Col>
+              <Col md="12" className="mt-2">
                 <label>Versión:</label>
-                <Input className="mb-2" type="text" name="version" id="version" value={dataCorrida.verParam} disabled />
+                <div className="d-flex">
+                  <Col md="6" className="m-0 pl-0">
+                    <Input className="mb-2" type="text" name="version" id="version" placeholder={verParam} /> 
+                  </Col>
+                  <Col md="4" className="m-0 pl-0">
+                    <Button disabled={btnChangeParameters} color="primary mr-2" outline 
+                      onClick={(e) => searchParameters(e)}
+                    >
+                      {!btnChangeParameters ? 'Cambiar parametros' : <><Spinner color="blue" size="sm" /></>}
+                    </Button>
+                  </Col>                     
+                </div>                  
               </Col>
 
               <Col md="12" className="mt-2">
@@ -582,10 +653,8 @@ const CreateSprint = () => {
                                 editable: true,
                                 resizable: true
                               }}
+                              columnDefs={columnsParametros}
                             >
-                              <AgGridColumn field="nombre" editable="false"></AgGridColumn>
-                              <AgGridColumn field="valor"></AgGridColumn>
-                              <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
                             </AgGridReact>
                           </div>
                           <br />

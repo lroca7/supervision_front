@@ -19,6 +19,8 @@ import CustomTooltip from "./customTooltip.js"
 
 import { useHistory } from "react-router-dom"
 
+import { sortCorridas } from "../../utility/Utils"
+
 const Sprint = (props) => {
   const { colors } = useContext(ThemeColors)
 
@@ -64,7 +66,8 @@ const Sprint = (props) => {
       .then((result) => {
         if (result.codigo === 200) {
           console.log("Resultado", result.result)
-          setCorridas(result.result)
+          const data = sortCorridas(result.result)
+          setCorridas(data)          
           setLoader(false)
         } else {
           Swal.fire(

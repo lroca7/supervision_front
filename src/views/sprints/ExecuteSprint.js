@@ -32,6 +32,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
+import { milesFormat } from "../../utility/Utils"
 
 const ExecuteSprint = () => {
   const { colors } = useContext(ThemeColors)
@@ -63,12 +64,29 @@ const ExecuteSprint = () => {
   const [parameters, setParameters] = useState([])
   const [parametersInitial, setParametersInitial] = useState([])
   const [subgrupos, setSubgrupos] = useState([])
-
-  const [columnsDef, setColumnsDef] = useState([
-    { field: "nombre", headerName: "Nombre", editable: false, maxWidth: 150 },
-    { field: "valor", headerName: "Valor", maxWidth: 150 },
-    { field: "descripcion", headerName: "Descripción", editable: false, minWidth: 100, wrapText: true, autoHeight: true }
-  ])
+ 
+  const columnsDef = [
+    { 
+      field: "nombre", 
+      headerName: "Nombre",
+      maxWidth: 250,
+      editable: false
+    },
+    { 
+      field: "valor", 
+      headerName: "Valor",
+      valueFormatter: milesFormat,
+      maxWidth: 250
+    },
+    { 
+      field: "descripcion", 
+      headerName: "Descripción", 
+      editable: false,
+      minWidth: 150,
+      wrapText: true, 
+      autoHeight: true 
+    }
+  ]
 
   const [dataCorrida, setDataCorrida] = useState(null)
   const [corrida, setCorrida] = useState({
@@ -450,6 +468,9 @@ const ExecuteSprint = () => {
     
     if (version.length > 0) {
       getParameters(version)
+    } else {
+      setBtnChangeParameters(false)
+      Swal.fire(``, `Ingrese una versión de parametros valida`, "warning")
     }
 
   }
@@ -660,9 +681,6 @@ const ExecuteSprint = () => {
                                   }}
                                   columnDefs={columnsDef}
                                 >
-                                  {/* <AgGridColumn field="nombre" editable="false"></AgGridColumn>
-                                  <AgGridColumn field="valor"></AgGridColumn>
-                                  <AgGridColumn field="descripcion" editable="false"></AgGridColumn> */}
                                 </AgGridReact>
                               </div>
                               <br />

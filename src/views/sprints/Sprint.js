@@ -36,6 +36,8 @@ const Sprint = (props) => {
       })
         .then((response) => response.json())
         .then((result) => {
+          debugger
+          console.log('result -> ', result)
           if (result.codigo === 200) {
             setResultEjecucion(result.result)
           } else {
@@ -162,34 +164,36 @@ const Sprint = (props) => {
             <b>Observación: </b> {resultEjecucion.observacion}{" "}
           </p>
           {
-            resultEjecucion.detalleResultados.length > 0 && (
-              <>
-                <p>
-                  <b>Resultados reportados: </b> {resultEjecucion.resultados}{" "}
-                </p>
+            resultEjecucion.detalleResultados !== undefined && (
+              resultEjecucion.detalleResultados.length > 0 && (
+                <>
+                  <p>
+                    <b>Resultados reportados: </b> {resultEjecucion.resultados}{" "}
+                  </p>
 
-                <table className='table-detalle-corrida mt-2'>
-                  <thead>
-                    <tr>
-                      <th>Proceso</th>
-                      <th>Fecha</th>
-                      <th>Descripción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {resultEjecucion.detalleResultados.map(r => {
-                    return (
+                  <table className='table-detalle-corrida mt-2'>
+                    <thead>
                       <tr>
-                        <td>{r.nombreproceso}</td>
-                        <td>{r.fechareporte}</td>
-                        <td>{r.detalle}</td>
+                        <th>Proceso</th>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
                       </tr>
-                    )
-                  })}
-                  </tbody>
-                </table>
-              </>
-            ) 
+                    </thead>
+                    <tbody>
+                    {resultEjecucion.detalleResultados.map(r => {
+                      return (
+                        <tr>
+                          <td>{r.nombreproceso}</td>
+                          <td>{r.fechareporte}</td>
+                          <td>{r.detalle}</td>
+                        </tr>
+                      )
+                    })}
+                    </tbody>
+                  </table>
+                </>
+              ) 
+            )
           }
         </div>
       ) : (

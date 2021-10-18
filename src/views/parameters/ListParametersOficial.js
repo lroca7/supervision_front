@@ -14,7 +14,7 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
-import { URL_BACK } from "../../contants"
+import { columnsParametros, URL_BACK } from "../../contants"
 
 const ListParametersOficial = () => {
   const { colors } = useContext(ThemeColors)
@@ -49,6 +49,25 @@ const ListParametersOficial = () => {
       return r
     }, {})
     console.log("subgrupos -> ", group)
+   
+    if (group['Posturas'] !== undefined) {
+      if (group['Posturas'].length > 0) {
+        const posturas = group['Posturas'].filter(g => {
+          return g.key !== 'timeMinPosEnrPre'
+        })
+        posturas.map(p => {
+          if (p.key === 'variPrecioMinPos') {
+            p.nombre = 'Variación mínima'
+          }
+          if (p.key === 'variPrecioMaxPos') {
+            p.nombre = 'Variación máxima'
+          }
+          return p
+        })
+        group['Posturas'] = posturas
+      }
+    }
+    
    
     setSubgrupos(group)
   }
@@ -92,33 +111,6 @@ const ListParametersOficial = () => {
     // getParameters()
     // console.log('data inicial -> ', students)
   }, [])
-
-
-  const onCellValueChanged = (event) => {
-    console.log('data after changes is: ', event.data)
-  }
-
-  const milesFormat = (params) => {
-    debugger
-    const value = params.value
-    
-    let valueFormat = value
-    if (!value.includes('.')) {
-      valueFormat = Intl.NumberFormat().format(value)
-    }
-    
-    return valueFormat
-  }
-
-  const [columnsDef, setColumnsDef] = useState([
-    { field: "nombre", headerName: "Nombre"},
-    { 
-      field: "valor", 
-      headerName: "Valor",
-      valueFormatter: milesFormat
-    },
-    { field: "descripcion", headerName: "Descripción"}
-  ])
 
   return (
     <div className="card">
@@ -181,13 +173,8 @@ const ListParametersOficial = () => {
                           editable: false,
                           resizable: true
                         }}
-                        // onGridReady={onGridReady}
-                        // onCellValueChanged={onCellValueChanged}
-                        columnDefs={columnsDef}
+                        columnDefs={columnsParametros}
                       >
-                        {/* <AgGridColumn field="nombre" editable="false"></AgGridColumn>
-                        <AgGridColumn field="valor"></AgGridColumn>
-                        <AgGridColumn field="descripcion" editable="false"></AgGridColumn> */}
                       </AgGridReact>
                     </div>
                     <br />

@@ -89,19 +89,28 @@ const CreateTitle = (props) => {
   }
 
   const [columnsDef, setColumnsDef] = useState([
-    { field: "nemotecnico", headerName: "Nemotécnico", maxWidth: 120 },
+    { field: "nemotecnico", headerName: "Nemotécnico", maxWidth: 150 },
     { field: "moneda", headerName: "Moneda", maxWidth: 90 },
     { field: "fechavencimiento", headerName: "F. vencimiento", maxWidth: 120 },
     { field: "diasalvencimiento", headerName: "Días vencimiento", maxWidth: 120 },
     {
       field: "tir",
-      headerName: "TIR",
+      headerName: "TIR (%)",
       maxWidth: 90,
       cellRendererFramework: (field) => {
-        return (field.value * 100).toFixed(2)
+        debugger
+        return `${(field.value * 100).toFixed(2)} %`
       }
     },
-    { field: "preciosucio", headerName: "Precio sucio", minWidth: 100 },
+    { 
+      field: "preciosucio", 
+      headerName: "Precio sucio", 
+      minWidth: 100,
+      cellRendererFramework: (field) => {
+        debugger
+        return `${parseFloat(field.value).toFixed(4)} %`
+      }
+    },
     { field: "mkorigen", headerName: "Mercado origen", minWidth: 90 },
     {
       headerName: "Acciones",

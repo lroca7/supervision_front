@@ -28,6 +28,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Swal from "sweetalert2"
 
 import { URL_BACK } from "../../../contants"
+import { sortCorridas } from "../../../utility/Utils"
 
 const PendingSprints = (props) => {
   const { colors } = useContext(ThemeColors)
@@ -51,13 +52,8 @@ const PendingSprints = (props) => {
       .then((result) => {
         if (result.codigo === 200) {
           // transFormData(result.result)
-
-          const rowData = [
-            { make: "Toyota", model: "Celica", price: 35000 },
-            { make: "Ford", model: "Mondeo", price: 32000 },
-            { make: "Porsche", model: "Boxter", price: 72000 }
-          ]
-
+          const data = sortCorridas(result.result)
+          setCorridas(data)   
           setCorridas(result.result)
         } else {
           Swal.fire(

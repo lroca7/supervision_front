@@ -77,3 +77,30 @@ export const selectThemeColors = theme => ({
     neutral30: '#ededed' // for input hover border-color
   }
 })
+
+export const milesFormat = (params) => {
+  const value = params.value
+  
+  let valueFormat = value
+  if (!value.includes('.')) {
+    valueFormat = Intl.NumberFormat().format(value)
+  }
+  
+  return valueFormat
+}
+
+export const sortCorridas = (data) => {
+  data.sort(function(a, b) {
+    debugger
+    const nameA = a.idCorrida.toUpperCase()
+    const nameB = b.idCorrida.toUpperCase()
+    if (nameA > nameB) {
+      return -1
+    }
+    if (nameA < nameB) {
+      return 1
+    }
+    return 0
+  })
+  return data
+}

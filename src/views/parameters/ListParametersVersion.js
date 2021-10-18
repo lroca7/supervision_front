@@ -1,5 +1,4 @@
-import { useContext, useState, useEffect } from "react"
-import { ThemeColors } from "@src/utility/context/ThemeColors"
+import { useState } from "react"
 import {
   Row,
   Col,
@@ -7,18 +6,16 @@ import {
   Spinner,
   Input
 } from "reactstrap"
-import { AgGridColumn, AgGridReact } from "ag-grid-react"
+import { AgGridReact } from "ag-grid-react"
 
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
 import Swal from "sweetalert2"
 
-import { URL_BACK } from "../../contants"
-
+import { URL_BACK, columnsParametros} from "../../contants"
 
 const ListParametersVersion = () => {
-  const { colors } = useContext(ThemeColors)
 
   const [loader, setLoader] = useState(false)
 
@@ -122,10 +119,8 @@ const ListParametersVersion = () => {
                               editable: false,
                               resizable: true
                             }}
+                            columnDefs={columnsParametros}
                           >
-                            <AgGridColumn field="nombre" editable="false"></AgGridColumn>
-                            <AgGridColumn field="valor"></AgGridColumn>
-                            <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
                           </AgGridReact>
                         </div>
                         <br />

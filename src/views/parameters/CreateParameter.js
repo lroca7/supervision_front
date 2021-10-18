@@ -19,7 +19,8 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 
 import Swal from 'sweetalert2'
 
-import { URL_BACK } from "../../contants"
+import { columnsParametros, URL_BACK } from "../../contants"
+
 
 const CreateParameter = () => {
   const { colors } = useContext(ThemeColors)
@@ -203,10 +204,11 @@ const CreateParameter = () => {
                             }}
                             onGridReady={onGridReady}
                             onCellValueChanged={onCellValueChanged}
+                            columnDefs={columnsParametros}
                           >
-                            <AgGridColumn field="nombre" editable="false"></AgGridColumn>
+                            {/* <AgGridColumn field="nombre" editable="false"></AgGridColumn>
                             <AgGridColumn field="valor"></AgGridColumn>
-                            <AgGridColumn field="descripcion" editable="false"></AgGridColumn>
+                            <AgGridColumn field="descripcion" editable="false"></AgGridColumn> */}
                           </AgGridReact>
                         </div>
                         <br />
