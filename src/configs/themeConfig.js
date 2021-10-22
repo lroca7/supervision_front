@@ -16,7 +16,7 @@ const themeConfig = {
       isHidden: false, //Con esto se quita o pone el menu
       isCollapsed: false
     },
-    navbar: {
+    navbar: {//Con type se controla la barra superior
       // ? For horizontal menu, navbar type will work for navMenu type
       type: 'static', // static , sticky , floating, hidden
       backgroundColor: 'primary' // BS color options [primary, success, etc]
