@@ -4,12 +4,14 @@
 * src\configs\themeConfig.js se configura que tenga menu y barra superior
 * src\contants.js se configura endpoint de microservicios backend
 
+------
+* Ruta servidor /opt/git/supervision_front
+
 ```
 docker build . -t supervision_front
 docker run --rm -d -p 5000:5000 --name supervision-app supervision_front
 ```
-# Ruta servidor
-/opt/git/supervision_front
+
 # Publicar Imagen
 ```
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 503553001946.dkr.ecr.us-east-1.amazonaws.com
