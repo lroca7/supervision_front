@@ -91,7 +91,6 @@ export const milesFormat = (params) => {
 
 export const sortCorridas = (data) => {
   data.sort(function(a, b) {
-    debugger
     const nameA = a.idCorrida.toUpperCase()
     const nameB = b.idCorrida.toUpperCase()
     if (nameA > nameB) {

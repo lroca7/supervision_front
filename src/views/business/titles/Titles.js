@@ -98,7 +98,6 @@ const CreateTitle = (props) => {
       headerName: "TIR (%)",
       maxWidth: 90,
       cellRendererFramework: (field) => {
-        debugger
         return `${(field.value * 100).toFixed(2)} %`
       }
     },
@@ -107,7 +106,6 @@ const CreateTitle = (props) => {
       headerName: "Precio sucio", 
       minWidth: 100,
       cellRendererFramework: (field) => {
-        debugger
         return `${parseFloat(field.value).toFixed(4)} %`
       }
     },
