@@ -1,5 +1,9 @@
 # Construir Imagen Docker
 
+--------- AJUSTAR CONFIGURACIONES -----------
+* src\configs\themeConfig.js se configura que tenga menu y barra superior
+* src\contants.js se configura endpoint de microservicios backend
+
 ```
 docker build . -t supervision_front
 docker run --rm -d -p 5000:5000 --name supervision-app supervision_front

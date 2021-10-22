@@ -13,7 +13,7 @@ const themeConfig = {
     type: 'vertical', // vertical, horizontal
     contentWidth: 'full', // full, boxed
     menu: {
-      isHidden: false,
+      isHidden: false, //Con esto se quita o pone el menu
       isCollapsed: false
     },
     navbar: {
