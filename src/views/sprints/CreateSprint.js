@@ -74,7 +74,7 @@ const CreateSprint = () => {
   ]
 
   const [verParam, setVerParam] = useState(null)
-  const [idFlujo, setIdFlujo] = useState(null)
+  const [idFlujo, setIdFlujo] = useState(1)
   const [fecProceso, setFecProceso] = useState(null)
 
   const [btnChangeParameters, setBtnChangeParameters] = useState(false)
@@ -162,12 +162,14 @@ const CreateSprint = () => {
               ...corrida,
               id: result.result.corrida.idCorrida,
               verParam: result.result.corrida.verParam,
-              idFlujo: result.result.corrida.idFlujo,
+              idFlujo: result.result.idFlujo,
               fecProceso: result.result.corrida.fecProceso
             })
             setVerParam(result.result.corrida.verParam)
             setIdFlujo(result.result.corrida.idFlujo)
             setFecProceso(result.result.corrida.fecProceso)
+
+            console.log('Id flujo: ', result.result.corrida.idFlujo)
 
             setLoader(false)
           }
@@ -293,7 +295,7 @@ const CreateSprint = () => {
     // const body = {
     //   idCorrida: corrida.id,
     //   verParam: corrida.verParam,
-    //   idFlujo: corrida.idFlujo,
+    //   idFlujo: idFlujo,
     //   fecProceso: corrida.fecProceso
     // }
 
@@ -518,78 +520,78 @@ const CreateSprint = () => {
 
               <Col md="12" className="mt-2">
                 <h4 className="mb-2">Flujo a ejecutar</h4>
-                {corrida.idFlujo < 5 &&
+                {idFlujo < 5 &&
                   <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess} >
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" name="radio1" value={1}
-                        checked={corrida.idFlujo === 1}
+                        checked={idFlujo === 1}
                       />
                       PBO/N&S - Márgenes - Valoración (manual y automático, FDS arranca directamente en valoración)
                     </Label>
                   </FormGroup>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" name="radio1" value={2} checked={corrida.idFlujo === 2} />
+                      <Input type="radio" name="radio1" value={2} checked={idFlujo === 2} />
                       PBO - Márgenes - Valoración (Solo manual)
                     </Label>
                   </FormGroup>
                   <FormGroup check >
                     <Label check>
-                      <Input type="radio" name="radio1" value={3} checked={corrida.idFlujo === 3} />
+                      <Input type="radio" name="radio1" value={3} checked={idFlujo === 3} />
                       Márgenes - Valoración
                     </Label>
                   </FormGroup>
                   <FormGroup check >
                     <Label check>
-                      <Input type="radio" name="radio1" value={4} checked={corrida.idFlujo === 4} />
+                      <Input type="radio" name="radio1" value={4} checked={idFlujo === 4} />
                       Valoración
                     </Label>
                   </FormGroup>
                 </FormGroup>
                 }
-                {corrida.idFlujo ===  5 &&
+                {idFlujo ===  5 &&
                 <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}   >
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" name="radio1" value={5}
-                        checked={corrida.idFlujo === 5}
+                        checked={idFlujo === 5}
                       />
                       Límites RF
                     </Label>
                   </FormGroup>
                 </FormGroup>
                 }
-                {corrida.idFlujo ===  6 &&
+                {idFlujo ===  6 &&
                 <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" name="radio1" value={6}
-                        checked={corrida.idFlujo === 6}
+                        checked={idFlujo === 6}
                       />
                       Indices RF
                     </Label>
                   </FormGroup>
                 </FormGroup>
                 }
-                {corrida.idFlujo ===  7 &&
+                {idFlujo ===  7 &&
                 <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" name="radio1" value={7}
-                        checked={corrida.idFlujo === 7}
+                        checked={idFlujo === 7}
                       />
                       Límites RV
                     </Label>
                   </FormGroup>
                 </FormGroup>
                 }
-                {corrida.idFlujo ===  8 &&
+                {idFlujo ===  8 &&
                 <FormGroup id="radio-type" tag="fieldset" onChange={onChangeTypeProccess}  >
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" name="radio1" value={8}
-                        checked={corrida.idFlujo === 8}
+                        checked={idFlujo === 8}
                       />
                       Indices RV
                     </Label>
