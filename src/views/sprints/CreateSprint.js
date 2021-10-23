@@ -510,7 +510,8 @@ const CreateSprint = () => {
                 <Input type="text" name="fecha" id="fecha" value={dataCorrida.fecCreacion} disabled />
                 <label>Fecha del proceso:</label>
                 <Input className="pickadate" type="date" name="date-corrida" id="date-corrida"
-                  value={corrida.fecProceso}
+                  // value={corrida.fecProceso}
+                  value={fecProceso}
                   onChange={onChangeFechaProceso} />
 
               </Col>
