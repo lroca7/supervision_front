@@ -106,7 +106,7 @@ const CreateTitle = (props) => {
       headerName: "Precio sucio", 
       minWidth: 100,
       cellRendererFramework: (field) => {
-        return `${parseFloat(field.value).toFixed(4)} %`
+        return `${parseFloat(field.value).toFixed(4)}`
       }
     },
     { field: "mkorigen", headerName: "Mercado origen", minWidth: 90 },
