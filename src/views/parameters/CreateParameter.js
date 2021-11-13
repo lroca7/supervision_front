@@ -198,40 +198,42 @@ const CreateParameter = () => {
       item['tabla'] = elementosFI
     }
 
-    if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
-      debugger
-      const itemValor = item.valor
-      const splitOneSP =  itemValor.split('/')
-      const elementosSP = []
-      splitOneSP.forEach(element => {
-        
-        const splitTwoSP = element.split(':')
-        const grupos = splitTwoSP[2].split(' ')
-        
-        grupos.forEach((grupo, key) => {
+    if (grupo !== 'Monitoreo RV') {
+      if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
+        debugger
+        const itemValor = item.valor
+        const splitOneSP =  itemValor.split('/')
+        const elementosSP = []
+        splitOneSP.forEach(element => {
           
-          const sGrupo = grupo.split('(')
-          const nGrupo = sGrupo[0]
+          const splitTwoSP = element.split(':')
+          const grupos = splitTwoSP[2].split(' ')
           
-          
-          const obj = {
-            id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
-            nombre: splitTwoSP[0],
-            rango: splitTwoSP[1],
-            grupo: nGrupo
-          }
+          grupos.forEach((grupo, key) => {
+            
+            const sGrupo = grupo.split('(')
+            const nGrupo = sGrupo[0]
+            
+            
+            const obj = {
+              id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
+              nombre: splitTwoSP[0],
+              rango: splitTwoSP[1],
+              grupo: nGrupo
+            }
 
-          if (sGrupo[1] !== undefined) {
-            const gPorcentaje = sGrupo[1].replace(')', '')
-            obj.porcentaje = gPorcentaje
-          }
+            if (sGrupo[1] !== undefined) {
+              const gPorcentaje = sGrupo[1].replace(')', '')
+              obj.porcentaje = gPorcentaje
+            }
 
-          elementosSP.push(obj)
+            elementosSP.push(obj)
+          })
+          
         })
-        
-      })
 
-      item['tabla'] = elementosSP
+        item['tabla'] = elementosSP
+      }
     }
 
     setItemSelected(item)
@@ -490,7 +492,7 @@ const CreateParameter = () => {
                               <label>Valor:</label>
                               
                               {
-                                (itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') ? (
+                                ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
                                   <table className="table-edit">
                                     <thead>
                                       <tr>
