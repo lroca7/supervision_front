@@ -20,6 +20,7 @@ import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
 import "../../assets/scss/app.scss"
+import { groupBy } from "../../utility/Utils"
 
 const ListParametersOficial = () => {
   const { colors } = useContext(ThemeColors)
@@ -100,7 +101,7 @@ const ListParametersOficial = () => {
       }
     }
     console.log("subgrupos -> ", group)
-    debugger
+
     setSubgrupos(group)
   }
 
@@ -119,7 +120,7 @@ const ListParametersOficial = () => {
 
           setParameters(result.result.parametros)
           transFormData(result.result.parametros)
-          debugger
+          
           setRows(result.result.parametros)
         } else {
           setError({
@@ -142,7 +143,7 @@ const ListParametersOficial = () => {
   const handleClose = () => setOpen(false)
 
   const editItemTable = (item) => {
-    debugger
+    
     setOpen(true)
     console.log("Item -> ", item)
     
@@ -169,74 +170,40 @@ const ListParametersOficial = () => {
       item['tabla'] = elementosPapa
     }
 
+    if (item.key ===  'porAjustadorLim_SP') {
+      debugger
+      const itemValor = item.valor
+      const splitOneSP =  itemValor.split('/')
+      const elementosSP = []
+      splitOneSP.forEach(element => {
+        
+        const splitTwoSP = element.split(':')
+        const grupos = splitTwoSP[2].split(' ')
+        
+        grupos.forEach((grupo, key) => {
+          const sGrupo = grupo.split('(')
+          const nGrupo = sGrupo[0]
+          const gPorcentaje = sGrupo[1].replace(')', '')
+          const obj = {
+            id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
+            nombre: splitTwoSP[0],
+            rango: splitTwoSP[1],
+            grupo: nGrupo,
+            porcentaje: gPorcentaje
+          }
+          elementosSP.push(obj)
+        })
+        
+      })
+
+      item['tabla'] = elementosSP
+    }
+
     setItemSelected(item)
 
     return item
   }
 
-  const drawItemTable = (item) => {
-
-    const nItem = editItemTable(item)
-    debugger
-    {
-      nItem.key === 'confIndices' ? (
-        <table className="table-edit">
-          <thead>
-            <tr>
-              <th>Grupo</th>
-              <th>Nombre</th>
-              <th>Rango días</th>
-              {/* <th colSpan="2">Rango días</th> */}
-            </tr>
-          </thead>
-          <tbody>
-            {
-              nItem.tabla.map(t => {
-                return <tr className='valor'>
-                  <td>{t.grupo}</td>
-                  <td>{t.nombre}</td>
-                  <td>
-                    <Input id={t.id} placeholder={t.rango} />
-                  </td>
-                </tr>
-              })
-            }
-          </tbody>
-        </table>
-      ) : (
-        <Input
-          type="text"
-          name="valor"
-          id="valor"
-          value={nItem.valor}
-        />
-      )                              
-    }
-
-    return <p>Hola q tal</p>
-  }
-
-  const handleChangeRango = (id) => {
-    // debugger
-    const valueNew = event.target.value
-    console.log(itemSelected)
-    const toChange = itemSelected.tabla.filter(element => {
-      return element.id === id
-    })
-
-    // debugger
-  }
-
-  function groupBy(arr, criteria) {
-    const newObj = arr.reduce(function (acc, currentValue) {
-      if (!acc[currentValue[criteria]]) {
-        acc[currentValue[criteria]] = []
-      }
-      acc[currentValue[criteria]].push(currentValue)
-      return acc
-    }, {})
-    return newObj
-  }
 
   const getValoresChanged = () => {
     console.log(itemSelected)
@@ -351,12 +318,7 @@ const ListParametersOficial = () => {
     console.log(subgrupos)
   }
 
-  const updateItemSelected = () => {
-    const valores = getValoresChanged()
 
-    debugger
-
-  }
   useEffect(() => {
     // getParameters()
     // console.log('data inicial -> ', students)
@@ -403,7 +365,6 @@ const ListParametersOficial = () => {
                   <h4 className="mt-2 mb-2">Subgrupos</h4>
 
                   {Object.entries(subgrupos).map(([key, value]) => {
-                    debugger
                     return (
                       <div>
                         <h5>{key}</h5>
@@ -438,7 +399,7 @@ const ListParametersOficial = () => {
                                       {row.nombre}
                                     </TableCell>
                                     <TableCell>
-                                      {drawItemTable(row)}
+                                      {row.valor}
                                     </TableCell>
                                     <TableCell>
                                       {row.descripcion}
@@ -448,7 +409,7 @@ const ListParametersOficial = () => {
                                         variant="contained"
                                         onClick={() => editItemTable(row)}
                                       >
-                                        Editar
+                                        Ver
                                       </Button>
                                     </TableCell>
                                   </TableRow>
@@ -483,7 +444,7 @@ const ListParametersOficial = () => {
 
                   <Modal isOpen={open} size='lg'>
                     <ModalHeader >
-                      Editar
+                      Ver detalle
                     </ModalHeader>
                     <ModalBody>
                       {
@@ -503,26 +464,35 @@ const ListParametersOficial = () => {
                               <label>Valor:</label>
                               
                               {
-                                itemSelected.key === 'confIndices' ? (
+                                (itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP') ? (
                                   <table className="table-edit">
                                     <thead>
                                       <tr>
                                         <th>Grupo</th>
                                         <th>Nombre</th>
                                         <th>Rango días</th>
-                                        {/* <th colSpan="2">Rango días</th> */}
+                                        {
+                                          itemSelected.key === 'porAjustadorLim_SP' && (
+                                            <th>% Ajustador por criterio comisión</th>
+                                          )
+                                        }
                                       </tr>
                                     </thead>
                                     <tbody>
                                       {
                                         itemSelected.tabla.map(t => {
-                                          return <tr className='jaja'>
+                                          return <tr className='valor'>
                                             <td>{t.grupo}</td>
                                             <td>{t.nombre}</td>
                                             <td>
-                                              <Input id={t.id} placeholder={t.rango} 
-                                              onChange={() => { handleChangeRango(t.id) }}/>
+                                              {/* <Input id={t.id} value={t.rango} disabled={true}/> */}
+                                              {t.rango}
                                             </td>
+                                            {
+                                              itemSelected.key === 'porAjustadorLim_SP' && (
+                                                <td>{t.porcentaje}</td>
+                                              )
+                                            }
                                           </tr>
                                         })
                                       }
@@ -533,6 +503,7 @@ const ListParametersOficial = () => {
                                     type="text"
                                     name="valor"
                                     id="valor"
+                                    disabled={true}
                                     value={itemSelected.valor}
                                   />
                                 )                              
@@ -553,12 +524,6 @@ const ListParametersOficial = () => {
                       }
                     </ModalBody>
                     <ModalFooter>
-                      <Button
-                        color="primary"
-                        onClick={() => { updateItemSelected() }}
-                      >
-                        Guardar
-                      </Button>{" "}
                       <Button onClick={handleClose}>Cancelar</Button>
                     </ModalFooter>
                   </Modal>
