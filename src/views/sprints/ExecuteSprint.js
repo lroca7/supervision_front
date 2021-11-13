@@ -42,7 +42,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
-import { groupBy, milesFormat } from "../../utility/Utils"
+import { groupBy, milesFormat, milesFormatTwo } from "../../utility/Utils"
 import "../../assets/scss/app.scss"
 
 const ExecuteSprint = () => {
@@ -722,7 +722,6 @@ const ExecuteSprint = () => {
     setOpen(false)
   }
 
-
   return (
     <div className="card">
       <div class="card-header">
@@ -925,7 +924,10 @@ const ExecuteSprint = () => {
                                         {row.nombre}
                                       </TableCell>
                                       <TableCell>
-                                        {row.valor}
+                                        {/* {row.valor} */}
+                                        {
+                                          (row.key === 'confIndices' || row.key === 'porAjustadorLim_SP' || row.key === 'porAjustadorLim_BL') ? <span className='special'>{row.valor}</span> : <span className='normal'>{milesFormatTwo(row.valor)}</span>
+                                        }
                                       </TableCell>
                                       <TableCell>
                                         {row.descripcion}
@@ -1032,7 +1034,10 @@ const ExecuteSprint = () => {
                                     type="text"
                                     name="valor"
                                     id={itemSelected.key}
-                                    placeholder={itemSelected.valor}
+                                    // placeholder={itemSelected.valor}
+                                    placeholder={
+                                      (itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') ? itemSelected.valor : milesFormatTwo(itemSelected.valor)
+                                    }
                                   />
                                 )                              
                               }
