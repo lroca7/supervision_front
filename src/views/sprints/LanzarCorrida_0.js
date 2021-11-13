@@ -17,18 +17,8 @@ import {
   FormGroup,
   Label,
   Input,
-  Alert,   
-  Modal, ModalBody, ModalHeader, ModalFooter 
+  Alert
 } from "reactstrap"
-
-
-import Table from "@mui/material/Table"
-import TableBody from "@mui/material/TableBody"
-import TableCell from "@mui/material/TableCell"
-import TableContainer from "@mui/material/TableContainer"
-import TableHead from "@mui/material/TableHead"
-import TableRow from "@mui/material/TableRow"
-import Paper from "@mui/material/Paper"
 
 import Select from "react-select"
 
@@ -42,8 +32,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import Swal from 'sweetalert2'
 
 import { URL_BACK } from "../../contants"
-import { groupBy, milesFormat } from "../../utility/Utils"
-import "../../assets/scss/app.scss"
+import { milesFormat } from "../../utility/Utils"
 
 const ExecuteSprint = () => {
   const { colors } = useContext(ThemeColors)
@@ -111,11 +100,6 @@ const ExecuteSprint = () => {
   const [idFlujo, setIdFlujo] = useState(null)
   const [fecProceso, setFecProceso] = useState(null)
 
-  
-  const [open, setOpen] = useState(false)
-  const [itemSelected, setItemSelected] = useState(null)
-
-
   const inputEl = useRef(null)
 
   const transFormData = (data) => {
@@ -177,6 +161,7 @@ const ExecuteSprint = () => {
   }
 
   const saveParameters = async () => {
+
 
     const keys = Object.keys(subgrupos)
 
@@ -390,13 +375,12 @@ const ExecuteSprint = () => {
 
   const launchCorrida = async () => {
 
-    debugger
+    // debugger
     setbtnDisableLaunch(true)
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
-      debugger
+      // debugger
       const stateSaveParameters = await saveParameters()
-      
       if (stateSaveParameters.codigo === 201) {
         const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
       }
@@ -506,156 +490,6 @@ const ExecuteSprint = () => {
     setIdFlujo(null)
     setFecProceso(null)
 
-  }
-
-
-  // LO NUEVO 
-  const handleClose = () => setOpen(false)
-
-  const editItemTable = (item) => {   
-    setOpen(true)
-    
-    if (item.key ===  'confIndices') {
-      const splitOne =  item.valor.split('/')
-      const elementosPapa = []
-      splitOne.forEach(element => {
-        const splitTwo = element.split(':')
-        const grupos = splitTwo[2].split(' ')
-        const elementos = []
-        grupos.forEach((grupo, key) => {
-          const obj = {
-            id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
-            nombre: splitTwo[0],
-            rango: splitTwo[1],
-            grupo
-          }
-          elementosPapa.push(obj)
-        })
-        
-      })
-
-      item['tabla'] = elementosPapa
-    }
-
-    setItemSelected(item)
-  }
-
-  const getValoresChanged = () => {
-    console.log(itemSelected)
-    const itemChanged = itemSelected
-    debugger
-    itemSelected.tabla.map(element => {
-      const input = document.getElementById(element.id)
-      if (input.value !== '') {
-        element.rango = input.value
-      }
-    })
-
-    const corto = itemSelected.tabla.filter(f => {
-      return f.nombre === 'corto'
-    })
-    const largo = itemSelected.tabla.filter(f => {
-      return f.nombre === 'largo'
-    })
-    const mediano = itemSelected.tabla.filter(f => {
-      return f.nombre === 'mediano'
-    })
-   
-    const cortos = groupBy(corto, "rango")
-    const c = Object.keys(cortos).length
-    
-    const largos = groupBy(largo, "rango")
-    const l = Object.keys(largos).length
-
-    const medianos = groupBy(mediano, "rango")
-    const m = Object.keys(medianos).length
-
-    console.log(cortos)
-    let valoresCorto = ''
-    let valoresLargo = ''
-    let valoresMediano = ''
-    
-    Object.entries(cortos).forEach(([key, value], kk) => {
-      //corto:0-1095:MH_DOP MH_USD BC_DOP CORP_DOP CORP_USD/
-      let stringCortos = ''
-
-      if (kk < c - 1) {
-        stringCortos = `corto:${key}:`
-      } else {
-        stringCortos = `/corto:${key}:`
-      }     
-      
-      value.forEach((element, k) => {
-        console.log(l)
-        
-        if (k === 0) {
-          stringCortos += `${element.grupo}`
-        } else {
-          stringCortos += ` ${element.grupo}`
-        }
-      })
-      
-      valoresCorto += stringCortos
-    })
-
-    Object.entries(largos).forEach(([key, value], kk) => {        
-      
-      let stringLargos = ''
-
-      if (kk < c - 1) {
-        stringLargos = `largo:${key}:`
-      } else {
-        stringLargos = `/largo:${key}:`
-      }     
-      
-      value.forEach((element, k) => {
-        console.log(l)
-        
-        if (k === 0) {
-          stringLargos += `${element.grupo}`
-        } else {
-          stringLargos += ` ${element.grupo}`
-        }
-      })
-      
-      valoresLargo += stringLargos
-    })
-
-    Object.entries(medianos).forEach(([key, value], kk) => {        
-      
-      let stringMedianos = ''
-
-      if (kk < c - 1) {
-        stringMedianos = `mediano:${key}:`
-      } else {
-        stringMedianos = `/mediano:${key}:`
-      }     
-      
-      value.forEach((element, k) => {
-        console.log(l)
-        
-        if (k === 0) {
-          stringMedianos += `${element.grupo}`
-        } else {
-          stringMedianos += ` ${element.grupo}`
-        }
-      })
-      
-      valoresMediano += stringMedianos
-    })
-
-    const valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
-
-    debugger
-    itemChanged.valor = valoresAll
-    setItemSelected(itemChanged)
-
-    console.log(subgrupos)
-  }
-
-  const updateItemSelected = () => {
-    getValoresChanged()
-    setOpen(false)
   }
 
 
@@ -826,70 +660,35 @@ const ExecuteSprint = () => {
 
                   <Col md="12" className="mt-2">
                     <h4 className="mb-2">Subgrupos</h4>
-                    
-                    {Object.entries(subgrupos).map(([key, value]) => {
-                      
-                      return (
-                        <div>
-                          <h5>{key}</h5>
-                          <br />
-                          {value.length > 0 && (
-                            <TableContainer component={Paper}>
-                              <Table
-                                sx={{ minWidth: 650 }}
-                                aria-label="simple table"
+                    {Object.entries(subgrupos).length > 0 ? (
+                      <>
+                        {Object.entries(subgrupos).map(([key, value]) => {
+                          return (
+                            <div>
+                              <h5>{key}</h5>
+                              <br />
+                              <div
+                                className="ag-theme-alpine"
+                                style={{ height: 200, width: "100%" }}
                               >
-                                <TableHead>
-                                  <TableRow>
-                                    <TableCell>Nombre</TableCell>
-                                    <TableCell>Valor</TableCell>
-                                    <TableCell>
-                                      Descripción
-                                    </TableCell>
-                                    <TableCell>Acciones</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                  {value.map((row) => (
-                                    <TableRow
-                                      key={row.key}
-                                      sx={{
-                                        "&:last-child td, &:last-child th": {
-                                          border: 0
-                                        }
-                                      }}
-                                    >
-                                      <TableCell component="th" scope="row">
-                                        {row.nombre}
-                                      </TableCell>
-                                      <TableCell>
-                                        {row.valor}
-                                      </TableCell>
-                                      <TableCell>
-                                        {row.descripcion}
-                                      </TableCell>
-                                      <TableCell>
-                                        <Button
-                                          variant="contained"
-                                          onClick={() => editItemTable(row)}
-                                        >
-                                          Editar
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </TableContainer>
-                          )}
+                                <AgGridReact
+                                  rowData={value}
+                                  defaultColDef={{
+                                    flex: 1,
+                                    minWidth: 110,
+                                    editable: true,
+                                    resizable: true
+                                  }}
+                                  columnDefs={columnsDef}
+                                >
+                                </AgGridReact>
+                              </div>
+                              <br />
+                            </div>
+                          )
+                        })}
 
-                      
-                          <br />
-                        </div>
-                      )
-                    })}
-
-                    <h5 className="mt-2">Convertir parametros en oficiales</h5>
+                        <h5 className="mt-2">Convertir parametros en oficiales</h5>
                         <CustomInput
                           className="custom-control-primary mb-4"
                           type="switch"
@@ -907,86 +706,10 @@ const ExecuteSprint = () => {
                           </Button>
                         </div>
 
-                  <Modal isOpen={open} size='lg'>
-                    <ModalHeader >
-                      Editar
-                    </ModalHeader>
-                    <ModalBody>
-                      {
-                        itemSelected !== null && (
-                          <Row className="modal-edit d-flex align-items-end justify-content-center">
-                            <Col md="12">
-                              <label>Nombre:</label>
-                              <Input
-                                type="text"
-                                name="name"
-                                id="name"
-                                disabled={true}
-                                value={itemSelected.nombre}
-                              />
-                            </Col>
-                            <Col md="12">
-                              <label>Valor:</label>
-                              
-                              {
-                                itemSelected.key === 'confIndices' ? (
-                                  <table className="table-edit">
-                                    <thead>
-                                      <tr>
-                                        <th>Grupo</th>
-                                        <th>Nombre</th>
-                                        <th>Rango días</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {
-                                        itemSelected.tabla.map(t => {
-                                          return <tr className='valor'>
-                                            <td>{t.grupo}</td>
-                                            <td>{t.nombre}</td>
-                                            <td>
-                                              <Input id={t.id} placeholder={t.rango} />
-                                            </td>
-                                          </tr>
-                                        })
-                                      }
-                                    </tbody>
-                                  </table>
-                                ) : (
-                                  <Input
-                                    type="text"
-                                    name="valor"
-                                    id="valor"
-                                    value={itemSelected.valor}
-                                  />
-                                )                              
-                              }
-                            </Col>
-                            <Col md="12">
-                              <label>Descripción:</label>
-                              <textarea
-                                type="text"
-                                name="valor"
-                                id="valor"
-                                disabled={true}
-                                value={itemSelected.descripcion}
-                              ></textarea>
-                            </Col>                            
-                          </Row>
-                        )
-                      }
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button
-                        color="primary"
-                        onClick={() => { updateItemSelected() }}
-                      >
-                        Guardar
-                      </Button>{" "}
-                      <Button onClick={handleClose}>Cancelar</Button>
-                    </ModalFooter>
-                  </Modal>
-                    
+                      </>
+                    ) : (
+                      <p>No hay datos para visualizar </p>
+                    )}
                   </Col>
                 </>
               )}
