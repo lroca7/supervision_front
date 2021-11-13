@@ -20,7 +20,7 @@ import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
 import "../../assets/scss/app.scss"
-import { groupBy } from "../../utility/Utils"
+import { groupBy, milesFormat, milesFormatTwo } from "../../utility/Utils"
 
 const ListParametersOficial = () => {
   const { colors } = useContext(ThemeColors)
@@ -150,7 +150,7 @@ const ListParametersOficial = () => {
 
     if (item.key ===  'confIndices') {
       const splitOne =  item.valor.split('/')
-      const elementosPapa = []
+      const elementosFI = []
       splitOne.forEach(element => {
         const splitTwo = element.split(':')
         const grupos = splitTwo[2].split(' ')
@@ -162,15 +162,15 @@ const ListParametersOficial = () => {
             rango: splitTwo[1],
             grupo
           }
-          elementosPapa.push(obj)
+          elementosFI.push(obj)
         })
         
       })
 
-      item['tabla'] = elementosPapa
+      item['tabla'] = elementosFI
     }
 
-    if (item.key ===  'porAjustadorLim_SP') {
+    if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
       debugger
       const itemValor = item.valor
       const splitOneSP =  itemValor.split('/')
@@ -399,7 +399,10 @@ const ListParametersOficial = () => {
                                       {row.nombre}
                                     </TableCell>
                                     <TableCell>
-                                      {row.valor}
+                                      {
+                                        (row.key === 'confIndices' || row.key === 'porAjustadorLim_SP' || row.key === 'porAjustadorLim_BL') ? row.valor : milesFormatTwo(row.valor)
+                                      }
+                                      {/* {milesFormat(row.valor)} */}
                                     </TableCell>
                                     <TableCell>
                                       {row.descripcion}
@@ -464,7 +467,7 @@ const ListParametersOficial = () => {
                               <label>Valor:</label>
                               
                               {
-                                (itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP') ? (
+                                (itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') ? (
                                   <table className="table-edit">
                                     <thead>
                                       <tr>
@@ -472,7 +475,7 @@ const ListParametersOficial = () => {
                                         <th>Nombre</th>
                                         <th>Rango días</th>
                                         {
-                                          itemSelected.key === 'porAjustadorLim_SP' && (
+                                          (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
                                             <th>% Ajustador por criterio comisión</th>
                                           )
                                         }
@@ -489,7 +492,7 @@ const ListParametersOficial = () => {
                                               {t.rango}
                                             </td>
                                             {
-                                              itemSelected.key === 'porAjustadorLim_SP' && (
+                                              (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
                                                 <td>{t.porcentaje}</td>
                                               )
                                             }
@@ -504,7 +507,7 @@ const ListParametersOficial = () => {
                                     name="valor"
                                     id="valor"
                                     disabled={true}
-                                    value={itemSelected.valor}
+                                    value={milesFormatTwo(itemSelected.valor)}
                                   />
                                 )                              
                               }

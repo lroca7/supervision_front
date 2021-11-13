@@ -79,6 +79,7 @@ export const selectThemeColors = theme => ({
 })
 
 export const milesFormat = (params) => {
+  debugger
   const value = params.value
   
   let valueFormat = value
@@ -88,6 +89,19 @@ export const milesFormat = (params) => {
   
   return valueFormat
 }
+
+export const milesFormatTwo = (params) => {
+  debugger
+  const value = params
+  
+  let valueFormat = value
+  if (!value.includes('.')) {
+    valueFormat = Intl.NumberFormat().format(value)
+  }
+  
+  return valueFormat
+}
+
 
 export const sortCorridas = (data) => {
   data.sort(function(a, b) {
