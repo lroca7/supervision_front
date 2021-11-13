@@ -19,6 +19,7 @@ import TableContainer from "@mui/material/TableContainer"
 import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
+import "../../assets/scss/app.scss"
 
 const ListParametersOficial = () => {
   const { colors } = useContext(ThemeColors)
@@ -79,7 +80,7 @@ const ListParametersOficial = () => {
       r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
       return r
     }, {})
-    console.log("subgrupos -> ", group)
+    
 
     if (group["Posturas"] !== undefined) {
       if (group["Posturas"].length > 0) {
@@ -98,7 +99,8 @@ const ListParametersOficial = () => {
         group["Posturas"] = posturas
       }
     }
-
+    console.log("subgrupos -> ", group)
+    debugger
     setSubgrupos(group)
   }
 
@@ -117,6 +119,7 @@ const ListParametersOficial = () => {
 
           setParameters(result.result.parametros)
           transFormData(result.result.parametros)
+          debugger
           setRows(result.result.parametros)
         } else {
           setError({
@@ -142,7 +145,173 @@ const ListParametersOficial = () => {
     debugger
     setOpen(true)
     console.log("Item -> ", item)
+    
+
+    if (item.key ===  'confIndices') {
+      const splitOne =  item.valor.split('/')
+      const elementosPapa = []
+      splitOne.forEach(element => {
+        const splitTwo = element.split(':')
+        const grupos = splitTwo[2].split(' ')
+        const elementos = []
+        grupos.forEach((grupo, key) => {
+          const obj = {
+            id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
+            nombre: splitTwo[0],
+            rango: splitTwo[1],
+            grupo
+          }
+          elementosPapa.push(obj)
+        })
+        
+      })
+
+      item['tabla'] = elementosPapa
+    }
+
     setItemSelected(item)
+  }
+
+  const handleChangeRango = (id) => {
+    // debugger
+    const valueNew = event.target.value
+    console.log(itemSelected)
+    const toChange = itemSelected.tabla.filter(element => {
+      return element.id === id
+    })
+
+    // debugger
+  }
+
+  function groupBy(arr, criteria) {
+    const newObj = arr.reduce(function (acc, currentValue) {
+      if (!acc[currentValue[criteria]]) {
+        acc[currentValue[criteria]] = []
+      }
+      acc[currentValue[criteria]].push(currentValue)
+      return acc
+    }, {})
+    return newObj
+  }
+
+  const getValoresChanged = () => {
+    console.log(itemSelected)
+    const itemChanged = itemSelected
+    debugger
+    itemSelected.tabla.map(element => {
+      const input = document.getElementById(element.id)
+      if (input.value !== '') {
+        element.rango = input.value
+      }
+    })
+
+    const corto = itemSelected.tabla.filter(f => {
+      return f.nombre === 'corto'
+    })
+    const largo = itemSelected.tabla.filter(f => {
+      return f.nombre === 'largo'
+    })
+    const mediano = itemSelected.tabla.filter(f => {
+      return f.nombre === 'mediano'
+    })
+   
+    const cortos = groupBy(corto, "rango")
+    const c = Object.keys(cortos).length
+    
+    const largos = groupBy(largo, "rango")
+    const l = Object.keys(largos).length
+
+    const medianos = groupBy(mediano, "rango")
+    const m = Object.keys(medianos).length
+
+    console.log(cortos)
+    let valoresCorto = ''
+    let valoresLargo = ''
+    let valoresMediano = ''
+    
+    Object.entries(cortos).forEach(([key, value], kk) => {
+      //corto:0-1095:MH_DOP MH_USD BC_DOP CORP_DOP CORP_USD/
+      let stringCortos = ''
+
+      if (kk < c - 1) {
+        stringCortos = `corto:${key}:`
+      } else {
+        stringCortos = `/corto:${key}:`
+      }     
+      
+      value.forEach((element, k) => {
+        console.log(l)
+        
+        if (k === 0) {
+          stringCortos += `${element.grupo}`
+        } else {
+          stringCortos += ` ${element.grupo}`
+        }
+      })
+      
+      valoresCorto += stringCortos
+    })
+
+    Object.entries(largos).forEach(([key, value], kk) => {        
+      
+      let stringLargos = ''
+
+      if (kk < c - 1) {
+        stringLargos = `largo:${key}:`
+      } else {
+        stringLargos = `/largo:${key}:`
+      }     
+      
+      value.forEach((element, k) => {
+        console.log(l)
+        
+        if (k === 0) {
+          stringLargos += `${element.grupo}`
+        } else {
+          stringLargos += ` ${element.grupo}`
+        }
+      })
+      
+      valoresLargo += stringLargos
+    })
+
+    Object.entries(medianos).forEach(([key, value], kk) => {        
+      
+      let stringMedianos = ''
+
+      if (kk < c - 1) {
+        stringMedianos = `mediano:${key}:`
+      } else {
+        stringMedianos = `/mediano:${key}:`
+      }     
+      
+      value.forEach((element, k) => {
+        console.log(l)
+        
+        if (k === 0) {
+          stringMedianos += `${element.grupo}`
+        } else {
+          stringMedianos += ` ${element.grupo}`
+        }
+      })
+      
+      valoresMediano += stringMedianos
+    })
+
+    const valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
+
+    debugger
+    itemChanged.valor = valoresAll
+    setItemSelected(itemChanged)
+
+    console.log(subgrupos)
+  }
+
+  const updateItemSelected = () => {
+    const valores = getValoresChanged()
+
+    debugger
+
   }
   useEffect(() => {
     // getParameters()
@@ -190,11 +359,12 @@ const ListParametersOficial = () => {
                   <h4 className="mt-2 mb-2">Subgrupos</h4>
 
                   {Object.entries(subgrupos).map(([key, value]) => {
+                    debugger
                     return (
                       <div>
                         <h5>{key}</h5>
                         <br />
-                        {rows.length > 0 && (
+                        {value.length > 0 && (
                           <TableContainer component={Paper}>
                             <Table
                               sx={{ minWidth: 650 }}
@@ -203,15 +373,15 @@ const ListParametersOficial = () => {
                               <TableHead>
                                 <TableRow>
                                   <TableCell>Nombre</TableCell>
-                                  <TableCell align="right">Valor</TableCell>
-                                  <TableCell align="right">
+                                  <TableCell>Valor</TableCell>
+                                  <TableCell>
                                     Descripción
                                   </TableCell>
-                                  <TableCell align="right">Acciones</TableCell>
+                                  <TableCell>Acciones</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
-                                {rows.map((row) => (
+                                {value.map((row) => (
                                   <TableRow
                                     key={row.key}
                                     sx={{
@@ -223,13 +393,13 @@ const ListParametersOficial = () => {
                                     <TableCell component="th" scope="row">
                                       {row.nombre}
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell>
                                       {row.valor}
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell>
                                       {row.descripcion}
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell>
                                       <Button
                                         variant="contained"
                                         onClick={() => editItemTable(row)}
@@ -267,7 +437,7 @@ const ListParametersOficial = () => {
                     )
                   })}
 
-                  <Modal isOpen={open}>
+                  <Modal isOpen={open} size='lg'>
                     <ModalHeader >
                       Editar
                     </ModalHeader>
@@ -287,12 +457,42 @@ const ListParametersOficial = () => {
                             </Col>
                             <Col md="12">
                               <label>Valor:</label>
-                              <Input
-                                type="text"
-                                name="valor"
-                                id="valor"
-                                value={itemSelected.valor}
-                              />
+                              
+                              {
+                                itemSelected.key === 'confIndices' ? (
+                                  <table className="table-edit">
+                                    <thead>
+                                      <tr>
+                                        <th>Grupo</th>
+                                        <th>Nombre</th>
+                                        <th>Rango días</th>
+                                        {/* <th colSpan="2">Rango días</th> */}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {
+                                        itemSelected.tabla.map(t => {
+                                          return <tr className='jaja'>
+                                            <td>{t.grupo}</td>
+                                            <td>{t.nombre}</td>
+                                            <td>
+                                              <Input id={t.id} placeholder={t.rango} 
+                                              onChange={() => { handleChangeRango(t.id) }}/>
+                                            </td>
+                                          </tr>
+                                        })
+                                      }
+                                    </tbody>
+                                  </table>
+                                ) : (
+                                  <Input
+                                    type="text"
+                                    name="valor"
+                                    id="valor"
+                                    value={itemSelected.valor}
+                                  />
+                                )                              
+                              }
                             </Col>
                             <Col md="12">
                               <label>Descripción:</label>
@@ -311,11 +511,11 @@ const ListParametersOficial = () => {
                     <ModalFooter>
                       <Button
                         color="primary"
-                        onClick={open}
+                        onClick={() => { updateItemSelected() }}
                       >
                         Guardar
                       </Button>{" "}
-                      <Button onClick={handleClose}>Cancel</Button>
+                      <Button onClick={handleClose}>Cancelar</Button>
                     </ModalFooter>
                   </Modal>
                 </>

@@ -33,12 +33,29 @@
 }
 
 .modal-edit {
+  // background: red;
   .col-md-12 {
     display: flex;
     flex-direction: column;  
   }
- 
+
+  .table-edit {
+    border: 1px solid darkgray;
+    border-collapse: collapse;
+    th {
+      background: #006bc2;
+      color: #ffffff;
+      text-align: center;
+    }
+    th, td {
+      border: 1px solid darkgray;
+      border-collapse: collapse;
+      padding: 5px 10px;
+    }
+  }
 }
 textarea {
   min-height: 150px;
+  border-radius: 5px;
+  padding: 5px 10px;
 }
