@@ -102,7 +102,6 @@ const CreateSprint = () => {
       r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
       return r
     }, {})
-    console.log("subgrupos -> ", group)
     setSubgrupos(group)
   }
 

@@ -390,11 +390,11 @@ const ExecuteSprint = () => {
 
   const launchCorrida = async () => {
 
-    debugger
+    // debugger
     setbtnDisableLaunch(true)
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
-      debugger
+      // debugger
       const stateSaveParameters = await saveParameters()
       
       if (stateSaveParameters.codigo === 201) {
@@ -406,7 +406,7 @@ const ExecuteSprint = () => {
       const updateState = await updateCorrida()
 
       if (updateState.codigo === 201) {
-        // await executeCorrida()
+        await executeCorrida()
       }
 
     }
