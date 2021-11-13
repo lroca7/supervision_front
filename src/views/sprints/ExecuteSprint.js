@@ -538,48 +538,65 @@ const ExecuteSprint = () => {
       item['tabla'] = elementosFI
     }
 
-    if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
-      debugger
-      const itemValor = item.valor
-      const splitOneSP =  itemValor.split('/')
-      const elementosSP = []
-      splitOneSP.forEach(element => {
-        
-        const splitTwoSP = element.split(':')
-        const grupos = splitTwoSP[2].split(' ')
-        
-        grupos.forEach((grupo, key) => {
-          const sGrupo = grupo.split('(')
-          const nGrupo = sGrupo[0]
-          const gPorcentaje = sGrupo[1].replace(')', '')
-          const obj = {
-            id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
-            nombre: splitTwoSP[0],
-            rango: splitTwoSP[1],
-            grupo: nGrupo,
-            porcentaje: gPorcentaje
-          }
-          elementosSP.push(obj)
-        })
-        
-      })
+    if (grupo !== 'Monitoreo RV') {
+      if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
+        debugger
+        const itemValor = item.valor
+        const splitOneSP =  itemValor.split('/')
+        const elementosSP = []
+        splitOneSP.forEach(element => {
+          
+          const splitTwoSP = element.split(':')
+          const grupos = splitTwoSP[2].split(' ')
+          
+          grupos.forEach((grupo, key) => {
+            
+            const sGrupo = grupo.split('(')
+            const nGrupo = sGrupo[0]
+            
+            
+            const obj = {
+              id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
+              nombre: splitTwoSP[0],
+              rango: splitTwoSP[1],
+              grupo: nGrupo
+            }
 
-      item['tabla'] = elementosSP
+            if (sGrupo[1] !== undefined) {
+              const gPorcentaje = sGrupo[1].replace(')', '')
+              obj.porcentaje = gPorcentaje
+            }
+
+            elementosSP.push(obj)
+          })
+          
+        })
+
+        item['tabla'] = elementosSP
+      }
     }
 
     setItemSelected(item)
   }
 
   const getValoresChanged = () => {
-    console.log(itemSelected)
+    
     const itemChanged = itemSelected
 
     if (itemSelected.tabla !== undefined) {
       itemSelected.tabla.map(element => {
         const input = document.getElementById(element.id)
+        const inputPorcentaje  = document.getElementById(`porcentaje_${element.id}`)
+        
         if (input.value !== '') {
           element.rango = input.value
         }
+        if (inputPorcentaje !== null) {
+          if (inputPorcentaje.value !== '') {
+            element.porcentaje = inputPorcentaje.value
+          }
+        }
+        
       })
   
       const corto = itemSelected.tabla.filter(f => {
@@ -618,10 +635,20 @@ const ExecuteSprint = () => {
         value.forEach((element, k) => {
           
           if (k === 0) {
-            stringCortos += `${element.grupo}`
+            
+            if (element.porcentaje) {
+              stringCortos += `${element.grupo}(${element.porcentaje})`
+            } else {
+              stringCortos += `${element.grupo}`
+            }
           } else {
-            stringCortos += ` ${element.grupo}`
+            if (element.porcentaje) {
+              stringCortos += ` ${element.grupo}(${element.porcentaje})`
+            } else {
+              stringCortos += ` ${element.grupo}`
+            }            
           }
+         
         })
         
         valoresCorto += stringCortos
@@ -672,12 +699,13 @@ const ExecuteSprint = () => {
   
       let valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
       valoresAll = valoresAll.replaceAll('//', '/')
-
+      if (valoresAll.charAt(0) === '/') {
+        valoresAll = valoresAll.slice(1)
+      }
       itemChanged.valor = valoresAll
       setItemSelected(itemChanged)
 
     } else {
-
       const input = document.getElementById(itemSelected.key)
       if (input.value !== '') {
         itemChanged.valor = input.value
@@ -963,38 +991,51 @@ const ExecuteSprint = () => {
                                 <label>Valor:</label>
                                 
                                 {
-                                  itemSelected.key === 'confIndices' ? (
-                                    <table className="table-edit">
-                                      <thead>
-                                        <tr>
-                                          <th>Grupo</th>
-                                          <th>Nombre</th>
-                                          <th>Rango días</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
+                                ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
+                                  <table className="table-edit">
+                                    <thead>
+                                      <tr>
+                                        <th>Grupo</th>
+                                        <th>Nombre</th>
+                                        <th>Rango días</th>
                                         {
-                                          itemSelected.tabla.map(t => {
-                                            return <tr className='valor'>
-                                              <td>{t.grupo}</td>
-                                              <td>{t.nombre}</td>
-                                              <td>
-                                                <Input id={t.id} placeholder={t.rango} />
-                                              </td>
-                                            </tr>
-                                          })
+                                          (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
+                                            <th>% Ajustador por criterio comisión</th>
+                                          )
                                         }
-                                      </tbody>
-                                    </table>
-                                  ) : (
-                                    <Input
-                                      type="text"
-                                      name="valor"
-                                      id={itemSelected.key}
-                                      placeholder={itemSelected.valor}
-                                    />
-                                  )                              
-                                }
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {
+                                        itemSelected.tabla.map(t => {
+                                          return <tr className='valor'>
+                                            <td>{t.grupo}</td>
+                                            <td>{t.nombre}</td>
+                                            <td>
+                                              <Input id={t.id} placeholder={t.rango} />
+                                            </td>
+                                            {
+                                              (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
+                                                <td>
+                                                  {/* {t.porcentaje} */}
+                                                  <Input id={`porcentaje_${ t.id}`} placeholder={t.porcentaje} />
+                                                </td>
+                                              )
+                                            }
+                                          </tr>
+                                        })
+                                      }
+                                    </tbody>
+                                  </table>
+                                ) : (
+                                  <Input
+                                    type="text"
+                                    name="valor"
+                                    id={itemSelected.key}
+                                    placeholder={itemSelected.valor}
+                                  />
+                                )                              
+                              }
                               </Col>
                               <Col md="12">
                                 <label>Descripción:</label>

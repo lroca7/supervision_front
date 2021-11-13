@@ -251,8 +251,10 @@ const CreateParameter = () => {
         if (input.value !== '') {
           element.rango = input.value
         }
-        if (inputPorcentaje.value !== '') {
-          element.porcentaje = inputPorcentaje.value
+        if (inputPorcentaje !== null) {
+          if (inputPorcentaje.value !== '') {
+            element.porcentaje = inputPorcentaje.value
+          }
         }
         
       })
@@ -357,7 +359,9 @@ const CreateParameter = () => {
   
       let valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
       valoresAll = valoresAll.replaceAll('//', '/')
-
+      if (valoresAll.charAt(0) === '/') {
+        valoresAll = valoresAll.slice(1)
+      }
       itemChanged.valor = valoresAll
       setItemSelected(itemChanged)
 
