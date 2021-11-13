@@ -170,6 +170,50 @@ const ListParametersOficial = () => {
     }
 
     setItemSelected(item)
+
+    return item
+  }
+
+  const drawItemTable = (item) => {
+
+    const nItem = editItemTable(item)
+    debugger
+    {
+      nItem.key === 'confIndices' ? (
+        <table className="table-edit">
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              <th>Nombre</th>
+              <th>Rango días</th>
+              {/* <th colSpan="2">Rango días</th> */}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              nItem.tabla.map(t => {
+                return <tr className='valor'>
+                  <td>{t.grupo}</td>
+                  <td>{t.nombre}</td>
+                  <td>
+                    <Input id={t.id} placeholder={t.rango} />
+                  </td>
+                </tr>
+              })
+            }
+          </tbody>
+        </table>
+      ) : (
+        <Input
+          type="text"
+          name="valor"
+          id="valor"
+          value={nItem.valor}
+        />
+      )                              
+    }
+
+    return <p>Hola q tal</p>
   }
 
   const handleChangeRango = (id) => {
@@ -394,7 +438,7 @@ const ListParametersOficial = () => {
                                       {row.nombre}
                                     </TableCell>
                                     <TableCell>
-                                      {row.valor}
+                                      {drawItemTable(row)}
                                     </TableCell>
                                     <TableCell>
                                       {row.descripcion}

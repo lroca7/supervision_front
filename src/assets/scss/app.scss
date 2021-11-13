@@ -48,12 +48,28 @@
       text-align: center;
     }
     th, td {
+      font-family: "Montserrat", Helvetica, Arial, serif;
       border: 1px solid darkgray;
       border-collapse: collapse;
       padding: 5px 10px;
     }
   }
 }
+
+.table-parametros {
+  thead {
+    background: #d0d0d0;
+    th {
+      color: #515456;
+      font-weight: 600;
+    }
+  }
+  
+  th, td {
+    font-family: "Montserrat", Helvetica, Arial, serif;
+  }
+}
+
 textarea {
   min-height: 150px;
   border-radius: 5px;

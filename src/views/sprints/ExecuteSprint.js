@@ -513,6 +513,7 @@ const ExecuteSprint = () => {
   const handleClose = () => setOpen(false)
 
   const editItemTable = (item) => {   
+    debugger
     setOpen(true)
     
     if (item.key ===  'confIndices') {
@@ -543,114 +544,120 @@ const ExecuteSprint = () => {
   const getValoresChanged = () => {
     console.log(itemSelected)
     const itemChanged = itemSelected
-    debugger
-    itemSelected.tabla.map(element => {
-      const input = document.getElementById(element.id)
+
+    if (itemSelected.tabla !== undefined) {
+      itemSelected.tabla.map(element => {
+        const input = document.getElementById(element.id)
+        if (input.value !== '') {
+          element.rango = input.value
+        }
+      })
+  
+      const corto = itemSelected.tabla.filter(f => {
+        return f.nombre === 'corto'
+      })
+      const largo = itemSelected.tabla.filter(f => {
+        return f.nombre === 'largo'
+      })
+      const mediano = itemSelected.tabla.filter(f => {
+        return f.nombre === 'mediano'
+      })
+     
+      const cortos = groupBy(corto, "rango")
+      const c = Object.keys(cortos).length
+      
+      const largos = groupBy(largo, "rango")
+      const l = Object.keys(largos).length
+  
+      const medianos = groupBy(mediano, "rango")
+      const m = Object.keys(medianos).length
+  
+      let valoresCorto = ''
+      let valoresLargo = ''
+      let valoresMediano = ''
+      
+      Object.entries(cortos).forEach(([key, value], kk) => {
+        //corto:0-1095:MH_DOP MH_USD BC_DOP CORP_DOP CORP_USD/
+        let stringCortos = ''
+  
+        if (kk < c - 1) {
+          stringCortos = `corto:${key}:`
+        } else {
+          stringCortos = `/corto:${key}:`
+        }     
+        
+        value.forEach((element, k) => {
+          
+          if (k === 0) {
+            stringCortos += `${element.grupo}`
+          } else {
+            stringCortos += ` ${element.grupo}`
+          }
+        })
+        
+        valoresCorto += stringCortos
+      })
+  
+      Object.entries(largos).forEach(([key, value], kk) => {        
+        
+        let stringLargos = ''
+  
+        if (kk < l - 1) {
+          stringLargos = `largo:${key}:`
+        } else {
+          stringLargos = `/largo:${key}:`
+        }     
+        
+        value.forEach((element, k) => {
+          
+          if (k === 0) {
+            stringLargos += `${element.grupo}`
+          } else {
+            stringLargos += ` ${element.grupo}`
+          }
+        })
+        
+        valoresLargo += stringLargos
+      })
+  
+      Object.entries(medianos).forEach(([key, value], kk) => {        
+        
+        let stringMedianos = ''
+  
+        if (kk < m - 1) {
+          stringMedianos = `mediano:${key}:`
+        } else {
+          stringMedianos = `/mediano:${key}:`
+        }     
+        
+        value.forEach((element, k) => {
+          if (k === 0) {
+            stringMedianos += `${element.grupo}`
+          } else {
+            stringMedianos += ` ${element.grupo}`
+          }
+        })
+        
+        valoresMediano += stringMedianos
+      })
+  
+      let valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
+      valoresAll = valoresAll.replace('//', '/')
+
+      itemChanged.valor = valoresAll
+      setItemSelected(itemChanged)
+
+    } else {
+
+      const input = document.getElementById(itemSelected.key)
       if (input.value !== '') {
-        element.rango = input.value
+        itemChanged.valor = input.value
+        setItemSelected(itemChanged)
       }
-    })
 
-    const corto = itemSelected.tabla.filter(f => {
-      return f.nombre === 'corto'
-    })
-    const largo = itemSelected.tabla.filter(f => {
-      return f.nombre === 'largo'
-    })
-    const mediano = itemSelected.tabla.filter(f => {
-      return f.nombre === 'mediano'
-    })
-   
-    const cortos = groupBy(corto, "rango")
-    const c = Object.keys(cortos).length
-    
-    const largos = groupBy(largo, "rango")
-    const l = Object.keys(largos).length
+    }
 
-    const medianos = groupBy(mediano, "rango")
-    const m = Object.keys(medianos).length
 
-    console.log(cortos)
-    let valoresCorto = ''
-    let valoresLargo = ''
-    let valoresMediano = ''
-    
-    Object.entries(cortos).forEach(([key, value], kk) => {
-      //corto:0-1095:MH_DOP MH_USD BC_DOP CORP_DOP CORP_USD/
-      let stringCortos = ''
-
-      if (kk < c - 1) {
-        stringCortos = `corto:${key}:`
-      } else {
-        stringCortos = `/corto:${key}:`
-      }     
-      
-      value.forEach((element, k) => {
-        console.log(l)
-        
-        if (k === 0) {
-          stringCortos += `${element.grupo}`
-        } else {
-          stringCortos += ` ${element.grupo}`
-        }
-      })
-      
-      valoresCorto += stringCortos
-    })
-
-    Object.entries(largos).forEach(([key, value], kk) => {        
-      
-      let stringLargos = ''
-
-      if (kk < c - 1) {
-        stringLargos = `largo:${key}:`
-      } else {
-        stringLargos = `/largo:${key}:`
-      }     
-      
-      value.forEach((element, k) => {
-        console.log(l)
-        
-        if (k === 0) {
-          stringLargos += `${element.grupo}`
-        } else {
-          stringLargos += ` ${element.grupo}`
-        }
-      })
-      
-      valoresLargo += stringLargos
-    })
-
-    Object.entries(medianos).forEach(([key, value], kk) => {        
-      
-      let stringMedianos = ''
-
-      if (kk < c - 1) {
-        stringMedianos = `mediano:${key}:`
-      } else {
-        stringMedianos = `/mediano:${key}:`
-      }     
-      
-      value.forEach((element, k) => {
-        console.log(l)
-        
-        if (k === 0) {
-          stringMedianos += `${element.grupo}`
-        } else {
-          stringMedianos += ` ${element.grupo}`
-        }
-      })
-      
-      valoresMediano += stringMedianos
-    })
-
-    const valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
-
-    debugger
-    itemChanged.valor = valoresAll
-    setItemSelected(itemChanged)
-
-    console.log(subgrupos)
   }
 
   const updateItemSelected = () => {
@@ -684,7 +691,6 @@ const ExecuteSprint = () => {
               )}
             </Col>
           </Row>
-
 
           {loader === true ? (
             <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
@@ -838,14 +844,13 @@ const ExecuteSprint = () => {
                               <Table
                                 sx={{ minWidth: 650 }}
                                 aria-label="simple table"
+                                className="table-parametros"
                               >
                                 <TableHead>
                                   <TableRow>
                                     <TableCell>Nombre</TableCell>
                                     <TableCell>Valor</TableCell>
-                                    <TableCell>
-                                      Descripción
-                                    </TableCell>
+                                    <TableCell>Descripción</TableCell>
                                     <TableCell>Acciones</TableCell>
                                   </TableRow>
                                 </TableHead>
@@ -956,8 +961,8 @@ const ExecuteSprint = () => {
                                   <Input
                                     type="text"
                                     name="valor"
-                                    id="valor"
-                                    value={itemSelected.valor}
+                                    id={itemSelected.key}
+                                    placeholder={itemSelected.valor}
                                   />
                                 )                              
                               }
