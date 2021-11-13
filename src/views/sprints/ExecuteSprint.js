@@ -518,7 +518,7 @@ const ExecuteSprint = () => {
     
     if (item.key ===  'confIndices') {
       const splitOne =  item.valor.split('/')
-      const elementosPapa = []
+      const elementosFI = []
       splitOne.forEach(element => {
         const splitTwo = element.split(':')
         const grupos = splitTwo[2].split(' ')
@@ -530,12 +530,41 @@ const ExecuteSprint = () => {
             rango: splitTwo[1],
             grupo
           }
-          elementosPapa.push(obj)
+          elementosFI.push(obj)
         })
         
       })
 
-      item['tabla'] = elementosPapa
+      item['tabla'] = elementosFI
+    }
+
+    if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
+      debugger
+      const itemValor = item.valor
+      const splitOneSP =  itemValor.split('/')
+      const elementosSP = []
+      splitOneSP.forEach(element => {
+        
+        const splitTwoSP = element.split(':')
+        const grupos = splitTwoSP[2].split(' ')
+        
+        grupos.forEach((grupo, key) => {
+          const sGrupo = grupo.split('(')
+          const nGrupo = sGrupo[0]
+          const gPorcentaje = sGrupo[1].replace(')', '')
+          const obj = {
+            id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
+            nombre: splitTwoSP[0],
+            rango: splitTwoSP[1],
+            grupo: nGrupo,
+            porcentaje: gPorcentaje
+          }
+          elementosSP.push(obj)
+        })
+        
+      })
+
+      item['tabla'] = elementosSP
     }
 
     setItemSelected(item)
@@ -642,7 +671,7 @@ const ExecuteSprint = () => {
       })
   
       let valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
-      valoresAll = valoresAll.replace('//', '/')
+      valoresAll = valoresAll.replaceAll('//', '/')
 
       itemChanged.valor = valoresAll
       setItemSelected(itemChanged)
@@ -912,85 +941,85 @@ const ExecuteSprint = () => {
                           </Button>
                         </div>
 
-                  <Modal isOpen={open} size='lg'>
-                    <ModalHeader >
-                      Editar
-                    </ModalHeader>
-                    <ModalBody>
-                      {
-                        itemSelected !== null && (
-                          <Row className="modal-edit d-flex align-items-end justify-content-center">
-                            <Col md="12">
-                              <label>Nombre:</label>
-                              <Input
-                                type="text"
-                                name="name"
-                                id="name"
-                                disabled={true}
-                                value={itemSelected.nombre}
-                              />
-                            </Col>
-                            <Col md="12">
-                              <label>Valor:</label>
-                              
-                              {
-                                itemSelected.key === 'confIndices' ? (
-                                  <table className="table-edit">
-                                    <thead>
-                                      <tr>
-                                        <th>Grupo</th>
-                                        <th>Nombre</th>
-                                        <th>Rango días</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {
-                                        itemSelected.tabla.map(t => {
-                                          return <tr className='valor'>
-                                            <td>{t.grupo}</td>
-                                            <td>{t.nombre}</td>
-                                            <td>
-                                              <Input id={t.id} placeholder={t.rango} />
-                                            </td>
-                                          </tr>
-                                        })
-                                      }
-                                    </tbody>
-                                  </table>
-                                ) : (
-                                  <Input
-                                    type="text"
-                                    name="valor"
-                                    id={itemSelected.key}
-                                    placeholder={itemSelected.valor}
-                                  />
-                                )                              
-                              }
-                            </Col>
-                            <Col md="12">
-                              <label>Descripción:</label>
-                              <textarea
-                                type="text"
-                                name="valor"
-                                id="valor"
-                                disabled={true}
-                                value={itemSelected.descripcion}
-                              ></textarea>
-                            </Col>                            
-                          </Row>
-                        )
-                      }
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button
-                        color="primary"
-                        onClick={() => { updateItemSelected() }}
-                      >
-                        Guardar
-                      </Button>{" "}
-                      <Button onClick={handleClose}>Cancelar</Button>
-                    </ModalFooter>
-                  </Modal>
+                    <Modal isOpen={open} size='lg'>
+                      <ModalHeader >
+                        Editar
+                      </ModalHeader>
+                      <ModalBody>
+                        {
+                          itemSelected !== null && (
+                            <Row className="modal-edit d-flex align-items-end justify-content-center">
+                              <Col md="12">
+                                <label>Nombre:</label>
+                                <Input
+                                  type="text"
+                                  name="name"
+                                  id="name"
+                                  disabled={true}
+                                  value={itemSelected.nombre}
+                                />
+                              </Col>
+                              <Col md="12">
+                                <label>Valor:</label>
+                                
+                                {
+                                  itemSelected.key === 'confIndices' ? (
+                                    <table className="table-edit">
+                                      <thead>
+                                        <tr>
+                                          <th>Grupo</th>
+                                          <th>Nombre</th>
+                                          <th>Rango días</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {
+                                          itemSelected.tabla.map(t => {
+                                            return <tr className='valor'>
+                                              <td>{t.grupo}</td>
+                                              <td>{t.nombre}</td>
+                                              <td>
+                                                <Input id={t.id} placeholder={t.rango} />
+                                              </td>
+                                            </tr>
+                                          })
+                                        }
+                                      </tbody>
+                                    </table>
+                                  ) : (
+                                    <Input
+                                      type="text"
+                                      name="valor"
+                                      id={itemSelected.key}
+                                      placeholder={itemSelected.valor}
+                                    />
+                                  )                              
+                                }
+                              </Col>
+                              <Col md="12">
+                                <label>Descripción:</label>
+                                <textarea
+                                  type="text"
+                                  name="valor"
+                                  id="valor"
+                                  disabled={true}
+                                  value={itemSelected.descripcion}
+                                ></textarea>
+                              </Col>                            
+                            </Row>
+                          )
+                        }
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button
+                          color="primary"
+                          onClick={() => { updateItemSelected() }}
+                        >
+                          Guardar
+                        </Button>{" "}
+                        <Button onClick={handleClose}>Cancelar</Button>
+                      </ModalFooter>
+                    </Modal>
                     
                   </Col>
                 </>
