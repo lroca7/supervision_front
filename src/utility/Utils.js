@@ -79,7 +79,7 @@ export const selectThemeColors = theme => ({
 })
 
 export const milesFormat = (params) => {
-  debugger
+  
   const value = params.value
   
   let valueFormat = value
@@ -95,7 +95,13 @@ export const milesFormatTwo = (params) => {
   const value = params
   
   let valueFormat = value
-  if (!value.includes('.')) {
+  const regExp = /[a-zA-Z]/g
+              
+  if (regExp.test(valueFormat)) {
+    return valueFormat
+  } 
+
+  if (!value.includes('.') && !value.includes('-')) {
     valueFormat = Intl.NumberFormat().format(value)
   }
   

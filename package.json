@@ -5,6 +5,8 @@
   "dependencies": {
     "@casl/ability": "5.2.2",
     "@casl/react": "2.1.1",
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
     "@fullcalendar/core": "5.7.2",
     "@fullcalendar/daygrid": "5.7.2",
     "@fullcalendar/interaction": "5.7.2",
@@ -13,6 +15,7 @@
     "@fullcalendar/timegrid": "5.7.2",
     "@fullcalendar/timeline": "5.7.2",
     "@hookform/resolvers": "1.3.4",
+    "@mui/material": "^5.1.0",
     "@uppy/react": "1.10.8",
     "ag-grid-community": "^25.3.0",
     "ag-grid-react": "^25.3.0",

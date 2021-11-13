@@ -400,7 +400,7 @@ const ListParametersOficial = () => {
                                     </TableCell>
                                     <TableCell>
                                       {
-                                        (row.key === 'confIndices' || row.key === 'porAjustadorLim_SP' || row.key === 'porAjustadorLim_BL') ? row.valor : milesFormatTwo(row.valor)
+                                        (row.key === 'confIndices' || row.key === 'porAjustadorLim_SP' || row.key === 'porAjustadorLim_BL') ? <span className='special'>{row.valor}</span> : <span className='normal'>{milesFormatTwo(row.valor)}</span>
                                       }
                                       {/* {milesFormat(row.valor)} */}
                                     </TableCell>
