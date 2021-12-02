@@ -171,7 +171,7 @@ const ListParametersOficial = () => {
     }
 
     if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
-      debugger
+
       const itemValor = item.valor
       const splitOneSP =  itemValor.split('/')
       const elementosSP = []
@@ -208,7 +208,7 @@ const ListParametersOficial = () => {
   const getValoresChanged = () => {
     console.log(itemSelected)
     const itemChanged = itemSelected
-    debugger
+
     itemSelected.tabla.map(element => {
       const input = document.getElementById(element.id)
       if (input.value !== '') {
@@ -311,7 +311,7 @@ const ListParametersOficial = () => {
 
     const valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
 
-    debugger
+
     itemChanged.valor = valoresAll
     setItemSelected(itemChanged)
 
