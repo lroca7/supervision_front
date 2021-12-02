@@ -91,7 +91,7 @@ export const milesFormat = (params) => {
 }
 
 export const milesFormatTwo = (params) => {
-  debugger
+  
   const value = params
   
   let valueFormat = value

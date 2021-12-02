@@ -173,7 +173,7 @@ const CreateParameter = () => {
   const handleClose = () => setOpen(false)
 
   const editItemTable = (item) => {   
-    debugger
+    
     setOpen(true)
     
     if (item.key ===  'confIndices') {
@@ -200,7 +200,7 @@ const CreateParameter = () => {
 
     if (grupo !== 'Monitoreo RV') {
       if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
-        debugger
+        
         const itemValor = item.valor
         const splitOneSP =  itemValor.split('/')
         const elementosSP = []
