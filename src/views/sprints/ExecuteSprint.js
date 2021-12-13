@@ -44,6 +44,7 @@ import Swal from 'sweetalert2'
 import { URL_BACK } from "../../contants"
 import { groupBy, milesFormat, milesFormatTwo } from "../../utility/Utils"
 import "../../assets/scss/app.scss"
+import DeleteIcon from "../../assets/images/icons/delete-icon.png"
 
 const ExecuteSprint = () => {
   const { colors } = useContext(ThemeColors)
@@ -123,7 +124,6 @@ const ExecuteSprint = () => {
       r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
       return r
     }, {})
-    console.log("subgrupos -> ", group)
     setSubgrupos(group)
   }
 
@@ -175,7 +175,7 @@ const ExecuteSprint = () => {
     // })
     setFecProceso(event.target.value)
   }
-
+  
   const saveParameters = async () => {
 
     const keys = Object.keys(subgrupos)
@@ -391,6 +391,7 @@ const ExecuteSprint = () => {
   const launchCorrida = async () => {
 
     // debugger
+
     setbtnDisableLaunch(true)
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
@@ -579,12 +580,13 @@ const ExecuteSprint = () => {
     setItemSelected(item)
   }
 
-  const getValoresChanged = () => {
+  const getValoresChanged = (currentItemSelected) => {
     
-    const itemChanged = itemSelected
-
-    if (itemSelected.tabla !== undefined) {
-      itemSelected.tabla.map(element => {
+    // const itemChanged = itemSelected
+    const itemChanged = currentItemSelected
+    
+    if (itemChanged.tabla !== undefined) {
+      itemChanged.tabla.map(element => {
         const input = document.getElementById(element.id)
         const inputPorcentaje  = document.getElementById(`porcentaje_${element.id}`)
         
@@ -599,13 +601,13 @@ const ExecuteSprint = () => {
         
       })
   
-      const corto = itemSelected.tabla.filter(f => {
+      const corto = itemChanged.tabla.filter(f => {
         return f.nombre === 'corto'
       })
-      const largo = itemSelected.tabla.filter(f => {
+      const largo = itemChanged.tabla.filter(f => {
         return f.nombre === 'largo'
       })
-      const mediano = itemSelected.tabla.filter(f => {
+      const mediano = itemChanged.tabla.filter(f => {
         return f.nombre === 'mediano'
       })
      
@@ -703,13 +705,15 @@ const ExecuteSprint = () => {
         valoresAll = valoresAll.slice(1)
       }
       itemChanged.valor = valoresAll
-      setItemSelected(itemChanged)
+      // setItemSelected(itemChanged)
+      return itemChanged
 
     } else {
-      const input = document.getElementById(itemSelected.key)
+      const input = document.getElementById(itemChanged.key)
       if (input.value !== '') {
         itemChanged.valor = input.value
-        setItemSelected(itemChanged)
+        // setItemSelected(itemChanged)
+        return itemChanged
       }
 
     }
@@ -717,15 +721,49 @@ const ExecuteSprint = () => {
 
   }
 
-  const updateItemSelected = () => {
-    getValoresChanged()
+  const updateItemSelected = (item = null) => {
+    debugger
+    // if (item !== null) {
+    //   const valoresChanged = getValoresChanged(item)
+    // } else {
+      
+    //   const valoresChanged = getValoresChanged(itemSelected)
+    // }
+    const valoresChanged = getValoresChanged(itemSelected)
+
+    // const subgrupo = itemSelected.subgrupo
+    // const updatedSubgrupo = {...subgrupos}
+    // updatedSubgrupo[subgrupo] = valoresChanged
+
+    setItemSelected(valoresChanged)
+    // setSubgrupos(updatedSubgrupo)
     setOpen(false)
+  }
+
+  const deleteParameter = (parameter) => {
+
+    const tableUpdated = itemSelected.tabla.filter(item => {
+      return parameter.id !== item.id
+    })
+    console.log('tableUpdated ->', tableUpdated)
+    const newItemSelected = itemSelected
+    newItemSelected.tabla = tableUpdated
+    
+    console.log('subgrupos -> ', subgrupos)
+    if (itemSelected.key === 'confIndices') {
+      const itemChanged = getValoresChanged(newItemSelected)
+      console.log('Cambiar valor')      
+      setItemSelected(itemChanged)
+
+      const trItem = document.getElementById(`item-${parameter.id}`)
+      trItem.remove()
+    }
   }
 
   return (
     <div className="card">
       <div class="card-header">
-        <h4 class="card-title">Lanzar Corrida</h4>
+        <h4 class="card-title">Lanzar Corrida 1</h4>
       </div>
       <div class="card-body">
         <div id="parameters-container mb-4">
@@ -911,8 +949,8 @@ const ExecuteSprint = () => {
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {value.map((row) => (
-                                    <TableRow
+                                  {value.map((row, index) => (
+                                    <TableRow                                      
                                       key={row.key}
                                       sx={{
                                         "&:last-child td, &:last-child th": {
@@ -926,7 +964,9 @@ const ExecuteSprint = () => {
                                       <TableCell>
                                         {/* {row.valor} */}
                                         {
-                                          (row.key === 'confIndices' || row.key === 'porAjustadorLim_SP' || row.key === 'porAjustadorLim_BL') ? <span className='special'>{row.valor}</span> : <span className='normal'>{milesFormatTwo(row.valor)}</span>
+                                          (row.key === 'confIndices' || row.key === 'porAjustadorLim_SP' || row.key === 'porAjustadorLim_BL') 
+                                            ? <span className='special'>{row.valor}</span> 
+                                            : <span className='normal'>{milesFormatTwo(row.valor)}</span>
                                         }
                                       </TableCell>
                                       <TableCell>
@@ -1005,12 +1045,13 @@ const ExecuteSprint = () => {
                                             <th>% Ajustador por criterio comisión</th>
                                           )
                                         }
+                                        <th>Acciones</th>
                                       </tr>
                                     </thead>
                                     <tbody>
                                       {
-                                        itemSelected.tabla.map(t => {
-                                          return <tr className='valor'>
+                                        itemSelected.tabla.map((t, index) => {
+                                          return <tr className='valor' id={`item-${t.id}`}>
                                             <td>{t.grupo}</td>
                                             <td>{t.nombre}</td>
                                             <td>
@@ -1024,6 +1065,12 @@ const ExecuteSprint = () => {
                                                 </td>
                                               )
                                             }
+                                            <td className="acciones">
+                                              <Button type="button" onClick={() => deleteParameter(t)}>
+                                                <img src={DeleteIcon} alt='Eliminar' width='20px'/>
+                                                Eliminar
+                                              </Button>                                              
+                                            </td>
                                           </tr>
                                         })
                                       }

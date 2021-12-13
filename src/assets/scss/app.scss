@@ -68,6 +68,12 @@
   th, td {
     font-family: "Montserrat", Helvetica, Arial, serif;
   }
+
+  .acciones {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 textarea {
