@@ -69,7 +69,13 @@
     font-family: "Montserrat", Helvetica, Arial, serif;
   }
 
-  .acciones {
+
+}
+.acciones {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -80,4 +86,11 @@ textarea {
   min-height: 150px;
   border-radius: 5px;
   padding: 5px 10px;
+}
+label {
+  font-size: 1rem;
+}
+.btn-add {
+  margin-bottom: 10px;
+  width: 150px;
 }

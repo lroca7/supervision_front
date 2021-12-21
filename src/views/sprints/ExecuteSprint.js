@@ -70,6 +70,14 @@ const ExecuteSprint = () => {
     { value: "temporales", label: "Temporales" }
   ]
 
+  const optionsGrupos = [
+    { value: "CORP_USD", label: "CORP_USD" },
+    { value: "CORP_DOP", label: "CORP_DOP" },
+    { value: "MH_USD", label: "MH_USD" },
+    { value: "MH_DOP", label: "MH_DOP" },
+    { value: "BC_DO", label: "BC_DO" }
+  ]
+
   const [grupoParameter, setGrupoParameter] = useState('Hola')
   const [typeParameter, setTypeParameter] = useState(null)
 
@@ -115,7 +123,7 @@ const ExecuteSprint = () => {
   
   const [open, setOpen] = useState(false)
   const [itemSelected, setItemSelected] = useState(null)
-
+  const [addOpen, setAddOpen] = useState(false)
 
   const inputEl = useRef(null)
 
@@ -407,7 +415,7 @@ const ExecuteSprint = () => {
       const updateState = await updateCorrida()
 
       if (updateState.codigo === 201) {
-        await executeCorrida()
+        // await executeCorrida()
       }
 
     }
@@ -522,17 +530,19 @@ const ExecuteSprint = () => {
       const elementosFI = []
       splitOne.forEach(element => {
         const splitTwo = element.split(':')
-        const grupos = splitTwo[2].split(' ')
-        const elementos = []
-        grupos.forEach((grupo, key) => {
-          const obj = {
-            id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
-            nombre: splitTwo[0],
-            rango: splitTwo[1],
-            grupo
-          }
-          elementosFI.push(obj)
-        })
+        if (splitTwo[2] !== undefined) {
+          const grupos = splitTwo[2].split(' ')
+          grupos.forEach((grupo, key) => {
+            const obj = {
+              id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
+              nombre: splitTwo[0],
+              rango: splitTwo[1],
+              grupo
+            }
+            elementosFI.push(obj)
+          })
+        }
+       
         
       })
 
@@ -581,7 +591,7 @@ const ExecuteSprint = () => {
   }
 
   const getValoresChanged = (currentItemSelected) => {
-    
+
     // const itemChanged = itemSelected
     const itemChanged = currentItemSelected
     
@@ -590,9 +600,13 @@ const ExecuteSprint = () => {
         const input = document.getElementById(element.id)
         const inputPorcentaje  = document.getElementById(`porcentaje_${element.id}`)
         
-        if (input.value !== '') {
-          element.rango = input.value
+        if (input !== null) {
+          if (input.value !== '') {
+            element.rango = input.value
+          }
         }
+
+       
         if (inputPorcentaje !== null) {
           if (inputPorcentaje.value !== '') {
             element.porcentaje = inputPorcentaje.value
@@ -721,26 +735,14 @@ const ExecuteSprint = () => {
 
   }
 
-  const updateItemSelected = (item = null) => {
-    debugger
-    // if (item !== null) {
-    //   const valoresChanged = getValoresChanged(item)
-    // } else {
-      
-    //   const valoresChanged = getValoresChanged(itemSelected)
-    // }
+  const updateItemSelected = (value, type) => {
+
     const valoresChanged = getValoresChanged(itemSelected)
-
-    // const subgrupo = itemSelected.subgrupo
-    // const updatedSubgrupo = {...subgrupos}
-    // updatedSubgrupo[subgrupo] = valoresChanged
-
     setItemSelected(valoresChanged)
-    // setSubgrupos(updatedSubgrupo)
     setOpen(false)
   }
 
-  const deleteParameter = (parameter) => {
+  const deleteItemParameter = (parameter) => {
 
     const tableUpdated = itemSelected.tabla.filter(item => {
       return parameter.id !== item.id
@@ -756,9 +758,67 @@ const ExecuteSprint = () => {
       setItemSelected(itemChanged)
 
       const trItem = document.getElementById(`item-${parameter.id}`)
-      trItem.remove()
+      if (trItem) {
+        trItem.remove()
+      }
+      
     }
   }
+
+  
+  const addItemParameter = (parameter) => {
+
+    setAddOpen(true)
+    setOpen(false)
+  
+  }
+
+  const saveAddItemParameter = () => {
+    setAddOpen(false)
+    
+    const tableUpdated = itemSelected.tabla
+    
+    if (itemSelected.key === 'confIndices') {
+      const addName = document.getElementById('add-name').value
+      const addGroup = document.getElementById('add-group').value
+      const addValue = document.getElementById('add-value').value
+      const newRow = {
+        id: `${addGroup}_${addName}_${addValue}`,
+        grupo: addGroup,
+        nombre: addName,
+        rango: addValue
+      }
+      tableUpdated.push(newRow)
+
+      const newItemSelected = itemSelected
+      newItemSelected.tabla = tableUpdated
+      
+      setItemSelected(newItemSelected)
+
+    }
+    
+    setOpen(true)
+
+
+  }
+  
+  const updateGroup = (event, parameter) => {
+    
+    const newGroup = event.value
+
+    const itemToUpdated = itemSelected.tabla.filter(item => {
+      return parameter.id === item.id
+    })
+    
+    itemToUpdated.grupo = newGroup
+    
+    if (itemSelected.key === 'confIndices') {
+      const itemChanged = getValoresChanged(itemToUpdated)
+      console.log('Cambiar valor')      
+      setItemSelected(itemChanged)
+
+    }
+  } 
 
   return (
     <div className="card">
@@ -1034,48 +1094,68 @@ const ExecuteSprint = () => {
                                 
                                 {
                                 ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
-                                  <table className="table-edit">
-                                    <thead>
-                                      <tr>
-                                        <th>Grupo</th>
-                                        <th>Nombre</th>
-                                        <th>Rango días</th>
+                                  <>
+                                    <Button type="button" 
+                                      className="btn btn-secondary btn-add" 
+                                      size='small'
+                                      onClick={()=> addItemParameter()}>                                    
+                                      Agregar
+                                    </Button>
+                                    
+                                    <table className="table-edit">
+                                      <thead>
+                                        <tr>
+                                          <th width="160">Grupo</th>
+                                          <th>Nombre</th>
+                                          <th>Rango días</th>
+                                          {
+                                            (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
+                                              <th>% Ajustador por criterio comisión</th>
+                                            )
+                                          }
+                                          <th>Acciones</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
                                         {
-                                          (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                            <th>% Ajustador por criterio comisión</th>
-                                          )
+                                          itemSelected.tabla.map((t, index) => {
+                                            return <tr className='valor' id={`item-${t.id}`}>
+                                              <td>
+                                                {/* {t.grupo} */}
+                                                <Select
+                                                  id="select-group"
+                                                  // ref={inputEl}
+                                                  options={optionsGrupos}
+                                                  placeholder={t.grupo}
+                                                  
+                                                  isDisabled={false}
+                                                  onChange={(e) => updateGroup(e, t)}
+                                                />
+                                              </td>
+                                              <td>{t.nombre}</td>
+                                              <td>
+                                                <Input id={t.id} placeholder={t.rango} />
+                                              </td>
+                                              {
+                                                (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
+                                                  <td>
+                                                    {/* {t.porcentaje} */}
+                                                    <Input id={`porcentaje_${ t.id}`} placeholder={t.porcentaje} />
+                                                  </td>
+                                                )
+                                              }
+                                              <td className="acciones">
+                                                <Button type="button" className="btn btn-secondary" onClick={() => deleteItemParameter(t)}>
+                                                  <img src={DeleteIcon} alt='Eliminar' width='20px'/>
+                                                  Eliminar
+                                                </Button>                                              
+                                              </td>
+                                            </tr>
+                                          })
                                         }
-                                        <th>Acciones</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {
-                                        itemSelected.tabla.map((t, index) => {
-                                          return <tr className='valor' id={`item-${t.id}`}>
-                                            <td>{t.grupo}</td>
-                                            <td>{t.nombre}</td>
-                                            <td>
-                                              <Input id={t.id} placeholder={t.rango} />
-                                            </td>
-                                            {
-                                              (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                                <td>
-                                                  {/* {t.porcentaje} */}
-                                                  <Input id={`porcentaje_${ t.id}`} placeholder={t.porcentaje} />
-                                                </td>
-                                              )
-                                            }
-                                            <td className="acciones">
-                                              <Button type="button" onClick={() => deleteParameter(t)}>
-                                                <img src={DeleteIcon} alt='Eliminar' width='20px'/>
-                                                Eliminar
-                                              </Button>                                              
-                                            </td>
-                                          </tr>
-                                        })
-                                      }
-                                    </tbody>
-                                  </table>
+                                      </tbody>
+                                    </table>
+                                  </>
                                 ) : (
                                   <Input
                                     type="text"
@@ -1114,6 +1194,54 @@ const ExecuteSprint = () => {
                       </ModalFooter>
                     </Modal>
                     
+
+                    <Modal isOpen={addOpen} size='lg'>
+                      <ModalHeader >
+                        Agregar
+                      </ModalHeader>
+                      <ModalBody>
+                        {
+                          itemSelected !== null && (
+                            <Row className="modal-edit d-flex align-items-end justify-content-center">
+                              <Col md="12">
+                                <label>Grupo:</label>
+                                <Input
+                                  type="text"
+                                  name="group"
+                                  id="add-group"
+                                />
+                              </Col>
+                              <Col md="12">
+                                <label>Nombre:</label>
+                                <Input
+                                  type="text"
+                                  name="add-name"
+                                  id="add-name"
+                                />
+                              </Col>
+                              <Col md="12">
+                                <label>Valor:</label>
+                                <Input
+                                  type="text"
+                                  name="add-value"
+                                  id="add-value"
+                                />                          
+                              
+                              </Col>                          
+                            </Row>
+                          )
+                        }
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button
+                          color="primary"
+                          onClick={() => { saveAddItemParameter() }}
+                        >
+                          Guardar
+                        </Button>{" "}
+                        <Button onClick={() => setAddOpen(false)}>Cancelar</Button>
+                      </ModalFooter>
+                    </Modal>
                   </Col>
                 </>
               )}
