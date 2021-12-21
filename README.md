@@ -1,3 +1,9 @@
+Componente de aplicación que maneja todo lo referente a parametrización, configuración y ejecución de algoritmos de analítica
+
+# Repositorio
+git clone https://inactionarq@bitbucket.org/inactionteam/supervision_front.git
+git clone --branch dev --single-branch https://inactionarq@bitbucket.org/inactionteam/supervision_front.git
+
 # Construir Imagen Docker
 
 --------- AJUSTAR CONFIGURACIONES -----------
@@ -9,7 +15,7 @@
 
 ```
 docker build . -t supervision_front
-docker run --rm -d -p 5000:5000 --name supervision-app supervision_front
+docker run --rm -d -p 5000:3000 --name supervision-app supervision_front
 ```
 
 # Publicar Imagen
