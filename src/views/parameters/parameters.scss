@@ -1,0 +1,32 @@
+
+.table-subgrupo {
+    border: 1px solid darkgray;
+    border-collapse: collapse;
+    width: 100%;
+    th {
+      background: #006bc2;
+      color: #ffffff;
+      text-align: center;
+      height: 40px;
+      border: 1px solid #006bc2 !important;
+    }
+    th, td {
+      font-family: "Montserrat", Helvetica, Arial, serif;
+      border: 1px solid darkgray;
+      border-collapse: collapse;
+      padding: 5px 10px;
+    }
+    .table-actions {
+        >div {
+            display: flex;
+            justify-content: center;
+        }       
+        // display: flex;
+        // justify-content: center;
+        // border: none !important;
+    }
+}
+
+.add-action {
+    margin-bottom: 15px;
+}

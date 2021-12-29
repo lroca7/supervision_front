@@ -31,7 +31,8 @@ import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
 import "../../assets/scss/app.scss"
-import { groupBy } from "../../utility/Utils"
+import { fakeResponseIndicesRF, groupBy } from "../../utility/Utils"
+import TableSubgrupo from "./TableSubgrupo"
 
 const CreateParameter = () => {
   const { colors } = useContext(ThemeColors)
@@ -59,11 +60,34 @@ const CreateParameter = () => {
   const [itemSelected, setItemSelected] = useState(null)
 
   const transFormData = (data) => {
-    const group = data.reduce((r, a) => {
-      r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
+    const group = data.reduce((r, item) => {
+      r[item.subgrupo] = [...(r[item.subgrupo] || []), item]
+      if (item.key === 'confIndices') {
+
+        const splitOne =  item.valor.split('/')
+        const valuesInArray = []
+        splitOne.forEach(element => {
+          const splitTwo = element.split(':')
+          const grupos = splitTwo[2].split(' ')
+          const elementos = []
+          grupos.forEach((grupo, key) => {
+            const obj = {
+              id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
+              nombre: splitTwo[0],
+              rango: splitTwo[1],
+              grupo
+            }
+            valuesInArray.push(obj)
+          })
+          
+        })
+
+        r[item.subgrupo][0]['valuesInArray'] = valuesInArray
+      }
       return r
     }, {})
     console.log("subgrupos -> ", group)
+    
     setSubgrupos(group)
   }
 
@@ -74,15 +98,19 @@ const CreateParameter = () => {
     setGrupo(grupo)
     const url = `${URL_BACK}parametros/plantilla-parametros?grupo=${grupo}`
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.codigo === 200) {
-          setParameters(result.result.parametros)
-          transFormData(result.result.parametros)
-          setLoader(false)
-        }
-      })
+    transFormData(fakeResponseIndicesRF.result.parametros)
+    setLoader(false)
+    // fetch(url)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     if (result.codigo === 200) {
+
+    //       debugger
+    //       // setParameters(result.result.parametros)
+    //       transFormData(result.result.parametros)
+    //       setLoader(false)
+    //     }
+    //   })
   }
 
   const [gridApi, setGridApi] = useState(null)
@@ -176,65 +204,65 @@ const CreateParameter = () => {
     
     setOpen(true)
     
-    if (item.key ===  'confIndices') {
-      const splitOne =  item.valor.split('/')
-      const elementosFI = []
-      splitOne.forEach(element => {
-        const splitTwo = element.split(':')
-        const grupos = splitTwo[2].split(' ')
-        const elementos = []
-        grupos.forEach((grupo, key) => {
-          const obj = {
-            id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
-            nombre: splitTwo[0],
-            rango: splitTwo[1],
-            grupo
-          }
-          elementosFI.push(obj)
-        })
+    // if (item.key ===  'confIndices') {
+    //   const splitOne =  item.valor.split('/')
+    //   const elementosFI = []
+    //   splitOne.forEach(element => {
+    //     const splitTwo = element.split(':')
+    //     const grupos = splitTwo[2].split(' ')
+    //     const elementos = []
+    //     grupos.forEach((grupo, key) => {
+    //       const obj = {
+    //         id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
+    //         nombre: splitTwo[0],
+    //         rango: splitTwo[1],
+    //         grupo
+    //       }
+    //       elementosFI.push(obj)
+    //     })
         
-      })
+    //   })
 
-      item['tabla'] = elementosFI
-    }
+    //   item['tabla'] = elementosFI
+    // }
 
-    if (grupo !== 'Monitoreo RV') {
-      if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
+    // if (grupo !== 'Monitoreo RV') {
+    //   if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
         
-        const itemValor = item.valor
-        const splitOneSP =  itemValor.split('/')
-        const elementosSP = []
-        splitOneSP.forEach(element => {
+    //     const itemValor = item.valor
+    //     const splitOneSP =  itemValor.split('/')
+    //     const elementosSP = []
+    //     splitOneSP.forEach(element => {
           
-          const splitTwoSP = element.split(':')
-          const grupos = splitTwoSP[2].split(' ')
+    //       const splitTwoSP = element.split(':')
+    //       const grupos = splitTwoSP[2].split(' ')
           
-          grupos.forEach((grupo, key) => {
+    //       grupos.forEach((grupo, key) => {
             
-            const sGrupo = grupo.split('(')
-            const nGrupo = sGrupo[0]
+    //         const sGrupo = grupo.split('(')
+    //         const nGrupo = sGrupo[0]
             
             
-            const obj = {
-              id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
-              nombre: splitTwoSP[0],
-              rango: splitTwoSP[1],
-              grupo: nGrupo
-            }
+    //         const obj = {
+    //           id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
+    //           nombre: splitTwoSP[0],
+    //           rango: splitTwoSP[1],
+    //           grupo: nGrupo
+    //         }
 
-            if (sGrupo[1] !== undefined) {
-              const gPorcentaje = sGrupo[1].replace(')', '')
-              obj.porcentaje = gPorcentaje
-            }
+    //         if (sGrupo[1] !== undefined) {
+    //           const gPorcentaje = sGrupo[1].replace(')', '')
+    //           obj.porcentaje = gPorcentaje
+    //         }
 
-            elementosSP.push(obj)
-          })
+    //         elementosSP.push(obj)
+    //       })
           
-        })
+    //     })
 
-        item['tabla'] = elementosSP
-      }
-    }
+    //     item['tabla'] = elementosSP
+    //   }
+    // }
 
     setItemSelected(item)
   }
@@ -378,8 +406,12 @@ const CreateParameter = () => {
   }
 
   const updateItemSelected = () => {
-    getValoresChanged()
+    // getValoresChanged()
     setOpen(false)
+  }
+
+  const toSetItemSelect = (itemToSet) => {
+    setItemSelected(itemToSet)
   }
 
 
@@ -493,45 +525,10 @@ const CreateParameter = () => {
                               />
                             </Col>
                             <Col md="12">
-                              <label>Valor:</label>
-                              
+                              <label>Valor:</label>                              
                               {
                                 ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
-                                  <table className="table-edit">
-                                    <thead>
-                                      <tr>
-                                        <th>Grupo</th>
-                                        <th>Nombre</th>
-                                        <th>Rango días</th>
-                                        {
-                                          (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                            <th>% Ajustador por criterio comisión</th>
-                                          )
-                                        }
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {
-                                        itemSelected.tabla.map(t => {
-                                          return <tr className='valor'>
-                                            <td>{t.grupo}</td>
-                                            <td>{t.nombre}</td>
-                                            <td>
-                                              <Input id={t.id} placeholder={t.rango} />
-                                            </td>
-                                            {
-                                              (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                                <td>
-                                                  {/* {t.porcentaje} */}
-                                                  <Input id={`porcentaje_${ t.id}`} placeholder={t.porcentaje} />
-                                                </td>
-                                              )
-                                            }
-                                          </tr>
-                                        })
-                                      }
-                                    </tbody>
-                                  </table>
+                                  <TableSubgrupo itemSelected={itemSelected} toSetItemSelect={toSetItemSelect} />
                                 ) : (
                                   <Input
                                     type="text"

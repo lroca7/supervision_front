@@ -134,3 +134,44 @@ export function groupBy(arr, criteria) {
   }, {})
   return newObj
 }
+
+export const fakeResponseIndicesRF = {
+status: 'ok',
+codigo: 200,
+result: {
+    grupo: 'Indices RF',
+    user: 'system',
+    fecha: '20210501104015',
+    tipo: 'plantilla',
+    parametros: [
+          {
+            key: 'confIndices',
+            valor: 'corto:101-1000:MH_DOP CORP_USD/mediano:1001-2000:BC_DOP MH_USD MH_DOP CORP_USD/largo:2001-3000:MH_DOP',
+            nombre: 'Parámetros para definición de índices',
+            subgrupo: 'Configuración de índices',
+            descripcion: 'Definición de indices a calcular. Formato: [Nombre]:[RangoDiasVcto]:[GrupoTitulosSeparadosPorEspacio]'
+          },
+          {
+            key: 'mesRefInicial',
+            valor: '2019-06',
+            nombre: 'Mes de cálculo inicial',
+            subgrupo: 'General',
+            descripcion: 'Mes (Formato: YYYY-MM) desde el cual se inicia el cálculo de índices en caso de no existir'
+          },
+          {
+            key: 'perMesRebalanceo',
+            valor: '1',
+            nombre: 'Periodo de rebalanceo (Meses)',
+            subgrupo: 'General',
+            descripcion: 'Periodo (En meses) establecido para rebalancear los títulos que integran el cálculo de los índices'
+          },
+          {
+            key: 'obs',
+            valor: '0',
+            nombre: 'Observación',
+            subgrupo: 'General',
+            descripcion: 'Observación de los parámetros establecidos'
+          }
+      ]
+  }
+}
