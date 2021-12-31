@@ -1,14 +1,14 @@
 
 .table-subgrupo {
-    border: 1px solid darkgray;
+    border: none;
     border-collapse: collapse;
     width: 100%;
     th {
-      background: #006bc2;
-      color: #ffffff;
+      background: #D0D0D0;
+      color: #5e5873;
       text-align: center;
       height: 40px;
-      border: 1px solid #006bc2 !important;
+      border: 1px solid #D0D0D0 !important;
     }
     th, td {
       font-family: "Montserrat", Helvetica, Arial, serif;
@@ -29,4 +29,11 @@
 
 .add-action {
     margin-bottom: 15px;
+}
+
+.table-actions {
+  display: flex;
+  button {
+    margin: 5px;
+  }
 }

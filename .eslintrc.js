@@ -4,7 +4,7 @@ module.exports = {
     es6: true,
     browser: true
   },
-
+  parser: "babel-eslint",
   parserOptions: {
     ecmaVersion: 6,
     sourceType: 'module',
@@ -63,7 +63,7 @@ module.exports = {
     'space-unary-ops': 'error',
 
     // ES6
-    'arrow-spacing': 'error',
+    // 'arrow-spacing': 'error',
     'no-confusing-arrow': 'error',
     'no-duplicate-imports': 'error',
     'no-var': 'error',

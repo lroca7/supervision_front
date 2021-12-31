@@ -33,9 +33,12 @@ import Paper from "@mui/material/Paper"
 import "../../assets/scss/app.scss"
 import { fakeResponseIndicesRF, groupBy } from "../../utility/Utils"
 import TableSubgrupo from "./TableSubgrupo"
+import { setSelectedParameter } from "./store/action"
+import { useDispatch } from "react-redux"
 
 const CreateParameter = () => {
-  const { colors } = useContext(ThemeColors)
+  
+  const dispatch = useDispatch()
 
   const [loader, setLoader] = useState(false)
   //Analítica, Límites y Monitoreo
@@ -113,17 +116,6 @@ const CreateParameter = () => {
     //   })
   }
 
-  const [gridApi, setGridApi] = useState(null)
-  const [gridColumnApi, setGridColumnApi] = useState(null)
-
-  const onGridReady = (params) => {
-    setGridApi(params.api)
-    setGridColumnApi(params.columnApi)
-  }
-
-  const onCellValueChanged = (event) => {
-    console.log('data after changes is: ', event.data)
-  }
 
   const saveParameters = () => {
 
@@ -192,7 +184,7 @@ const CreateParameter = () => {
 
   }
   
-  const handleCandel = () => {    
+  const handleCancel = () => {    
     setGrupo(null)
     setParameters([])
     setSubgrupos([])
@@ -264,36 +256,25 @@ const CreateParameter = () => {
     //   }
     // }
 
-    setItemSelected(item)
+    // setItemSelected(item)
+
+
+    dispatch(setSelectedParameter(item))
   }
 
-  const getValoresChanged = () => {
+  const getValoresChanged = (itemSelected) => {
     
     const itemChanged = itemSelected
 
-    if (itemSelected.tabla !== undefined) {
-      itemSelected.tabla.map(element => {
-        const input = document.getElementById(element.id)
-        const inputPorcentaje  = document.getElementById(`porcentaje_${element.id}`)
-        
-        if (input.value !== '') {
-          element.rango = input.value
-        }
-        if (inputPorcentaje !== null) {
-          if (inputPorcentaje.value !== '') {
-            element.porcentaje = inputPorcentaje.value
-          }
-        }
-        
-      })
+    if (itemSelected.valuesInArray !== undefined) {
   
-      const corto = itemSelected.tabla.filter(f => {
+      const corto = itemSelected.valuesInArray.filter(f => {
         return f.nombre === 'corto'
       })
-      const largo = itemSelected.tabla.filter(f => {
+      const largo = itemSelected.valuesInArray.filter(f => {
         return f.nombre === 'largo'
       })
-      const mediano = itemSelected.tabla.filter(f => {
+      const mediano = itemSelected.valuesInArray.filter(f => {
         return f.nombre === 'mediano'
       })
      
@@ -391,29 +372,42 @@ const CreateParameter = () => {
         valoresAll = valoresAll.slice(1)
       }
       itemChanged.valor = valoresAll
-      setItemSelected(itemChanged)
+      // setItemSelected(itemChanged)
 
     } else {
       const input = document.getElementById(itemSelected.key)
       if (input.value !== '') {
         itemChanged.valor = input.value
-        setItemSelected(itemChanged)
+        // setItemSelected(itemChanged)
       }
 
     }
 
+    if (itemChanged.valor.charAt(0) === '/') {
+      itemChanged.valor = itemChanged.valor.slice(1)
+    }
+    if (itemChanged.valor.charAt(itemChanged.valor.length - 1) === '/') {
+      itemChanged.valor = itemChanged.valor.slice(0, -1)
+    }
 
-  }
+    itemChanged.valor = itemChanged.valor.replaceAll('//', '/')
 
-  const updateItemSelected = () => {
-    // getValoresChanged()
-    setOpen(false)
+    return itemChanged
+
   }
 
   const toSetItemSelect = (itemToSet) => {
-    setItemSelected(itemToSet)
-  }
 
+    if (itemToSet.key === 'confIndices') {
+      const itemChanged = getValoresChanged(itemToSet)
+
+      const copySubgrupos = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgrupos["Configuración de índices"][0] = itemChanged
+      setSubgrupos(copySubgrupos)
+    }
+   
+  }
 
   return (
     <div className="card">
@@ -461,7 +455,7 @@ const CreateParameter = () => {
                                 <TableHead>
                                   <TableRow>
                                     <TableCell>Nombre</TableCell>
-                                    <TableCell>Valor</TableCell>
+                                    <TableCell>Valor KO</TableCell>
                                     <TableCell>Descripción</TableCell>
                                     <TableCell>Acciones</TableCell>
                                   </TableRow>
@@ -487,6 +481,7 @@ const CreateParameter = () => {
                                       </TableCell>
                                       <TableCell>
                                         <Button
+                                           color="primary"
                                           variant="contained"
                                           onClick={() => editItemTable(row)}
                                         >
@@ -506,92 +501,13 @@ const CreateParameter = () => {
                       )
                   })}
 
-                  <Modal isOpen={open} size='lg'>
-                    <ModalHeader >
-                      Editar
-                    </ModalHeader>
-                    <ModalBody>
-                      {
-                        itemSelected !== null && (
-                          <Row className="modal-edit d-flex align-items-end justify-content-center">
-                            <Col md="12">
-                              <label>Nombre:</label>
-                              <Input
-                                type="text"
-                                name="name"
-                                id="name"
-                                disabled={true}
-                                value={itemSelected.nombre}
-                              />
-                            </Col>
-                            <Col md="12">
-                              <label>Valor:</label>                              
-                              {
-                                ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
-                                  <TableSubgrupo itemSelected={itemSelected} toSetItemSelect={toSetItemSelect} />
-                                ) : (
-                                  <Input
-                                    type="text"
-                                    name="valor"
-                                    id={itemSelected.key}
-                                    placeholder={itemSelected.valor}
-                                  />
-                                )                              
-                              }
-                            </Col>
-                            <Col md="12">
-                              <label>Descripción:</label>
-                              <textarea
-                                type="text"
-                                name="valor"
-                                id="valor"
-                                disabled={true}
-                                value={itemSelected.descripcion}
-                              ></textarea>
-                            </Col>                            
-                          </Row>
-                        )
-                      }
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button
-                        color="primary"
-                        onClick={() => { updateItemSelected() }}
-                      >
-                        Guardar
-                      </Button>{" "}
-                      <Button onClick={handleClose}>Cancelar</Button>
-                    </ModalFooter>
-                  </Modal>
-
-
-                  {/* {Object.entries(subgrupos).map(([key, value]) => {
-                    return (
-                      <div>
-                        <h5>{key}</h5>
-                        <br />
-                        <div
-                          className="ag-theme-alpine"
-                          style={{ height: 200, width: "100%" }}
-                        >
-                          <AgGridReact
-                            rowData={value}
-                            defaultColDef={{
-                              flex: 1,
-                              minWidth: 110,
-                              editable: true,
-                              resizable: true
-                            }}
-                            onGridReady={onGridReady}
-                            onCellValueChanged={onCellValueChanged}
-                            columnDefs={columnsParametros}
-                          >
-                          </AgGridReact>
-                        </div>
-                        <br />
-                      </div>
-                    )
-                  })} */}
+                  <TableSubgrupo 
+                    itemSelected={itemSelected} 
+                    toSetItemSelect={toSetItemSelect} 
+                    grupo={grupo}
+                    open={open}
+                    handleClose={handleClose}
+                  />
 
                   <h5 className="mt-2">Convertir parametros en oficiales</h5>
                   <CustomInput
@@ -606,7 +522,7 @@ const CreateParameter = () => {
                     <Button disabled={btnDisable} color="primary mr-2" onClick={saveParameters}>
                       {!btnDisable ? 'Guardar' : <><Spinner color="white" size="sm" /><span className="ml-50">Guardando...</span></>}
                     </Button>
-                    <Button disabled={btnDisable} outline color="secondary" onClick={handleCandel}>
+                    <Button disabled={btnDisable} outline color="secondary" onClick={handleCancel}>
                       Cancelar
                     </Button>
                   </div>
