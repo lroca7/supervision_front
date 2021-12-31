@@ -31,7 +31,14 @@ export const editValueToSelectedParameter = (itemToEdit) => (dispatch, getState)
   const valuesEdited  = copyToEdit.valuesInArray.map(item => {
      if (item.id === itemToEdit.id) {
        item = itemToEdit
-       item.id = `${itemToEdit.grupo}_${itemToEdit.nombre}_${itemToEdit.rango}`    
+      debugger
+       let _id =  `${itemToEdit.grupo}_${itemToEdit.nombre}_${itemToEdit.rango}`
+
+       if (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') {
+          _id = `${itemToEdit.grupo}(${itemToEdit.porcentaje})_${itemToEdit.nombre}_${itemToEdit.rango}`    
+       }
+       
+       item.id = _id
      }
      return item
   })

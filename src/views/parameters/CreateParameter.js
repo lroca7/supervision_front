@@ -31,7 +31,7 @@ import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
 import "../../assets/scss/app.scss"
-import { fakeResponseIndicesRF, groupBy } from "../../utility/Utils"
+import { fakeResponseIndicesRF, fakeResponseMonitoreoRF, groupBy } from "../../utility/Utils"
 import TableSubgrupo from "./TableSubgrupo"
 import { setSelectedParameter } from "./store/action"
 import { useDispatch } from "react-redux"
@@ -65,6 +65,7 @@ const CreateParameter = () => {
   const transFormData = (data) => {
     const group = data.reduce((r, item) => {
       r[item.subgrupo] = [...(r[item.subgrupo] || []), item]
+
       if (item.key === 'confIndices') {
 
         const splitOne =  item.valor.split('/')
@@ -87,6 +88,47 @@ const CreateParameter = () => {
 
         r[item.subgrupo][0]['valuesInArray'] = valuesInArray
       }
+      
+      if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
+        
+        const itemValor = item.valor
+        const splitOneSP =  itemValor.split('/')
+        const valuesInArrayMonitoreo = []
+
+        splitOneSP.forEach(element => {
+          
+          const splitTwoSP = element.split(':')
+          const grupos = splitTwoSP[2].split(' ')
+          
+          grupos.forEach((grupo, key) => {
+            
+            const sGrupo = grupo.split('(')
+            const nGrupo = sGrupo[0]
+            
+            
+            const obj = {
+              id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
+              nombre: splitTwoSP[0],
+              rango: splitTwoSP[1],
+              grupo: nGrupo
+            }
+
+            if (sGrupo[1] !== undefined) {
+              const gPorcentaje = sGrupo[1].replace(')', '')
+              obj.porcentaje = gPorcentaje
+            }
+
+            valuesInArrayMonitoreo.push(obj)
+          })
+          
+        })
+
+        const indexGroup = r[item.subgrupo].findIndex(x => x.key === item.key)
+
+        r[item.subgrupo][indexGroup]['valuesInArray'] = valuesInArrayMonitoreo
+        
+      }
+
       return r
     }, {})
     console.log("subgrupos -> ", group)
@@ -101,14 +143,14 @@ const CreateParameter = () => {
     setGrupo(grupo)
     const url = `${URL_BACK}parametros/plantilla-parametros?grupo=${grupo}`
 
-    transFormData(fakeResponseIndicesRF.result.parametros)
+    // transFormData(fakeResponseIndicesRF.result.parametros)
+    transFormData(fakeResponseMonitoreoRF.result.parametros)
     setLoader(false)
     // fetch(url)
     //   .then((response) => response.json())
     //   .then((result) => {
     //     if (result.codigo === 200) {
 
-    //       debugger
     //       // setParameters(result.result.parametros)
     //       transFormData(result.result.parametros)
     //       setLoader(false)
@@ -263,7 +305,7 @@ const CreateParameter = () => {
   }
 
   const getValoresChanged = (itemSelected) => {
-    
+    debugger
     const itemChanged = itemSelected
 
     if (itemSelected.valuesInArray !== undefined) {
@@ -380,7 +422,6 @@ const CreateParameter = () => {
         itemChanged.valor = input.value
         // setItemSelected(itemChanged)
       }
-
     }
 
     if (itemChanged.valor.charAt(0) === '/') {
@@ -405,6 +446,16 @@ const CreateParameter = () => {
       
       copySubgrupos["Configuración de índices"][0] = itemChanged
       setSubgrupos(copySubgrupos)
+    }
+
+    if (itemToSet.key === 'porAjustadorLim_SP' || itemToSet.key === 'porAjustadorLim_BL') {
+      debugger
+      const itemChangedMonitoreo = getValoresChanged(itemToSet)
+      debugger
+      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgruposMonitoreo["Sistema SIOPEL"][1] = itemChangedMonitoreo
+      setSubgrupos(copySubgruposMonitoreo)
     }
    
   }

@@ -135,6 +135,21 @@ export function groupBy(arr, criteria) {
   return newObj
 }
 
+export const groupsRF = [
+  'CORP_USD',
+  'CORP_DOP',
+  'MH_USD',
+  'MH_DOP',
+  'BC_DOP'
+]
+
+export const namesRF = [
+  'corto',
+  'mediano',
+  'largo'
+]
+
+
 export const fakeResponseIndicesRF = {
 status: 'ok',
 codigo: 200,
@@ -175,3 +190,45 @@ result: {
       ]
   }
 }
+
+export const fakeResponseMonitoreoRF = {
+  status: "ok",
+  codigo: 200,
+  result: {
+    grupo: "Monitoreo RF",
+    user: "system",
+    fecha: "20210501104015",
+    tipo: "plantilla",
+    parametros: [
+      {
+        key: "porVariacionVal_SP",
+        valor: "10.0",
+        nombre: "Porcentaje de variación para anulación",
+        subgrupo: "Sistema SIOPEL",
+        descripcion: "Porcentaje permitido de variación en valoración para las operaciones "
+      },
+      {
+        key: "porAjustadorLim_SP",
+        valor: "corto:101-1000:MH_DOP(-2) MH_USD(1.9) BC_DOP(-4) CORP_DOP(0) CORP_USD(0)/mediano:1001-2000:MH_DOP(-2) MH_USD(1.9) BC_DOP(-4) CORP_DOP(0) CORP_USD(0)/largo:2001-3000:MH_DOP(-2) MH_USD(1.9) BC_DOP(-4) CORP_DOP(0) CORP_USD(0)",
+        nombre: "Porcentajes ajustadores de límites",
+        subgrupo: "Sistema SIOPEL",
+        descripcion: "Porcentajes ajustadores de los límites de liquidez y volatilidad permitidos para las operaciones"
+      },
+      {
+        key: "porVariacionVal_BL",
+        valor: "10.0",
+        nombre: "Porcentaje de variación para anulación",
+        subgrupo: "Sistema BLOOMBERG",
+        descripcion: "Porcentaje permitido de variación en valoración para las operaciones "
+      },
+      {
+        key: "porAjustadorLim_BL",
+        valor: "corto:101-1000:MH_DOP(3) MH_USD(0)/mediano:1001-2000:MH_DOP(-2) MH_USD(9.5)/largo:2001-3000:MH_DOP(-2) MH_USD(0)",
+        nombre: "Porcentajes ajustadores de límites",
+        subgrupo: "Sistema BLOOMBERG",
+        descripcion: "Porcentajes ajustadores de los límites de liquidez y volatilidad permitidos para las operaciones"
+      }
+    ]
+  }
+}
+

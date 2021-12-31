@@ -37,3 +37,20 @@
     margin: 5px;
   }
 }
+
+.select-group {
+  border: 1px solid #d8d6de;
+  height: 40px;
+  width: 100%;
+  color: #6e6b7b;
+  font-size: 1rem;
+  div, input, li {
+    font-family: "Montserrat", Helvetica, Arial, serif;
+    color: #6e6b7b;
+    font-size: 1rem;
+  }
+ 
+}
+.select-group:focus {
+  border-color: #006bc2;
+}
