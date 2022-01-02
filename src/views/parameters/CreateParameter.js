@@ -89,44 +89,48 @@ const CreateParameter = () => {
         r[item.subgrupo][0]['valuesInArray'] = valuesInArray
       }
       
-      if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
-        
-        const itemValor = item.valor
-        const splitOneSP =  itemValor.split('/')
-        const valuesInArrayMonitoreo = []
-
-        splitOneSP.forEach(element => {
+      if (grupo !== 'Monitoreo RV') { 
+        if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
           
-          const splitTwoSP = element.split(':')
-          const grupos = splitTwoSP[2].split(' ')
-          
-          grupos.forEach((grupo, key) => {
-            
-            const sGrupo = grupo.split('(')
-            const nGrupo = sGrupo[0]
-            
-            
-            const obj = {
-              id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
-              nombre: splitTwoSP[0],
-              rango: splitTwoSP[1],
-              grupo: nGrupo
-            }
+          const itemValor = item.valor
+          const splitOneSP =  itemValor.split('/')
+          const valuesInArrayMonitoreo = []
 
-            if (sGrupo[1] !== undefined) {
-              const gPorcentaje = sGrupo[1].replace(')', '')
-              obj.porcentaje = gPorcentaje
-            }
-
-            valuesInArrayMonitoreo.push(obj)
+          splitOneSP.forEach(element => {
+            
+            const splitTwoSP = element.split(':')
+            const grupos = splitTwoSP[2]?.split(' ')
+                  
+            if (grupos !== undefined) {
+              grupos.forEach((grupo, key) => {
+              
+                const sGrupo = grupo.split('(')
+                const nGrupo = sGrupo[0]
+                
+                
+                const obj = {
+                  id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
+                  nombre: splitTwoSP[0],
+                  rango: splitTwoSP[1],
+                  grupo: nGrupo
+                }
+    
+                if (sGrupo[1] !== undefined) {
+                  const gPorcentaje = sGrupo[1].replace(')', '')
+                  obj.porcentaje = gPorcentaje
+                }
+    
+                valuesInArrayMonitoreo.push(obj)
+              })
+            }          
+            
           })
+
+          const indexGroup = r[item.subgrupo].findIndex(x => x.key === item.key)
+
+          r[item.subgrupo][indexGroup]['valuesInArray'] = valuesInArrayMonitoreo
           
-        })
-
-        const indexGroup = r[item.subgrupo].findIndex(x => x.key === item.key)
-
-        r[item.subgrupo][indexGroup]['valuesInArray'] = valuesInArrayMonitoreo
-        
+        }
       }
 
       return r
@@ -144,18 +148,18 @@ const CreateParameter = () => {
     const url = `${URL_BACK}parametros/plantilla-parametros?grupo=${grupo}`
 
     // transFormData(fakeResponseIndicesRF.result.parametros)
-    transFormData(fakeResponseMonitoreoRF.result.parametros)
-    setLoader(false)
-    // fetch(url)
-    //   .then((response) => response.json())
-    //   .then((result) => {
-    //     if (result.codigo === 200) {
+    // transFormData(fakeResponseMonitoreoRF.result.parametros)
+    // setLoader(false)
+    fetch(url)
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.codigo === 200) {
 
-    //       // setParameters(result.result.parametros)
-    //       transFormData(result.result.parametros)
-    //       setLoader(false)
-    //     }
-    //   })
+          // setParameters(result.result.parametros)
+          transFormData(result.result.parametros)
+          setLoader(false)
+        }
+      })
   }
 
 
@@ -417,11 +421,14 @@ const CreateParameter = () => {
       // setItemSelected(itemChanged)
 
     } else {
+      debugger
       const input = document.getElementById(itemSelected.key)
-      if (input.value !== '') {
-        itemChanged.valor = input.value
-        // setItemSelected(itemChanged)
-      }
+      if (input !== null) {
+        if (input.value !== '') {
+          itemChanged.valor = input.value
+          // setItemSelected(itemChanged)
+        }
+      }      
     }
 
     if (itemChanged.valor.charAt(0) === '/') {
@@ -448,13 +455,23 @@ const CreateParameter = () => {
       setSubgrupos(copySubgrupos)
     }
 
-    if (itemToSet.key === 'porAjustadorLim_SP' || itemToSet.key === 'porAjustadorLim_BL') {
-      debugger
+    if (itemToSet.key === 'porAjustadorLim_SP') {
+      
       const itemChangedMonitoreo = getValoresChanged(itemToSet)
-      debugger
+      
       const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
       
       copySubgruposMonitoreo["Sistema SIOPEL"][1] = itemChangedMonitoreo
+      setSubgrupos(copySubgruposMonitoreo)
+    }
+
+    if (itemToSet.key === 'porAjustadorLim_BL') {
+      
+      const itemChangedMonitoreo = getValoresChanged(itemToSet)
+      
+      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgruposMonitoreo["Sistema BLOOMBERG"][1] = itemChangedMonitoreo
       setSubgrupos(copySubgruposMonitoreo)
     }
    

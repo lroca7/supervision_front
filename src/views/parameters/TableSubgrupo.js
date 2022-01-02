@@ -62,8 +62,14 @@ const TableSubgrupo = ({
         const valueAddRange = document.getElementById('add_range')?.value
         const valueAddPercentage = document.getElementById('add_percentage')?.value
 
+        let _id = `${valueAddGroup}_${valueAddName}_${valueAddRange}`
+
+        if (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') {
+          _id = `${valueAddGroup}(${valueAddPercentage})_${valueAddName}_${valueAddRange}`
+        }       
+
         const valueToAdd = {
-          id:  `${valueAddGroup}_${valueAddName}_${valueAddRange}`,
+          id:  _id,
           grupo: valueAddGroup,
           nombre: valueAddName,
           rango: valueAddRange
@@ -89,8 +95,17 @@ const TableSubgrupo = ({
         
         const valueEditGroup = valueGroupAdd === null ? itemToEdit.grupo : valueGroupAdd
         const valueEditName = valueNameAdd === null ? itemToEdit.nombre : valueNameAdd
-        const valueEditRange = document.getElementById('edit_range').value === "" ? itemToEdit.rango : document.getElementById('edit_range').value
-        const valueEditPercentage = document.getElementById('edit_percentage').value === "" ? itemToEdit.porcentaje : document.getElementById('edit_percentage').value
+
+        let valueEditRange = ""
+        if (document.getElementById('edit_range')) {
+          valueEditRange = document.getElementById('edit_range').value === "" ? itemToEdit.rango : document.getElementById('edit_range').value
+        }        
+        
+        let valueEditPercentage = ""
+        if (document.getElementById('edit_percentage')) {
+          valueEditPercentage = document.getElementById('edit_percentage').value === "" ? itemToEdit.porcentaje : document.getElementById('edit_percentage').value
+        }
+        
 
         let _id = `${itemToEdit.grupo}_${itemToEdit.nombre}_${itemToEdit.rango}`
 
