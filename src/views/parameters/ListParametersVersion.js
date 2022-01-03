@@ -6,14 +6,10 @@ import {
   Spinner,
   Input
 } from "reactstrap"
-import { AgGridReact } from "ag-grid-react"
 
-import "ag-grid-community/dist/styles/ag-grid.css"
-import "ag-grid-community/dist/styles/ag-theme-alpine.css"
+import { URL_BACK } from "../../contants"
 
 import Swal from "sweetalert2"
-
-import { URL_BACK, columnsParametros} from "../../contants"
 
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"

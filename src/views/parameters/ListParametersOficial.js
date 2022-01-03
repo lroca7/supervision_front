@@ -1,16 +1,8 @@
-import { useContext, useState, useEffect } from "react"
-import { ThemeColors } from "@src/utility/context/ThemeColors"
+import { useState } from "react"
 import { 
-  Row, Col, Button, Spinner, Alert, Input, 
-  Modal, ModalBody, ModalHeader, ModalFooter 
+  Col, Button, Spinner, Alert
 } from "reactstrap"
 import Select from "react-select"
-import "@styles/react/libs/charts/apex-charts.scss"
-import { AgGridColumn, AgGridReact } from "ag-grid-react"
-import "ag-grid-community/dist/styles/ag-grid.css"
-import "ag-grid-community/dist/styles/ag-theme-alpine.css"
-
-import { columnsParametros, URL_BACK } from "../../contants"
 
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -19,29 +11,17 @@ import TableContainer from "@mui/material/TableContainer"
 import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
-import "../../assets/scss/app.scss"
-import { groupBy, milesFormat, milesFormatTwo } from "../../utility/Utils"
+
 import TableSubgrupo from "./TableSubgrupo"
 import { useDispatch } from "react-redux"
 import { setSelectedParameter } from "./store/action"
+import { milesFormatTwo } from "../../utility/Utils"
 import { buildData, getValues } from "./Utils"
+import { URL_BACK } from "../../contants"
+import "../../assets/scss/app.scss"
 
 const ListParametersOficial = () => {
   const dispatch = useDispatch()
-
-  const { colors } = useContext(ThemeColors)
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "80%",
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4
-  }
 
   const initialErrorState = {
     status: false,
@@ -63,46 +43,13 @@ const ListParametersOficial = () => {
   ]
 
   const [grupo, setGrupo] = useState(null)
-  const [parameters, setParameters] = useState([])
 
   const [subgrupos, setSubgrupos] = useState([])
-  const [rows, setRows] = useState([])
   const [open, setOpen] = useState(false)
   const [itemSelected, setItemSelected] = useState(null)
 
-  const transFormDataOld = (data) => {
-    const group = data.reduce((r, a) => {
-      r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
-      return r
-    }, {})
-    
-
-    if (group["Posturas"] !== undefined) {
-      if (group["Posturas"].length > 0) {
-        const posturas = group["Posturas"].filter((g) => {
-          return g.key !== "timeMinPosEnrPre"
-        })
-        posturas.map((p) => {
-          if (p.key === "variPrecioMinPos") {
-            p.nombre = "Variación mínima"
-          }
-          if (p.key === "variPrecioMaxPos") {
-            p.nombre = "Variación máxima"
-          }
-          return p
-        })
-        group["Posturas"] = posturas
-      }
-    }
-    console.log("subgrupos -> ", group)
-
-    setSubgrupos(group)
-  }
-
   const transFormData = (data) => {
-
-    const group = buildData(data, grupo)
-    
+    const group = buildData(data, grupo)    
     setSubgrupos(group)
   }
 
@@ -118,11 +65,7 @@ const ListParametersOficial = () => {
       .then((result) => {
         if (result.codigo === 200) {
           setGrupo(result.result)
-
-          setParameters(result.result.parametros)
-          transFormData(result.result.parametros)
-          
-          setRows(result.result.parametros)
+          transFormData(result.result.parametros)          
         } else {
           setError({
             status: result.status,
@@ -214,44 +157,6 @@ const ListParametersOficial = () => {
     return itemChanged
 
   }
-
-  const toSetItemSelect = (itemToSet) => {
-
-    if (itemToSet.key === 'confIndices') {
-      const itemChanged = getValoresChanged(itemToSet)
-
-      const copySubgrupos = JSON.parse(JSON.stringify(subgrupos))
-      
-      copySubgrupos["Configuración de índices"][0] = itemChanged
-      setSubgrupos(copySubgrupos)
-    }
-
-    if (itemToSet.key === 'porAjustadorLim_SP') {
-      
-      const itemChangedMonitoreo = getValoresChanged(itemToSet)
-      
-      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
-      
-      copySubgruposMonitoreo["Sistema SIOPEL"][1] = itemChangedMonitoreo
-      setSubgrupos(copySubgruposMonitoreo)
-    }
-
-    if (itemToSet.key === 'porAjustadorLim_BL') {
-      
-      const itemChangedMonitoreo = getValoresChanged(itemToSet)
-      
-      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
-      
-      copySubgruposMonitoreo["Sistema BLOOMBERG"][1] = itemChangedMonitoreo
-      setSubgrupos(copySubgruposMonitoreo)
-    }
-   
-  }
-
-  useEffect(() => {
-    // getParameters()
-    // console.log('data inicial -> ', students)
-  }, [])
 
   return (
     <div className="card">
@@ -349,26 +254,7 @@ const ListParametersOficial = () => {
                               </TableBody>
                             </Table>
                           </TableContainer>
-                        )}
-
-                        {/* <div
-                      className="ag-theme-alpine"
-                      style={{ height: 200, width: "100%" }}
-                    >
-                      <AgGridReact
-                        rowData={value}
-                        defaultColDef={{
-                          flex: 1,
-                          minWidth: 110,
-                          // editable: false,
-                          editable: true,
-                          resizable: true
-                        }}
-                        columnDefs={columnsParametros}
-                        isPopup={true}
-                      >
-                      </AgGridReact>
-                    </div> */}
+                        )}                       
                         <br />
                       </div>
                     )
@@ -376,7 +262,7 @@ const ListParametersOficial = () => {
 
                   <TableSubgrupo 
                     itemSelected={itemSelected} 
-                    toSetItemSelect={toSetItemSelect} 
+                    // toSetItemSelect={toSetItemSelect} 
                     grupo={grupo}
                     open={open}
                     handleClose={handleClose}
