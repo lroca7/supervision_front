@@ -77,7 +77,7 @@ export default [
       //   navLink: '/corridaspendientes'
       // },
       {
-        id: 'titles',
+        id: 'titles_pending',
         title: 'Aprobar Títulos',
         icon: <Circle size={12} />,
         // navLink: '/titles/sprints'

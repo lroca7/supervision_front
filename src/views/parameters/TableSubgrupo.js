@@ -54,7 +54,7 @@ const TableSubgrupo = ({
     }
 
     const addValueToItemSelected = () => {
-      debugger
+
         // const valueAddGroup = document.getElementById('add_group').value
         const valueAddGroup = valueGroupAdd
         // const valueAddName = document.getElementById('add_name')?.value
@@ -131,7 +131,7 @@ const TableSubgrupo = ({
     }
 
     const updateItemSelected = () => {
-      debugger
+
       const simpleValue = document.getElementById('simplevalue_to_edit')
       if (simpleValue) {
         itemSelected.valor = simpleValue.value
@@ -194,8 +194,9 @@ const TableSubgrupo = ({
                               </TableHead>
                               <TableBody>
                               {
-                                  itemSelected.valuesInArray.map(t => {
-                                  return <TableRow className='valor'>
+                                  itemSelected.valuesInArray.map((t, index) => {
+                                  return (
+                                    <TableRow key={`trow_${index}`} className='valor'>
                                       <TableCell>{t.grupo}</TableCell>
                                       <TableCell>{t.nombre}</TableCell>
                                       <TableCell>{t.rango}</TableCell>
@@ -213,7 +214,7 @@ const TableSubgrupo = ({
                                               <Button color='danger' outline onClick={() => { deleteItemValue(t) }}>Eliminar</Button>
                                           </div>           
                                       </TableCell>
-                                  </TableRow>
+                                  </TableRow>)
                                   })
                               }
                               </TableBody>
@@ -278,8 +279,8 @@ const TableSubgrupo = ({
                       displayEmpty                      
                     >
                       {
-                        groupsRF.map(g => ( 
-                          <MenuItem value={g}>{g}</MenuItem>
+                        groupsRF.map((g, index) => ( 
+                          <MenuItem key={`mgroup_${index}`} value={g}>{g}</MenuItem>
                         ))
                       }
                     </Select>
@@ -298,8 +299,8 @@ const TableSubgrupo = ({
                       displayEmpty                      
                     >
                       {
-                        namesRF.map(n => ( 
-                          <MenuItem value={n}>{n}</MenuItem>
+                        namesRF.map((n, index) => ( 
+                          <MenuItem key={`mname_${index}`} value={n}>{n}</MenuItem>
                         ))
                       }
                     </Select>
@@ -363,8 +364,8 @@ const TableSubgrupo = ({
                       displayEmpty                      
                     >
                       {
-                        groupsRF.map(g => ( 
-                          <MenuItem value={g}>{g}</MenuItem>
+                        groupsRF.map((g, index) => ( 
+                          <MenuItem key={`mgroup_${index}`} value={g}>{g}</MenuItem>
                         ))
                       }
                     </Select>
@@ -385,8 +386,8 @@ const TableSubgrupo = ({
                       displayEmpty                      
                     >
                       {
-                        namesRF.map(n => ( 
-                          <MenuItem value={n}>{n}</MenuItem>
+                        namesRF.map((n, index) => ( 
+                          <MenuItem key={`mname_${index}`} value={n}>{n}</MenuItem>
                         ))
                       }
                     </Select>
