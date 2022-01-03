@@ -26,7 +26,6 @@ import Swal from "sweetalert2"
 
 import { URL_BACK } from "../../../contants"
 import { Alert } from "bootstrap"
-import { FALSE } from "node-sass"
 
 const CreateTitle = (props) => {
   const { colors } = useContext(ThemeColors)

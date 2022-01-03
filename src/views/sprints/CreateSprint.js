@@ -149,8 +149,6 @@ const CreateSprint = () => {
   const createCorrida = async (e) => {
     setbtnDisable(true)
     setLoadingCreateCorrida(true)
-
-    setTimeout(async() => {
       
 
     // const selectTypeCorrida = document.getElementById("select-type-corrida")
@@ -162,55 +160,53 @@ const CreateSprint = () => {
         tipoCorrida
       }
   
-      const result = fakeResponseCrearCorrida
-      await getParameters(result.result.corrida.verParam)
-      setDataCorrida(result.result.corrida)
-      setCorrida({
-        ...corrida,
-        id: result.result.corrida.idCorrida,
-        verParam: result.result.corrida.verParam,
-        idFlujo: result.result.idFlujo,
-        fecProceso: result.result.corrida.fecProceso
-      })
-      setVerParam(result.result.corrida.verParam)
-      setIdFlujo(result.result.corrida.idFlujo)
-      setFecProceso(result.result.corrida.fecProceso)
-          
-      // const url = `${URL_BACK}corridas`
-
-      // fetch(url, {
-      //   method: 'POST',
-      //   body: JSON.stringify(body)
+      // const result = fakeResponseCrearCorrida
+      // await getParameters(result.result.corrida.verParam)
+      // setDataCorrida(result.result.corrida)
+      // setCorrida({
+      //   ...corrida,
+      //   id: result.result.corrida.idCorrida,
+      //   verParam: result.result.corrida.verParam,
+      //   idFlujo: result.result.idFlujo,
+      //   fecProceso: result.result.corrida.fecProceso
       // })
-      //   .then((response) => response.json())
-      //   .then((result) => {
-      //     if (result.codigo === 200 || result.codigo === 201) {
-  
-  
-      //       getParameters(result.result.corrida.verParam)
-      //       setDataCorrida(result.result.corrida)
-      //       setCorrida({
-      //         ...corrida,
-      //         id: result.result.corrida.idCorrida,
-      //         verParam: result.result.corrida.verParam,
-      //         idFlujo: result.result.idFlujo,
-      //         fecProceso: result.result.corrida.fecProceso
-      //       })
-      //       setVerParam(result.result.corrida.verParam)
-      //       setIdFlujo(result.result.corrida.idFlujo)
-      //       setFecProceso(result.result.corrida.fecProceso)
+      // setVerParam(result.result.corrida.verParam)
+      // setIdFlujo(result.result.corrida.idFlujo)
+      // setFecProceso(result.result.corrida.fecProceso)
+          
+      const url = `${URL_BACK}corridas`
 
-      //       console.log('Id flujo: ', result.result.corrida.idFlujo)
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(body)
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.codigo === 200 || result.codigo === 201) {
+  
+            getParameters(result.result.corrida.verParam)
+            setDataCorrida(result.result.corrida)
+            setCorrida({
+              ...corrida,
+              id: result.result.corrida.idCorrida,
+              verParam: result.result.corrida.verParam,
+              idFlujo: result.result.idFlujo,
+              fecProceso: result.result.corrida.fecProceso
+            })
+            setVerParam(result.result.corrida.verParam)
+            setIdFlujo(result.result.corrida.idFlujo)
+            setFecProceso(result.result.corrida.fecProceso)
 
-      //       setLoader(false)
-      //     }
-      //     // setbtnDisable(false)
-      //   })
-      //   .catch((error) => {
-      //     console.error(error)
-      //     setbtnDisable(false)
-      //     setLoader(false)
-      //   })
+            console.log('Id flujo: ', result.result.corrida.idFlujo)
+
+          }
+          // setbtnDisable(false)
+        })
+        .catch((error) => {
+          console.error(error)
+          setbtnDisable(false)
+          setLoadingCreateCorrida(false)
+        })
     } else {
       Swal.fire(
         `Error`,
@@ -218,7 +214,6 @@ const CreateSprint = () => {
         'error'
       )
     }
-    }, 5000)
     
   }
 

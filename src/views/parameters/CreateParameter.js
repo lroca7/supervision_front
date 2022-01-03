@@ -83,8 +83,6 @@ const CreateParameter = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
-
-          // setParameters(result.result.parametros)
           transFormData(result.result.parametros)
           setLoader(false)
         }
