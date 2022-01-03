@@ -1,7 +1,8 @@
-import { useContext, useState, useEffect, useRef } from "react"
+import { useContext, useState, useRef } from "react"
 import { ThemeColors } from "@src/utility/context/ThemeColors"
+import { useHistory } from "react-router-dom"
+
 import {
-  Row,
   Col,
   Button,
   Spinner,
@@ -9,24 +10,11 @@ import {
   FormGroup,
   Label,
   Input,
-  Alert,
-  Modal, ModalBody, ModalHeader, ModalFooter 
+  Alert
 } from "reactstrap"
 
 import Select from "react-select"
-
-import "@styles/react/libs/charts/apex-charts.scss"
-
-import { AgGridColumn, AgGridReact } from "ag-grid-react"
-
-import "ag-grid-community/dist/styles/ag-grid.css"
-import "ag-grid-community/dist/styles/ag-theme-alpine.css"
-
 import Swal from 'sweetalert2'
-
-import { columnsParametros, URL_BACK } from "../../contants"
-
-import { useHistory } from "react-router-dom"
 
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -35,14 +23,24 @@ import TableContainer from "@mui/material/TableContainer"
 import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
-import { groupBy, milesFormatTwo } from "../../utility/Utils"
+
+
+import { buildData, getValues } from "../parameters/Utils"
+import { fakeResponseCrearCorrida, milesFormatTwo } from "../../utility/Utils"
+import { useDispatch, useSelector } from "react-redux"
+import { setSelectedParameter } from "../parameters/store/action"
+import { getSelectedParameter } from "../parameters/store/selector"
+import { URL_BACK } from "../../contants"
+
+import TableSubgrupo from "../parameters/TableSubgrupo"
+
 import "../../assets/scss/app.scss"
 
 const CreateSprint = () => {
-  const { colors } = useContext(ThemeColors)
+  const dispatch = useDispatch()
 
-  const [loader, setLoader] = useState(false)
-
+  const [loadingCreateCorrida, setLoadingCreateCorrida] = useState(false)
+  
   const initialErrorState = {
     status: false,
     codigo: '',
@@ -97,11 +95,12 @@ const CreateSprint = () => {
 
   const inputEl = useRef(null)
 
+  const parametrosRedux = useSelector(getSelectedParameter)
+
   const transFormData = (data) => {
-    const group = data.reduce((r, a) => {
-      r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
-      return r
-    }, {})
+
+    const group = buildData(data, grupoParameter)
+    
     setSubgrupos(group)
   }
 
@@ -131,23 +130,28 @@ const CreateSprint = () => {
           setParametersInitial(JSON.parse(JSON.stringify(result.result.parametros)))
 
           setSubgrupos([])
+          setGrupoParameter(result.result.grupo)
+
           transFormData(result.result.parametros)
 
-          setGrupoParameter(result.result.grupo)
+          
           setTypeParameter({ value: result.result.tipo, label: result.result.tipo })
 
           setbtnDisable(false)
-          setLoader(false)
+          
           setBtnChangeParameters(false)
 
+          setLoadingCreateCorrida(false)
         }
       })
   }
 
-  const createCorrida = (e) => {
-
+  const createCorrida = async (e) => {
     setbtnDisable(true)
-    setLoader(true)
+    setLoadingCreateCorrida(true)
+
+    setTimeout(async() => {
+      
 
     // const selectTypeCorrida = document.getElementById("select-type-corrida")
     const tipoCorrida = e.value
@@ -158,41 +162,55 @@ const CreateSprint = () => {
         tipoCorrida
       }
   
-      const url = `${URL_BACK}corridas`
-  
-      fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(body)
+      const result = fakeResponseCrearCorrida
+      await getParameters(result.result.corrida.verParam)
+      setDataCorrida(result.result.corrida)
+      setCorrida({
+        ...corrida,
+        id: result.result.corrida.idCorrida,
+        verParam: result.result.corrida.verParam,
+        idFlujo: result.result.idFlujo,
+        fecProceso: result.result.corrida.fecProceso
       })
-        .then((response) => response.json())
-        .then((result) => {
-          if (result.codigo === 200 || result.codigo === 201) {
+      setVerParam(result.result.corrida.verParam)
+      setIdFlujo(result.result.corrida.idFlujo)
+      setFecProceso(result.result.corrida.fecProceso)
+          
+      // const url = `${URL_BACK}corridas`
+
+      // fetch(url, {
+      //   method: 'POST',
+      //   body: JSON.stringify(body)
+      // })
+      //   .then((response) => response.json())
+      //   .then((result) => {
+      //     if (result.codigo === 200 || result.codigo === 201) {
   
   
-            getParameters(result.result.corrida.verParam)
-            setDataCorrida(result.result.corrida)
-            setCorrida({
-              ...corrida,
-              id: result.result.corrida.idCorrida,
-              verParam: result.result.corrida.verParam,
-              idFlujo: result.result.idFlujo,
-              fecProceso: result.result.corrida.fecProceso
-            })
-            setVerParam(result.result.corrida.verParam)
-            setIdFlujo(result.result.corrida.idFlujo)
-            setFecProceso(result.result.corrida.fecProceso)
+      //       getParameters(result.result.corrida.verParam)
+      //       setDataCorrida(result.result.corrida)
+      //       setCorrida({
+      //         ...corrida,
+      //         id: result.result.corrida.idCorrida,
+      //         verParam: result.result.corrida.verParam,
+      //         idFlujo: result.result.idFlujo,
+      //         fecProceso: result.result.corrida.fecProceso
+      //       })
+      //       setVerParam(result.result.corrida.verParam)
+      //       setIdFlujo(result.result.corrida.idFlujo)
+      //       setFecProceso(result.result.corrida.fecProceso)
 
-            console.log('Id flujo: ', result.result.corrida.idFlujo)
+      //       console.log('Id flujo: ', result.result.corrida.idFlujo)
 
-            setLoader(false)
-          }
-          // setbtnDisable(false)
-        })
-        .catch((error) => {
-          console.error(error)
-          setbtnDisable(false)
-          setLoader(false)
-        })
+      //       setLoader(false)
+      //     }
+      //     // setbtnDisable(false)
+      //   })
+      //   .catch((error) => {
+      //     console.error(error)
+      //     setbtnDisable(false)
+      //     setLoader(false)
+      //   })
     } else {
       Swal.fire(
         `Error`,
@@ -200,6 +218,8 @@ const CreateSprint = () => {
         'error'
       )
     }
+    }, 5000)
+    
   }
 
 
@@ -427,17 +447,28 @@ const CreateSprint = () => {
 
 
   const launchCorrida = async () => {
-
+   
     setbtnDisableLaunch(true)
-    if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
+    const parameters = JSON.parse(JSON.stringify(parametrosRedux))
+    delete parameters['valuesInArray']
+
+    /* Si los parametros cambiaron se guarda la nueva version de parametros
+     * se actualiza la corrida y se lanza la corrida
+     */
+    if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
       const stateSaveParameters = await saveParameters()
       if (stateSaveParameters.codigo === 201) {
         const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
+
+        if (stateUpdateCorrida.codigo === 201) {
+          await executeCorrida()
+        }
+
       }
 
-    } else {
+    } else { 
       const updateState = await updateCorrida()
 
       if (updateState.codigo === 201) {
@@ -448,7 +479,7 @@ const CreateSprint = () => {
 
   }
 
-  const handleCandel = () => {  
+  const handleCancel = () => {  
     setResponseCorrida(null)  
     setGrupoParameter('')
     setTypeParameter(null)  
@@ -487,218 +518,56 @@ const CreateSprint = () => {
     
     setOpen(true)
     
-    if (item.key ===  'confIndices') {
-      const splitOne =  item.valor.split('/')
-      const elementosFI = []
-      splitOne.forEach(element => {
-        const splitTwo = element.split(':')
-        const grupos = splitTwo[2].split(' ')
-        const elementos = []
-        grupos.forEach((grupo, key) => {
-          const obj = {
-            id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
-            nombre: splitTwo[0],
-            rango: splitTwo[1],
-            grupo
-          }
-          elementosFI.push(obj)
-        })
-        
-      })
-
-      item['tabla'] = elementosFI
-    }
-
-    if (grupo !== 'Monitoreo RV') {
-      if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
-        
-        const itemValor = item.valor
-        const splitOneSP =  itemValor.split('/')
-        const elementosSP = []
-        splitOneSP.forEach(element => {
-          
-          const splitTwoSP = element.split(':')
-          const grupos = splitTwoSP[2].split(' ')
-          
-          grupos.forEach((grupo, key) => {
-            
-            const sGrupo = grupo.split('(')
-            const nGrupo = sGrupo[0]
-            
-            
-            const obj = {
-              id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
-              nombre: splitTwoSP[0],
-              rango: splitTwoSP[1],
-              grupo: nGrupo
-            }
-
-            if (sGrupo[1] !== undefined) {
-              const gPorcentaje = sGrupo[1].replace(')', '')
-              obj.porcentaje = gPorcentaje
-            }
-
-            elementosSP.push(obj)
-          })
-          
-        })
-
-        item['tabla'] = elementosSP
-      }
-    }
-
-    setItemSelected(item)
+    dispatch(setSelectedParameter(item))
   }
 
-  const getValoresChanged = () => {
+  const getValoresChanged = (itemSelected) => {
     
-    const itemChanged = itemSelected
-
-    if (itemSelected.tabla !== undefined) {
-      itemSelected.tabla.map(element => {
-        const input = document.getElementById(element.id)
-        const inputPorcentaje  = document.getElementById(`porcentaje_${element.id}`)
-        
-        if (input.value !== '') {
-          element.rango = input.value
-        }
-        if (inputPorcentaje !== null) {
-          if (inputPorcentaje.value !== '') {
-            element.porcentaje = inputPorcentaje.value
-          }
-        }
-        
-      })
-  
-      const corto = itemSelected.tabla.filter(f => {
-        return f.nombre === 'corto'
-      })
-      const largo = itemSelected.tabla.filter(f => {
-        return f.nombre === 'largo'
-      })
-      const mediano = itemSelected.tabla.filter(f => {
-        return f.nombre === 'mediano'
-      })
-      
-      const cortos = groupBy(corto, "rango")
-      const c = Object.keys(cortos).length
-      
-      const largos = groupBy(largo, "rango")
-      const l = Object.keys(largos).length
-  
-      const medianos = groupBy(mediano, "rango")
-      const m = Object.keys(medianos).length
-  
-      let valoresCorto = ''
-      let valoresLargo = ''
-      let valoresMediano = ''
-      
-      Object.entries(cortos).forEach(([key, value], kk) => {
-        //corto:0-1095:MH_DOP MH_USD BC_DOP CORP_DOP CORP_USD/
-        let stringCortos = ''
-  
-        if (kk < c - 1) {
-          stringCortos = `corto:${key}:`
-        } else {
-          stringCortos = `/corto:${key}:`
-        }     
-        
-        value.forEach((element, k) => {
-          
-          if (k === 0) {
-            
-            if (element.porcentaje) {
-              stringCortos += `${element.grupo}(${element.porcentaje})`
-            } else {
-              stringCortos += `${element.grupo}`
-            }
-          } else {
-            if (element.porcentaje) {
-              stringCortos += ` ${element.grupo}(${element.porcentaje})`
-            } else {
-              stringCortos += ` ${element.grupo}`
-            }            
-          }
-          
-        })
-        
-        valoresCorto += stringCortos
-      })
-  
-      Object.entries(largos).forEach(([key, value], kk) => {        
-        
-        let stringLargos = ''
-  
-        if (kk < l - 1) {
-          stringLargos = `largo:${key}:`
-        } else {
-          stringLargos = `/largo:${key}:`
-        }     
-        
-        value.forEach((element, k) => {
-          
-          if (k === 0) {
-            stringLargos += `${element.grupo}`
-          } else {
-            stringLargos += ` ${element.grupo}`
-          }
-        })
-        
-        valoresLargo += stringLargos
-      })
-  
-      Object.entries(medianos).forEach(([key, value], kk) => {        
-        
-        let stringMedianos = ''
-  
-        if (kk < m - 1) {
-          stringMedianos = `mediano:${key}:`
-        } else {
-          stringMedianos = `/mediano:${key}:`
-        }     
-        
-        value.forEach((element, k) => {
-          if (k === 0) {
-            stringMedianos += `${element.grupo}`
-          } else {
-            stringMedianos += ` ${element.grupo}`
-          }
-        })
-        
-        valoresMediano += stringMedianos
-      })
-  
-      let valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
-      valoresAll = valoresAll.replaceAll('//', '/')
-      if (valoresAll.charAt(0) === '/') {
-        valoresAll = valoresAll.slice(1)
-      }
-      itemChanged.valor = valoresAll
-      setItemSelected(itemChanged)
-
-    } else {
-      const input = document.getElementById(itemSelected.key)
-      if (input.value !== '') {
-        itemChanged.valor = input.value
-        setItemSelected(itemChanged)
-      }
-
-    }
-
+    const itemChanged = getValues(itemSelected)
+    
+    return itemChanged
 
   }
 
-  const updateItemSelected = () => {
-    getValoresChanged()
-    setOpen(false)
+  const toSetItemSelect = (itemToSet) => {
+
+    if (itemToSet.key === 'confIndices') {
+      const itemChanged = getValoresChanged(itemToSet)
+
+      const copySubgrupos = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgrupos["Configuración de índices"][0] = itemChanged
+      setSubgrupos(copySubgrupos)
+    }
+
+    if (itemToSet.key === 'porAjustadorLim_SP') {
+      
+      const itemChangedMonitoreo = getValoresChanged(itemToSet)
+      
+      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgruposMonitoreo["Sistema SIOPEL"][1] = itemChangedMonitoreo
+      setSubgrupos(copySubgruposMonitoreo)
+    }
+
+    if (itemToSet.key === 'porAjustadorLim_BL') {
+      
+      const itemChangedMonitoreo = getValoresChanged(itemToSet)
+      
+      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgruposMonitoreo["Sistema BLOOMBERG"][1] = itemChangedMonitoreo
+      setSubgrupos(copySubgruposMonitoreo)
+    }
+   
   }
 
   return (
     <div className="card">
-      <div class="card-header">
-        <h4 class="card-title">Crear corrida 2</h4>
+      <div className="card-header">
+        <h4 className="card-title">Crear corrida 2</h4>
       </div>
-      <div class="card-body">
+      <div className="card-body">
         <div id="parameters-container mb-4">
           <div className="d-flex align-items-end">
             <Col md="6">
@@ -718,7 +587,7 @@ const CreateSprint = () => {
             </Col> */}
           </div>
           
-          {loader === true && 
+          {loadingCreateCorrida === true && 
             <Col md="12" className="d-flex justify-content-center mt-4 mb-4">
               <Button.Ripple color="primary">
                 <Spinner color="white" size="sm" />
@@ -864,37 +733,11 @@ const CreateSprint = () => {
               <Col md="12" className="mt-2">
                 <h4 className="mb-2">Subgrupos</h4>
                 {Object.entries(subgrupos).length > 0 ? (
-                  <>
-                    {/* {Object.entries(subgrupos).map(([key, value]) => {
-                      return (
-                        <div>
-                          <h5>{key}</h5>
-                          <br />
-                          <div
-                            className="ag-theme-alpine"
-                            style={{ height: 200, width: "100%" }}
-                          >
-                            <AgGridReact
-                              rowData={value}
-                              defaultColDef={{
-                                flex: 1,
-                                minWidth: 110,
-                                editable: true,
-                                resizable: true
-                              }}
-                              columnDefs={columnsParametros}
-                            >
-                            </AgGridReact>
-                          </div>
-                          <br />
-                        </div>
-                      )
-                    })} */}
-
-{Object.entries(subgrupos).map(([key, value]) => {
+                  <>                    
+                    {Object.entries(subgrupos).map(([key, value]) => {
                       
                       return (
-                        <div>
+                        <div key={`subgrupo_${key}`}>
                           <h5>{key}</h5>
                           <br />
                           {value.length > 0 && (
@@ -968,106 +811,19 @@ const CreateSprint = () => {
                       <Button disabled={btnDisableLaunch} color="primary mr-2" onClick={launchCorrida}>
                         {!btnDisableLaunch ? 'Lanzar' : <><Spinner color="white" size="sm" /><span className="ml-50">Ejecutando...</span></>}
                       </Button>
-                      <Button disabled={btnDisableLaunch} outline color="secondary" onClick={handleCandel}>
+                      <Button disabled={btnDisableLaunch} outline color="secondary" onClick={handleCancel}>
                         Cancelar
                       </Button>
                     </div>
 
-                    <Modal isOpen={open} size='lg'>
-                      <ModalHeader >
-                        Editar
-                      </ModalHeader>
-                      <ModalBody>
-                        {
-                          itemSelected !== null && (
-                            <Row className="modal-edit d-flex align-items-end justify-content-center">
-                              <Col md="12">
-                                <label>Nombre:</label>
-                                <Input
-                                  type="text"
-                                  name="name"
-                                  id="name"
-                                  disabled={true}
-                                  value={itemSelected.nombre}
-                                />
-                              </Col>
-                              <Col md="12">
-                                <label>Valor:</label>
-                                
-                                {
-                                ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
-                                  <table className="table-edit">
-                                    <thead>
-                                      <tr>
-                                        <th>Grupo</th>
-                                        <th>Nombre</th>
-                                        <th>Rango días</th>
-                                        {
-                                          (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                            <th>% Ajustador por criterio comisión</th>
-                                          )
-                                        }
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {
-                                        itemSelected.tabla.map(t => {
-                                          return <tr className='valor'>
-                                            <td>{t.grupo}</td>
-                                            <td>{t.nombre}</td>
-                                            <td>
-                                              <Input id={t.id} placeholder={t.rango} />
-                                            </td>
-                                            {
-                                              (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                                <td>
-                                                  {/* {t.porcentaje} */}                                                  
-                                                  <Input id={`porcentaje_${ t.id}`} placeholder={t.porcentaje} />
-                                                </td>
-                                              )
-                                            }
-                                          </tr>
-                                        })
-                                      }
-                                    </tbody>
-                                  </table>
-                                ) : (
-                                  <Input
-                                    type="text"
-                                    name="valor"
-                                    id={itemSelected.key}
-                                    // placeholder={itemSelected.valor}
-                                    placeholder={
-                                      (itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') ? itemSelected.valor : milesFormatTwo(itemSelected.valor)
-                                    }
-                                  />
-                                )                              
-                              }
-                              </Col>
-                              <Col md="12">
-                                <label>Descripción:</label>
-                                <textarea
-                                  type="text"
-                                  name="valor"
-                                  id="valor"
-                                  disabled={true}
-                                  value={itemSelected.descripcion}
-                                ></textarea>
-                              </Col>                            
-                            </Row>
-                          )
-                        }
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button
-                          color="primary"
-                          onClick={() => { updateItemSelected() }}
-                        >
-                          Guardar
-                        </Button>{" "}
-                        <Button onClick={handleClose}>Cancelar</Button>
-                      </ModalFooter>
-                    </Modal>
+                    <TableSubgrupo 
+                      itemSelected={itemSelected} 
+                      toSetItemSelect={toSetItemSelect} 
+                      grupo={grupoParameter}
+                      open={open}
+                      handleClose={handleClose}
+                      readOnly={false}
+                    />
 
                   </>
                 ) : (

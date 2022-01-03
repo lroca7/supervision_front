@@ -232,3 +232,18 @@ export const fakeResponseMonitoreoRF = {
   }
 }
 
+export const fakeResponseCrearCorrida = {
+  status: "ok",
+  codigo: 200,
+  result: {
+    corrida: {
+      idCorrida: 1311,
+      estado: "INI",
+      user: "jlotero",
+      fecCreacion: "2022-01-03 16:23:12",
+      verParam: "115",
+      idFlujo: 6,
+      fecProceso: "2022-01-02"
+    }
+  }
+}
