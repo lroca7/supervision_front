@@ -380,12 +380,14 @@ const CreateSprint = () => {
     } catch (error) {
       console.error(error)
 
+      setbtnDisableLaunch(false)
+      
       Swal.fire(
         `Ha ocurrido un error al actualizar`,
         `${error}`,
         'error'
       )
-      setbtnDisableLaunch(false)
+      
 
     }
     return []

@@ -1,26 +1,21 @@
 /* eslint-disable multiline-ternary */
-import { useContext, useState, useEffect, useRef } from "react"
-import { Link } from "react-router-dom"
-import { ThemeColors } from "@src/utility/context/ThemeColors"
+import { useState, useRef } from "react"
+
 import {
   Row,
-  Col,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  Media,
+  Col,  
   Button,
   Spinner,
-  CardText,
   CustomInput,
   FormGroup,
   Label,
   Input,
-  Alert,   
-  Modal, ModalBody, ModalHeader, ModalFooter 
+  Alert
 } from "reactstrap"
 
+import Select from "react-select"
+
+import Swal from 'sweetalert2'
 
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -30,24 +25,21 @@ import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
 
-import Select from "react-select"
 
-import "@styles/react/libs/charts/apex-charts.scss"
-
-import { AgGridColumn, AgGridReact } from "ag-grid-react"
-
-import "ag-grid-community/dist/styles/ag-grid.css"
-import "ag-grid-community/dist/styles/ag-theme-alpine.css"
-
-import Swal from 'sweetalert2'
-
+import { buildData, getValues } from "../parameters/Utils"
+import { milesFormat, milesFormatTwo, fakeResponseCrearCorrida } from "../../utility/Utils"
+import { useDispatch, useSelector } from "react-redux"
+import { setSelectedParameter } from "../parameters/store/action"
+import { getSelectedParameter } from "../parameters/store/selector"
 import { URL_BACK } from "../../contants"
-import { groupBy, milesFormat, milesFormatTwo } from "../../utility/Utils"
+
+import TableSubgrupo from "../parameters/TableSubgrupo"
+
 import "../../assets/scss/app.scss"
-import DeleteIcon from "../../assets/images/icons/delete-icon.png"
 
 const ExecuteSprint = () => {
-  const { colors } = useContext(ThemeColors)
+  
+  const dispatch = useDispatch()
 
   const [loader, setLoader] = useState(false)
 
@@ -70,14 +62,6 @@ const ExecuteSprint = () => {
     { value: "temporales", label: "Temporales" }
   ]
 
-  const optionsGrupos = [
-    { value: "CORP_USD", label: "CORP_USD" },
-    { value: "CORP_DOP", label: "CORP_DOP" },
-    { value: "MH_USD", label: "MH_USD" },
-    { value: "MH_DOP", label: "MH_DOP" },
-    { value: "BC_DO", label: "BC_DO" }
-  ]
-
   const [grupoParameter, setGrupoParameter] = useState('Hola')
   const [typeParameter, setTypeParameter] = useState(null)
 
@@ -85,35 +69,9 @@ const ExecuteSprint = () => {
   const [parametersInitial, setParametersInitial] = useState([])
   const [subgrupos, setSubgrupos] = useState([])
  
-  const columnsDef = [
-    { 
-      field: "nombre", 
-      headerName: "Nombre",
-      maxWidth: 250,
-      editable: false
-    },
-    { 
-      field: "valor", 
-      headerName: "Valor",
-      valueFormatter: milesFormat,
-      maxWidth: 250
-    },
-    { 
-      field: "descripcion", 
-      headerName: "Descripción", 
-      editable: false,
-      minWidth: 150,
-      wrapText: true, 
-      autoHeight: true 
-    }
-  ]
-
   const [dataCorrida, setDataCorrida] = useState(null)
   const [corrida, setCorrida] = useState({
     id: null
-    // verParam: null,
-    // idFlujo: null,
-    // fecProceso: null
   })
   
   const [verParam, setVerParam] = useState(null)
@@ -127,11 +85,12 @@ const ExecuteSprint = () => {
 
   const inputEl = useRef(null)
 
+  const parametrosRedux = useSelector(getSelectedParameter)
+
   const transFormData = (data) => {
-    const group = data.reduce((r, a) => {
-      r[a.subgrupo] = [...(r[a.subgrupo] || []), a]
-      return r
-    }, {})
+
+    const group = buildData(data, grupoParameter)
+    
     setSubgrupos(group)
   }
 
@@ -395,27 +354,33 @@ const ExecuteSprint = () => {
 
   }
 
-
   const launchCorrida = async () => {
-
-    // debugger
-
+   
     setbtnDisableLaunch(true)
+
+    const parameters = JSON.parse(JSON.stringify(parametrosRedux))
+    delete parameters['valuesInArray']
+
+    /* Si los parametros cambiaron se guarda la nueva version de parametros
+     * se actualiza la corrida y se lanza la corrida
+     */
     if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
-      // debugger
       const stateSaveParameters = await saveParameters()
-      
       if (stateSaveParameters.codigo === 201) {
         const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
+
+        if (stateUpdateCorrida.codigo === 201) {
+          await executeCorrida()
+        }
+
       }
 
-    } else {
-      // debugger
+    } else { 
       const updateState = await updateCorrida()
 
       if (updateState.codigo === 201) {
-        // await executeCorrida()
+        await executeCorrida()
       }
 
     }
@@ -519,229 +484,56 @@ const ExecuteSprint = () => {
 
 
   // LO NUEVO 
+
   const handleClose = () => setOpen(false)
 
   const editItemTable = (item) => {   
     
     setOpen(true)
     
-    if (item.key ===  'confIndices') {
-      const splitOne =  item.valor.split('/')
-      const elementosFI = []
-      splitOne.forEach(element => {
-        const splitTwo = element.split(':')
-        if (splitTwo[2] !== undefined) {
-          const grupos = splitTwo[2].split(' ')
-          grupos.forEach((grupo, key) => {
-            const obj = {
-              id:  `${grupo}_${splitTwo[0]}_${splitTwo[1]}`,
-              nombre: splitTwo[0],
-              rango: splitTwo[1],
-              grupo
-            }
-            elementosFI.push(obj)
-          })
-        }
-       
-        
-      })
-
-      item['tabla'] = elementosFI
-    }
-
-    if (grupo !== 'Monitoreo RV') {
-      if (item.key ===  'porAjustadorLim_SP' || item.key === 'porAjustadorLim_BL') {
-        
-        const itemValor = item.valor
-        const splitOneSP =  itemValor.split('/')
-        const elementosSP = []
-        splitOneSP.forEach(element => {
-          
-          const splitTwoSP = element.split(':')
-          const grupos = splitTwoSP[2].split(' ')
-          
-          grupos.forEach((grupo, key) => {
-            
-            const sGrupo = grupo.split('(')
-            const nGrupo = sGrupo[0]
-            
-            
-            const obj = {
-              id:  `${grupo}_${splitTwoSP[0]}_${splitTwoSP[1]}`,
-              nombre: splitTwoSP[0],
-              rango: splitTwoSP[1],
-              grupo: nGrupo
-            }
-
-            if (sGrupo[1] !== undefined) {
-              const gPorcentaje = sGrupo[1].replace(')', '')
-              obj.porcentaje = gPorcentaje
-            }
-
-            elementosSP.push(obj)
-          })
-          
-        })
-
-        item['tabla'] = elementosSP
-      }
-    }
-
-    setItemSelected(item)
+    dispatch(setSelectedParameter(item))
   }
 
-  const getValoresChanged = (currentItemSelected) => {
-
-    // const itemChanged = itemSelected
-    const itemChanged = currentItemSelected
+  const getValoresChanged = (itemSelected) => {
     
-    if (itemChanged.tabla !== undefined) {
-      itemChanged.tabla.map(element => {
-        const input = document.getElementById(element.id)
-        const inputPorcentaje  = document.getElementById(`porcentaje_${element.id}`)
-        
-        if (input !== null) {
-          if (input.value !== '') {
-            element.rango = input.value
-          }
-        }
+    const itemChanged = getValues(itemSelected)
+    
+    return itemChanged
 
-       
-        if (inputPorcentaje !== null) {
-          if (inputPorcentaje.value !== '') {
-            element.porcentaje = inputPorcentaje.value
-          }
-        }
-        
-      })
-  
-      const corto = itemChanged.tabla.filter(f => {
-        return f.nombre === 'corto'
-      })
-      const largo = itemChanged.tabla.filter(f => {
-        return f.nombre === 'largo'
-      })
-      const mediano = itemChanged.tabla.filter(f => {
-        return f.nombre === 'mediano'
-      })
-     
-      const cortos = groupBy(corto, "rango")
-      const c = Object.keys(cortos).length
+  }
+
+  const toSetItemSelect = (itemToSet) => {
+
+    if (itemToSet.key === 'confIndices') {
+      const itemChanged = getValoresChanged(itemToSet)
+
+      const copySubgrupos = JSON.parse(JSON.stringify(subgrupos))
       
-      const largos = groupBy(largo, "rango")
-      const l = Object.keys(largos).length
-  
-      const medianos = groupBy(mediano, "rango")
-      const m = Object.keys(medianos).length
-  
-      let valoresCorto = ''
-      let valoresLargo = ''
-      let valoresMediano = ''
-      
-      Object.entries(cortos).forEach(([key, value], kk) => {
-        //corto:0-1095:MH_DOP MH_USD BC_DOP CORP_DOP CORP_USD/
-        let stringCortos = ''
-  
-        if (kk < c - 1) {
-          stringCortos = `corto:${key}:`
-        } else {
-          stringCortos = `/corto:${key}:`
-        }     
-        
-        value.forEach((element, k) => {
-          
-          if (k === 0) {
-            
-            if (element.porcentaje) {
-              stringCortos += `${element.grupo}(${element.porcentaje})`
-            } else {
-              stringCortos += `${element.grupo}`
-            }
-          } else {
-            if (element.porcentaje) {
-              stringCortos += ` ${element.grupo}(${element.porcentaje})`
-            } else {
-              stringCortos += ` ${element.grupo}`
-            }            
-          }
-         
-        })
-        
-        valoresCorto += stringCortos
-      })
-  
-      Object.entries(largos).forEach(([key, value], kk) => {        
-        
-        let stringLargos = ''
-  
-        if (kk < l - 1) {
-          stringLargos = `largo:${key}:`
-        } else {
-          stringLargos = `/largo:${key}:`
-        }     
-        
-        value.forEach((element, k) => {
-          
-          if (k === 0) {
-            stringLargos += `${element.grupo}`
-          } else {
-            stringLargos += ` ${element.grupo}`
-          }
-        })
-        
-        valoresLargo += stringLargos
-      })
-  
-      Object.entries(medianos).forEach(([key, value], kk) => {        
-        
-        let stringMedianos = ''
-  
-        if (kk < m - 1) {
-          stringMedianos = `mediano:${key}:`
-        } else {
-          stringMedianos = `/mediano:${key}:`
-        }     
-        
-        value.forEach((element, k) => {
-          if (k === 0) {
-            stringMedianos += `${element.grupo}`
-          } else {
-            stringMedianos += ` ${element.grupo}`
-          }
-        })
-        
-        valoresMediano += stringMedianos
-      })
-  
-      let valoresAll = `${valoresCorto}/${valoresMediano}/${valoresLargo}`
-      valoresAll = valoresAll.replaceAll('//', '/')
-      if (valoresAll.charAt(0) === '/') {
-        valoresAll = valoresAll.slice(1)
-      }
-      itemChanged.valor = valoresAll
-      // setItemSelected(itemChanged)
-      return itemChanged
-
-    } else {
-      const input = document.getElementById(itemChanged.key)
-      if (input.value !== '') {
-        itemChanged.valor = input.value
-        // setItemSelected(itemChanged)
-        return itemChanged
-      }
-
+      copySubgrupos["Configuración de índices"][0] = itemChanged
+      setSubgrupos(copySubgrupos)
     }
 
+    if (itemToSet.key === 'porAjustadorLim_SP') {
+      
+      const itemChangedMonitoreo = getValoresChanged(itemToSet)
+      
+      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgruposMonitoreo["Sistema SIOPEL"][1] = itemChangedMonitoreo
+      setSubgrupos(copySubgruposMonitoreo)
+    }
 
+    if (itemToSet.key === 'porAjustadorLim_BL') {
+      
+      const itemChangedMonitoreo = getValoresChanged(itemToSet)
+      
+      const copySubgruposMonitoreo = JSON.parse(JSON.stringify(subgrupos))
+      
+      copySubgruposMonitoreo["Sistema BLOOMBERG"][1] = itemChangedMonitoreo
+      setSubgrupos(copySubgruposMonitoreo)
+    }
+   
   }
-
-  const updateItemSelected = (value, type) => {
-
-    const valoresChanged = getValoresChanged(itemSelected)
-    setItemSelected(valoresChanged)
-    setOpen(false)
-  }
-
   const deleteItemParameter = (parameter) => {
 
     const tableUpdated = itemSelected.tabla.filter(item => {
@@ -822,10 +614,10 @@ const ExecuteSprint = () => {
 
   return (
     <div className="card">
-      <div class="card-header">
-        <h4 class="card-title">Lanzar Corrida 1</h4>
+      <div className="card-header">
+        <h4 className="card-title">Lanzar Corrida 1</h4>
       </div>
-      <div class="card-body">
+      <div className="card-body">
         <div id="parameters-container mb-4">
 
           <Row className="d-flex align-items-end justify-content-center">
@@ -990,7 +782,7 @@ const ExecuteSprint = () => {
                     {Object.entries(subgrupos).map(([key, value]) => {
                       
                       return (
-                        <div>
+                        <div key={`subgrupo_${key}`}>
                           <h5>{key}</h5>
                           <br />
                           {value.length > 0 && (
@@ -1071,177 +863,14 @@ const ExecuteSprint = () => {
                           </Button>
                         </div>
 
-                    <Modal isOpen={open} size='lg'>
-                      <ModalHeader >
-                        Editar
-                      </ModalHeader>
-                      <ModalBody>
-                        {
-                          itemSelected !== null && (
-                            <Row className="modal-edit d-flex align-items-end justify-content-center">
-                              <Col md="12">
-                                <label>Nombre:</label>
-                                <Input
-                                  type="text"
-                                  name="name"
-                                  id="name"
-                                  disabled={true}
-                                  value={itemSelected.nombre}
-                                />
-                              </Col>
-                              <Col md="12">
-                                <label>Valor:</label>
-                                
-                                {
-                                ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
-                                  <>
-                                    <Button type="button" 
-                                      className="btn btn-secondary btn-add" 
-                                      size='small'
-                                      onClick={()=> addItemParameter()}>                                    
-                                      Agregar
-                                    </Button>
-                                    
-                                    <table className="table-edit">
-                                      <thead>
-                                        <tr>
-                                          <th width="160">Grupo</th>
-                                          <th>Nombre</th>
-                                          <th>Rango días</th>
-                                          {
-                                            (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                              <th>% Ajustador por criterio comisión</th>
-                                            )
-                                          }
-                                          <th>Acciones</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {
-                                          itemSelected.tabla.map((t, index) => {
-                                            return <tr className='valor' id={`item-${t.id}`}>
-                                              <td>
-                                                {/* {t.grupo} */}
-                                                <Select
-                                                  id="select-group"
-                                                  // ref={inputEl}
-                                                  options={optionsGrupos}
-                                                  placeholder={t.grupo}
-                                                  
-                                                  isDisabled={false}
-                                                  onChange={(e) => updateGroup(e, t)}
-                                                />
-                                              </td>
-                                              <td>{t.nombre}</td>
-                                              <td>
-                                                <Input id={t.id} placeholder={t.rango} />
-                                              </td>
-                                              {
-                                                (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                                                  <td>
-                                                    {/* {t.porcentaje} */}
-                                                    <Input id={`porcentaje_${ t.id}`} placeholder={t.porcentaje} />
-                                                  </td>
-                                                )
-                                              }
-                                              <td className="acciones">
-                                                <Button type="button" className="btn btn-secondary" onClick={() => deleteItemParameter(t)}>
-                                                  <img src={DeleteIcon} alt='Eliminar' width='20px'/>
-                                                  Eliminar
-                                                </Button>                                              
-                                              </td>
-                                            </tr>
-                                          })
-                                        }
-                                      </tbody>
-                                    </table>
-                                  </>
-                                ) : (
-                                  <Input
-                                    type="text"
-                                    name="valor"
-                                    id={itemSelected.key}
-                                    // placeholder={itemSelected.valor}
-                                    placeholder={
-                                      (itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') ? itemSelected.valor : milesFormatTwo(itemSelected.valor)
-                                    }
-                                  />
-                                )                              
-                              }
-                              </Col>
-                              <Col md="12">
-                                <label>Descripción:</label>
-                                <textarea
-                                  type="text"
-                                  name="valor"
-                                  id="valor"
-                                  disabled={true}
-                                  value={itemSelected.descripcion}
-                                ></textarea>
-                              </Col>                            
-                            </Row>
-                          )
-                        }
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button
-                          color="primary"
-                          onClick={() => { updateItemSelected() }}
-                        >
-                          Guardar
-                        </Button>{" "}
-                        <Button onClick={handleClose}>Cancelar</Button>
-                      </ModalFooter>
-                    </Modal>
-                    
-
-                    <Modal isOpen={addOpen} size='lg'>
-                      <ModalHeader >
-                        Agregar
-                      </ModalHeader>
-                      <ModalBody>
-                        {
-                          itemSelected !== null && (
-                            <Row className="modal-edit d-flex align-items-end justify-content-center">
-                              <Col md="12">
-                                <label>Grupo:</label>
-                                <Input
-                                  type="text"
-                                  name="group"
-                                  id="add-group"
-                                />
-                              </Col>
-                              <Col md="12">
-                                <label>Nombre:</label>
-                                <Input
-                                  type="text"
-                                  name="add-name"
-                                  id="add-name"
-                                />
-                              </Col>
-                              <Col md="12">
-                                <label>Valor:</label>
-                                <Input
-                                  type="text"
-                                  name="add-value"
-                                  id="add-value"
-                                />                          
-                              
-                              </Col>                          
-                            </Row>
-                          )
-                        }
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button
-                          color="primary"
-                          onClick={() => { saveAddItemParameter() }}
-                        >
-                          Guardar
-                        </Button>{" "}
-                        <Button onClick={() => setAddOpen(false)}>Cancelar</Button>
-                      </ModalFooter>
-                    </Modal>
+                        <TableSubgrupo 
+                          itemSelected={itemSelected} 
+                          toSetItemSelect={toSetItemSelect} 
+                          grupo={grupoParameter}
+                          open={open}
+                          handleClose={handleClose}
+                          readOnly={false}
+                        />
                   </Col>
                 </>
               )}

@@ -26,6 +26,7 @@ import Swal from "sweetalert2"
 
 import { URL_BACK } from "../../../contants"
 import { Alert } from "bootstrap"
+import { FALSE } from "node-sass"
 
 const CreateTitle = (props) => {
   const { colors } = useContext(ThemeColors)
@@ -36,6 +37,8 @@ const CreateTitle = (props) => {
   const [idCorrida, setIdCorrida] = useState(null)
 
   const [titulos, setTitulos] = useState([])
+
+  const [loadingNyS, setLoadingNyS] = useState(false)
 
   const history = useHistory()
 
@@ -186,6 +189,7 @@ const CreateTitle = (props) => {
   const aprobarTitulos = () => {
     const url = `${URL_BACK}titulos-nys/aprobar-titulos-nys`
     setLoader(true)
+    setLoadingNyS(true)
     const body = {
       idCorrida,
       titulosAprobados: titulos
@@ -210,11 +214,13 @@ const CreateTitle = (props) => {
           Swal.fire(`${result.message}`, ``, "error")
         }
         setLoader(false)
+        setLoadingNyS(true)
       })
       .catch((error) => {
         console.error(error)
         Swal.fire(`Ha ocurrido un error al aprobar titulos`, `${error}`, "error")
         setLoader(false)
+        setLoadingNyS(true)
       })
   }
   const addTitle = () => {
@@ -316,7 +322,8 @@ const CreateTitle = (props) => {
                       <Button
                         outline
                         color="primary"
-                        onClick={(e) => aprobarTitulos(e)}>
+                        onClick={(e) => aprobarTitulos(e)}
+                        disabled={!setLoadingNyS}>
                           Ejecutar N & S
                       </Button>
                     </Row>

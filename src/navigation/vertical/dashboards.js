@@ -65,7 +65,7 @@ export default [
     badge: 'light-warning',
     children: [
       {
-        id: 'titles',
+        id: 'titles_approve',
         title: 'Aprobar títulos - quitar',
         icon: <Circle size={12} />,
         navLink: '/titles'
