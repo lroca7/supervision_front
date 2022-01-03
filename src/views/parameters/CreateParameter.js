@@ -312,6 +312,7 @@ const CreateParameter = () => {
                     grupo={grupo}
                     open={open}
                     handleClose={handleClose}
+                    readOnly={false}
                   />
 
                   <h5 className="mt-2">Convertir parametros en oficiales</h5>

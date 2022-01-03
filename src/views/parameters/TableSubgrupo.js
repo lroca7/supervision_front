@@ -32,7 +32,8 @@ const TableSubgrupo = ({
     toSetItemSelect,
     open,
     handleClose, 
-    grupo }) => {
+    grupo,
+    readOnly }) => {
 
     const dispatch = useDispatch()
     const itemSelected = useSelector(getSelectedParameter)
@@ -152,7 +153,7 @@ const TableSubgrupo = ({
       <>
         <Modal isOpen={open} size='lg'>
           <ModalHeader >
-            Editar
+            {!readOnly ? 'Editar' : 'Detalle'}
           </ModalHeader>
           <ModalBody>
             {
@@ -174,9 +175,13 @@ const TableSubgrupo = ({
                       ((itemSelected.key === 'confIndices' || itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && grupo !== 'Monitoreo RV') ? (
                       
                         <div className="container-table-subgroup">
-                          <div className="add-action">
-                              <Button color='primary' onClick={ () => { openAddModal() }}>Agregar</Button>
-                          </div>
+                          {
+                            !readOnly && (
+                              <div className="add-action">
+                                  <Button color='primary' onClick={ () => { openAddModal() }}>Agregar</Button>
+                              </div>
+                            )
+                          }                          
                           <TableContainer component={Paper}>
                           <Table >
                               <TableHead>
@@ -189,7 +194,9 @@ const TableSubgrupo = ({
                                       <TableCell>% Ajustador por criterio comisión</TableCell>
                                   )
                                   }
-                                  <TableCell width={'10%'}>Acciones</TableCell>
+                                  {
+                                    !readOnly && (<TableCell width={'10%'}>Acciones</TableCell>)
+                                  }
                               </TableRow>
                               </TableHead>
                               <TableBody>
@@ -208,12 +215,17 @@ const TableSubgrupo = ({
                                           </TableCell>
                                       )
                                       }
-                                      <TableCell width={'10%'}>
-                                          <div className="table-actions">
-                                              <Button color='primary' outline onClick={() => { showEditItemValue(t) }}>Editar</Button>
-                                              <Button color='danger' outline onClick={() => { deleteItemValue(t) }}>Eliminar</Button>
-                                          </div>           
-                                      </TableCell>
+                                      {
+                                        !readOnly && (
+                                          <TableCell width={'10%'}>
+                                              <div className="table-actions">
+                                                  <Button color='primary' outline onClick={() => { showEditItemValue(t) }}>Editar</Button>
+                                                  <Button color='danger' outline onClick={() => { deleteItemValue(t) }}>Eliminar</Button>
+                                              </div>           
+                                          </TableCell>
+                                        )
+                                      }
+                                      
                                   </TableRow>)
                                   })
                               }
@@ -247,187 +259,197 @@ const TableSubgrupo = ({
             }
           </ModalBody>
           <ModalFooter>
-            <Button
-              color="primary"
-              onClick={() => { updateItemSelected() }}
-            >
-              Guardar todo
-            </Button>{" "}
+            {!readOnly && (
+              <Button
+                color="primary"
+                onClick={() => { updateItemSelected() }}
+              >
+                Guardar todo
+              </Button>
+            )}
+            {" "}
             <Button onClick={handleClose}>Cancelar</Button>
           </ModalFooter>
         </Modal>
          
-        <Modal isOpen={showModalAdd} >
-          <ModalHeader >
-            Agregar
-          </ModalHeader>
-          <ModalBody>
-            {
-              itemSelected !== null && (
-                <Row className="modal-edit d-flex align-items-end justify-content-center">
-                  <Col md="12">
-                    <label>Grupo:</label>
-                    {/* <Input
-                      type="text"
-                      name="add_group"
-                      id="add_group"
-                    /> */}
-                    <Select
-                      id="add_group"
-                      className='select-group'
-                      onChange={handleChangeSelectGroup}
-                      displayEmpty                      
-                    >
-                      {
-                        groupsRF.map((g, index) => ( 
-                          <MenuItem key={`mgroup_${index}`} value={g}>{g}</MenuItem>
-                        ))
-                      }
-                    </Select>
-                  </Col>   
-                  <Col md="12">
-                    <label>Nombre:</label>
-                    {/* <Input
-                      type="text"
-                      name="add_name"
-                      id="add_name"
-                    /> */}
-                    <Select
-                      id="add_name"
-                      className='select-group'
-                      onChange={handleChangeSelectName}
-                      displayEmpty                      
-                    >
-                      {
-                        namesRF.map((n, index) => ( 
-                          <MenuItem key={`mname_${index}`} value={n}>{n}</MenuItem>
-                        ))
-                      }
-                    </Select>
-                  </Col> 
-                  <Col md="12">
-                    <label>Rango:</label>
-                    <Input
-                      type="text"
-                      name="add_range"
-                      id="add_range"
-                    />
-                  </Col>   
+         {
+           !readOnly && (
+             <>
+              <Modal isOpen={showModalAdd} >
+                <ModalHeader >
+                  Agregar
+                </ModalHeader>
+                <ModalBody>
                   {
-                    (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                      <Col md="12">
-                        <label>% Ajustador:</label>
-                        <Input
-                          type="text"
-                          name="add_percentage"
-                          id="add_percentage"
-                        />
-                      </Col> 
+                    itemSelected !== null && (
+                      <Row className="modal-edit d-flex align-items-end justify-content-center">
+                        <Col md="12">
+                          <label>Grupo:</label>
+                          {/* <Input
+                            type="text"
+                            name="add_group"
+                            id="add_group"
+                          /> */}
+                          <Select
+                            id="add_group"
+                            className='select-group'
+                            onChange={handleChangeSelectGroup}
+                            displayEmpty                      
+                          >
+                            {
+                              groupsRF.map((g, index) => ( 
+                                <MenuItem key={`mgroup_${index}`} value={g}>{g}</MenuItem>
+                              ))
+                            }
+                          </Select>
+                        </Col>   
+                        <Col md="12">
+                          <label>Nombre:</label>
+                          {/* <Input
+                            type="text"
+                            name="add_name"
+                            id="add_name"
+                          /> */}
+                          <Select
+                            id="add_name"
+                            className='select-group'
+                            onChange={handleChangeSelectName}
+                            displayEmpty                      
+                          >
+                            {
+                              namesRF.map((n, index) => ( 
+                                <MenuItem key={`mname_${index}`} value={n}>{n}</MenuItem>
+                              ))
+                            }
+                          </Select>
+                        </Col> 
+                        <Col md="12">
+                          <label>Rango:</label>
+                          <Input
+                            type="text"
+                            name="add_range"
+                            id="add_range"
+                          />
+                        </Col>   
+                        {
+                          (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
+                            <Col md="12">
+                              <label>% Ajustador:</label>
+                              <Input
+                                type="text"
+                                name="add_percentage"
+                                id="add_percentage"
+                              />
+                            </Col> 
+                          )
+                        }                      
+                      </Row>
                     )
-                  }                      
-                </Row>
-              )
-            }
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              color="primary"
-              onClick={() => { addValueToItemSelected() }}
-            >
-              Guardar nuevo
-            </Button>{" "}
-            <Button onClick={() => setShowModalAdd(false)}>Cancelar</Button>
-          </ModalFooter>
-        </Modal>
+                  }
+                </ModalBody>
+                <ModalFooter>
+                  <Button
+                    color="primary"
+                    onClick={() => { addValueToItemSelected() }}
+                  >
+                    Guardar nuevo
+                  </Button>{" "}
+                  <Button onClick={() => setShowModalAdd(false)}>Cancelar</Button>
+                </ModalFooter>
+              </Modal>
 
-        <Modal isOpen={showModalEdit} >
-          <ModalHeader >
-            Editar
-          </ModalHeader>
-          <ModalBody>
-            {
-              valueItemToEdit !== null && (
-                <Row className="modal-edit d-flex align-items-end justify-content-center">
-                  <Col md="12">
-                    <label>Grupo e:</label>
-                    {/* <Input
-                      type="text"
-                      name="edit_group"
-                      id="edit_group"
-                      placeholder={valueItemToEdit.grupo}
-                    /> */}
-                    <Select
-                      id="edit_group"
-                      className='select-group'
-                      onChange={handleChangeSelectGroup}
-                      defaultValue={valueItemToEdit.grupo}
-                      displayEmpty                      
-                    >
-                      {
-                        groupsRF.map((g, index) => ( 
-                          <MenuItem key={`mgroup_${index}`} value={g}>{g}</MenuItem>
-                        ))
-                      }
-                    </Select>
-                  </Col>   
-                  <Col md="12">
-                    <label>Nombre:</label>
-                    {/* <Input
-                      type="text"
-                      name="edit_name"
-                      id="edit_name"
-                      placeholder={valueItemToEdit.nombre}
-                    /> */}
-                    <Select
-                      id="edit_name"
-                      className='select-group'
-                      onChange={handleChangeSelectName}
-                      defaultValue={valueItemToEdit.nombre}
-                      displayEmpty                      
-                    >
-                      {
-                        namesRF.map((n, index) => ( 
-                          <MenuItem key={`mname_${index}`} value={n}>{n}</MenuItem>
-                        ))
-                      }
-                    </Select>
-                  </Col> 
-                  <Col md="12">
-                    <label>Rango:</label>
-                    <Input
-                      type="text"
-                      name="edit_range"
-                      id="edit_range"
-                      placeholder={valueItemToEdit.rango}
-                    />
-                  </Col>   
+              <Modal isOpen={showModalEdit} >
+                <ModalHeader >
+                  Editar
+                </ModalHeader>
+                <ModalBody>
                   {
-                    (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
-                      <Col md="12">
-                        <label>% Ajustador:</label>
-                        <Input
-                          type="text"
-                          name="edit_percentage"
-                          id="edit_percentage"
-                          placeholder={valueItemToEdit.porcentaje}
-                        />
-                      </Col> 
+                    valueItemToEdit !== null && (
+                      <Row className="modal-edit d-flex align-items-end justify-content-center">
+                        <Col md="12">
+                          <label>Grupo e:</label>
+                          {/* <Input
+                            type="text"
+                            name="edit_group"
+                            id="edit_group"
+                            placeholder={valueItemToEdit.grupo}
+                          /> */}
+                          <Select
+                            id="edit_group"
+                            className='select-group'
+                            onChange={handleChangeSelectGroup}
+                            defaultValue={valueItemToEdit.grupo}
+                            displayEmpty                      
+                          >
+                            {
+                              groupsRF.map((g, index) => ( 
+                                <MenuItem key={`mgroup_${index}`} value={g}>{g}</MenuItem>
+                              ))
+                            }
+                          </Select>
+                        </Col>   
+                        <Col md="12">
+                          <label>Nombre:</label>
+                          {/* <Input
+                            type="text"
+                            name="edit_name"
+                            id="edit_name"
+                            placeholder={valueItemToEdit.nombre}
+                          /> */}
+                          <Select
+                            id="edit_name"
+                            className='select-group'
+                            onChange={handleChangeSelectName}
+                            defaultValue={valueItemToEdit.nombre}
+                            displayEmpty                      
+                          >
+                            {
+                              namesRF.map((n, index) => ( 
+                                <MenuItem key={`mname_${index}`} value={n}>{n}</MenuItem>
+                              ))
+                            }
+                          </Select>
+                        </Col> 
+                        <Col md="12">
+                          <label>Rango:</label>
+                          <Input
+                            type="text"
+                            name="edit_range"
+                            id="edit_range"
+                            placeholder={valueItemToEdit.rango}
+                          />
+                        </Col>   
+                        {
+                          (itemSelected.key === 'porAjustadorLim_SP' || itemSelected.key === 'porAjustadorLim_BL') && (
+                            <Col md="12">
+                              <label>% Ajustador:</label>
+                              <Input
+                                type="text"
+                                name="edit_percentage"
+                                id="edit_percentage"
+                                placeholder={valueItemToEdit.porcentaje}
+                              />
+                            </Col> 
+                          )
+                        }                        
+                      </Row>
                     )
-                  }                        
-                </Row>
-              )
-            }
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              color="primary"
-              onClick={() => { editValueToItemSelected(valueItemToEdit) }}
-            >
-              Guardar Edicion
-            </Button>{" "}
-            <Button onClick={() => setShowModalEdit(false)}>Cancelar</Button>
-          </ModalFooter>
-        </Modal>
+                  }
+                </ModalBody>
+                <ModalFooter>
+                  <Button
+                    color="primary"
+                    onClick={() => { editValueToItemSelected(valueItemToEdit) }}
+                  >
+                    Guardar Edicion
+                  </Button>{" "}
+                  <Button onClick={() => setShowModalEdit(false)}>Cancelar</Button>
+                </ModalFooter>
+              </Modal>
+             </>
+           )
+         }
+        
       </>
     )
 }

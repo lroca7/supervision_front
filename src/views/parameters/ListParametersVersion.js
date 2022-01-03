@@ -15,6 +15,16 @@ import Swal from "sweetalert2"
 
 import { URL_BACK, columnsParametros} from "../../contants"
 
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Paper from "@mui/material/Paper"
+
+import "../../assets/scss/app.scss"
+
 const ListParametersVersion = () => {
 
   const [loader, setLoader] = useState(false)
@@ -70,10 +80,10 @@ const ListParametersVersion = () => {
 
   return (
     <div className="card">
-      <div class="card-header">
-        <h4 class="card-title">Parámetros por versión</h4>
+      <div className="card-header">
+        <h4 className="card-title">Parámetros por versión</h4>
       </div>
-      <div class="card-body">
+      <div className="card-body">
         <div id="parameters-container mb-4">
 
           <Row className="d-flex align-items-end">
@@ -103,29 +113,55 @@ const ListParametersVersion = () => {
                   <h4 className='mb-2'>Subgrupos</h4>
 
                   {Object.entries(subgrupos).map(([key, value]) => {
-                    return (
-                      <div>
-                        <h5>{key}</h5>
-                        <br />
-                        <div
-                          className="ag-theme-alpine"
-                          style={{ height: 200, width: "100%" }}
-                        >
-                          <AgGridReact
-                            rowData={value}
-                            defaultColDef={{
-                              flex: 1,
-                              minWidth: 110,
-                              editable: false,
-                              resizable: true
-                            }}
-                            columnDefs={columnsParametros}
-                          >
-                          </AgGridReact>
+                      
+                      return (
+                        <div key={`subgrupo_${key}`}>
+                          <h5>{key}</h5>
+                          <br />
+                          {value.length > 0 && (
+                            <TableContainer component={Paper}>
+                              <Table
+                                sx={{ minWidth: 650 }}
+                                aria-label="simple table"
+                                className="table-parametros"
+                              >
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell>Nombre</TableCell>
+                                    <TableCell>Valor</TableCell>
+                                    <TableCell>Descripción</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {value.map((row) => (
+                                    <TableRow
+                                      key={row.key}
+                                      sx={{
+                                        "&:last-child td, &:last-child th": {
+                                          border: 0
+                                        }
+                                      }}
+                                    >
+                                      <TableCell component="th" scope="row">
+                                        {row.nombre}
+                                      </TableCell>
+                                      <TableCell>
+                                        {row.valor}
+                                      </TableCell>
+                                      <TableCell>
+                                        {row.descripcion}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </TableContainer>
+                          )}
+
+                      
+                          <br />
                         </div>
-                        <br />
-                      </div>
-                    )
+                      )
                   })}
 
                 </>

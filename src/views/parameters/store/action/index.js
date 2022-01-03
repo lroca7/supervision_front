@@ -48,4 +48,3 @@ export const editValueToSelectedParameter = (itemToEdit) => (dispatch, getState)
 
   return dispatch({ type: 'EDIT_PARAMETER_VALUE', parameter: copyToEdit })
 }
-
