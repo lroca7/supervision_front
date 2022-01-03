@@ -96,14 +96,12 @@ const ExecuteSprint = () => {
 
   const getParameters = (version) => {
 
-    // debugger
     const url = `${URL_BACK}parametros?version=${version}`
 
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
         if (result.codigo === 200) {
-          // debugger
           setVerParam(version)
           setParameters(result.result.parametros)
           setParametersInitial(JSON.parse(JSON.stringify(result.result.parametros)))
@@ -403,7 +401,7 @@ const ExecuteSprint = () => {
       })
         .then((response) => response.json())
         .then((result) => {
-          // debugger
+          
           if (result.codigo === 201 || result.codigo === 200) {
 
             if (result.result.estado === 'INI') {
