@@ -1,10 +1,13 @@
 import { milesFormat } from "./utility/Utils"
 
 //Ambiente desarrollo
-export const URL_BACK = 'https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/'
+//export const URL_BACK = 'https://zaemfz4o3j.execute-api.us-east-1.amazonaws.com/desa/desa-services_sync/'
 
 //Ambiente bvrd-qa
 //export const URL_BACK = 'https://sk76wd183f.execute-api.us-east-1.amazonaws.com/bvrd-qa/services_sync/'
+
+//Ambiente bvrd-prod
+export const URL_BACK = 'https://r97asexlp2.execute-api.us-east-1.amazonaws.com/bvrd-prod/services_sync/'
 
 export const columnsParametros = [
   { 
