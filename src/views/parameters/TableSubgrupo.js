@@ -264,7 +264,7 @@ const TableSubgrupo = ({
                 color="primary"
                 onClick={() => { updateItemSelected() }}
               >
-                Guardar todo
+                Guardar
               </Button>
             )}
             {" "}
@@ -352,7 +352,7 @@ const TableSubgrupo = ({
                     color="primary"
                     onClick={() => { addValueToItemSelected() }}
                   >
-                    Guardar nuevo
+                    Guardar
                   </Button>{" "}
                   <Button onClick={() => setShowModalAdd(false)}>Cancelar</Button>
                 </ModalFooter>
@@ -441,7 +441,7 @@ const TableSubgrupo = ({
                     color="primary"
                     onClick={() => { editValueToItemSelected(valueItemToEdit) }}
                   >
-                    Guardar Edicion
+                    Guardar edición
                   </Button>{" "}
                   <Button onClick={() => setShowModalEdit(false)}>Cancelar</Button>
                 </ModalFooter>

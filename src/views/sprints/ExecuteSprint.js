@@ -357,23 +357,25 @@ const ExecuteSprint = () => {
     setbtnDisableLaunch(true)
 
     const parameters = JSON.parse(JSON.stringify(parametrosRedux))
-    delete parameters['valuesInArray']
+    if (parameters) {      
+      delete parameters['valuesInArray']
 
-    /* Si los parametros cambiaron se guarda la nueva version de parametros
-     * se actualiza la corrida y se lanza la corrida
-     */
-    if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
+      /* Si los parametros cambiaron se guarda la nueva version de parametros
+       * se actualiza la corrida y se lanza la corrida
+       */
+      if (JSON.stringify(parameters) !== JSON.stringify(parametersInitial)) {
 
-      const stateSaveParameters = await saveParameters()
-      if (stateSaveParameters.codigo === 201) {
-        const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
+        const stateSaveParameters = await saveParameters()
+        if (stateSaveParameters.codigo === 201) {
+          const stateUpdateCorrida = await updateCorrida(stateSaveParameters.result)
 
-        if (stateUpdateCorrida.codigo === 201) {
-          await executeCorrida()
+          if (stateUpdateCorrida.codigo === 201) {
+            await executeCorrida()
+          }
+
         }
 
       }
-
     } else { 
       const updateState = await updateCorrida()
 
