@@ -353,7 +353,7 @@ const ExecuteSprint = () => {
   }
 
   const launchCorrida = async () => {
-   
+
     setbtnDisableLaunch(true)
 
     const parameters = JSON.parse(JSON.stringify(parametrosRedux))
@@ -615,7 +615,7 @@ const ExecuteSprint = () => {
   return (
     <div className="card">
       <div className="card-header">
-        <h4 className="card-title">Lanzar Corrida 1</h4>
+        <h4 className="card-title">111</h4>
       </div>
       <div className="card-body">
         <div id="parameters-container mb-4">
@@ -896,11 +896,11 @@ const ExecuteSprint = () => {
             responseCorrida !== null && (
               <Col md="12">
                 <Alert color='success'>
-                  <h4 className='alert-heading'>{responseCorrida.result.mensaje}</h4>
+                  <h4 className='alert-heading'>{responseCorrida.result?.mensaje}</h4>
                   <div className='alert-body'>
                     <p>Procesos lanzados: </p>
-                    {responseCorrida.result.procesosLanzados.length > 0 && (
-                      responseCorrida.result.procesosLanzados.map(proceso => {
+                    {responseCorrida.result?.procesosLanzados.length > 0 && (
+                      responseCorrida.result?.procesosLanzados.map(proceso => {
                         return <div>
                           <p>{proceso.processName}</p>
                         </div>
